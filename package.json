@@ -1,0 +1,8 @@
+{
+	"name": "budget",
+	"version": "0.0.1",
+	"dependencies": {
+		"table-master": "*",
+		"format-number-with-string": "*"
+	}
+}
