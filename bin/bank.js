@@ -7,13 +7,6 @@ var root = __dirname + '/../data/bank/csv/';
 var RE_LINE = /^\uFEFF?"(\d{2})\/(\d{2})\/(\d{4})","(.+?)","(-?\d+\.\d+)","'(\d+)'"\s*/i;
 
 var data = [];
-var result = [], keys = {};
-var total = {
-	descr: 'Total:',
-	income: 0,
-	outcome: 0,
-	count: 0
-};
 
 fs.readdirSync(root).forEach(function(path) {
 	if(!path.match(/\.csv$/)) {
@@ -23,14 +16,7 @@ fs.readdirSync(root).forEach(function(path) {
 	fs.readFileSync(root + path, 'utf-8').split(/\n/).forEach(function(line) {
 		var m = line.match(RE_LINE);
 
-		if(line.match(/ (EUR|USD|EGP)"/)) {
-
-		} else if(line.match(/ RUB"/)) {
-
-		} else if(line.match(/ \w{3}"/)) {
-			console.log(line)
-			
-		}
+		var currency = line.match(/ (EUR|USD|EGP)"/);
 
 		if(m) {
 			var descr = m[4]
@@ -53,68 +39,101 @@ fs.readdirSync(root).forEach(function(path) {
 				date: m[3] + '-' + m[2] + '-' + m[1],
 				amount: parseFloat(m[5]),
 				descr: descr,
-				account: m[6]
+				account: m[6],
+				currency: currency ? currency[1] : 'RUB'
 			});
 		}
 	})
 });
 
-data.sort(function(a, b) {
-	return a.descr == b.descr ? 0 : (
-		a.descr > b.descr ? 1 : -1
-	);
+function showTable(data) {
+	var result = [], keys = {};
+	var total = {
+		descr: 'Total:',
+		income: 0,
+		outcome: 0,
+		count: 0
+	};
 
-}).forEach(function(item) {
-	var key = keys[item.descr];
+	data.sort(function(a, b) {
+		return a.descr == b.descr ? 0 : (
+			a.descr > b.descr ? 1 : -1
+		);
 
-	if(!key) {
-		result.push({
-			pos: result.length + 1,
-			descr: item.descr,
-			income: 0,
-			outcome: 0,
-			count: 0
-		});
+	}).forEach(function(item) {
+		var key = keys[item.descr];
+
+		if(!key) {
+			result.push({
+				pos: result.length + 1,
+				descr: item.descr,
+				income: 0,
+				outcome: 0,
+				count: 0
+			});
 	
-		key = keys[item.descr] = {
-			data: [],
-			pos: result.length
-		};
+			key = keys[item.descr] = {
+				data: [],
+				pos: result.length
+			};
 
-	}
+		}
 
-	var field = item.amount > 0 ? 'income' : 'outcome';
+		var field = item.amount > 0 ? 'income' : 'outcome';
 
-	result[key.pos - 1][field] += item.amount;
-	result[key.pos - 1].count++;
-	total[field] += item.amount;
-	total.count++;
-	key.data.push(item);
-});
+		result[key.pos - 1][field] += item.amount;
+		result[key.pos - 1].count++;
+		total[field] += item.amount;
+		total.count++;
+		key.data.push(item);
+	});
 
-
-result.sort(function(a, b) {
-	return a.outcome == b.outcome ? (
-		a.income == b.income ? 0: (
-			a.income > b.income ? -1 : 1
-		)
-	) : (
-		a.outcome > b.outcome ? 1 : -1
-	);
-});
-
-
-result.push(total)
 /*
-console.table(result, 'rlrrr', [
-	true, true, function(item) {
-		var sign = item < 0 ? '-' : '';
-		return sign + nf(item, '# ###')
-
-	}, function(item) {
-		var sign = item < 0 ? '-' : '';
-		return sign + nf(item, '# ###')
-
-	}, true
-])
+	result.sort(function(a, b) {
+		return a.outcome == b.outcome ? (
+			a.income == b.income ? 0: (
+				a.income > b.income ? -1 : 1
+			)
+		) : (
+			a.outcome > b.outcome ? 1 : -1
+		);
+	});
 */
+
+	result.push(total)
+
+	console.table(result, 'rlrrr', [
+		true, true, function(item) {
+			var sign = item < 0 ? '-' : '';
+			return sign + nf(item, '# ###.00')
+
+		}, function(item) {
+			var sign = item < 0 ? '-' : '';
+			return sign + nf(item, '# ###.00')
+
+		}, true
+	])
+}
+
+var accounts = {
+	'40817978030330046856': { currency: 'EUR', data: [] },
+	'40817840330170087887': { currency: 'USD', data: [] },
+	'*': { currency: 'RUB', data: [] }
+};
+
+var currencies = {
+	'EUR': [],
+	'USD': [],
+	'RUB': []
+}
+
+data.forEach(function(item) {
+	var key = accounts[item.account] ? accounts[item.account].currency : 'RUB';
+	currencies[key].push(item);
+});
+
+Object.keys(currencies).forEach(function(currency) {
+	console.log(currency);
+	showTable(currencies[currency]);
+	console.log();
+})
