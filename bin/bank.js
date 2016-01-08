@@ -20,18 +20,25 @@ fs.readdirSync(root).forEach(function(path) {
 
 		if(m) {
 			var descr = m[4]
+				.replace(/\s{2,}/g, ' ')
 				.replace(/^ОПЛАТА КАРТОЙ\s+/, '')
 				.replace(/^ОПЛАТА УСЛУГ \d+\s+/, '')
+				.replace(/^.+СОВЕТСКОЕ ОТДЕЛЕНИЕ.+$/, 'ТОМА')
 				.replace(/\s+(MOSKVA|MOSCOW|TVER|Moskva|KHIMKI|EMMAUS|ANDREYKOVO|Moscow|PUTILKOVO)(\s+RU)?/g, '')
 				.replace(/(\s+|^)(OAO|OOO|ZAO|WWW\.)\s*/g, '')
-				.replace(/\s{2,}/g, ' ')
-				.replace(/^.*(Apteka|Aptech).*$/i, 'APTEKA')
-				.replace(/^(HYPERGLOBUS|КОМИССИЯ ЗА СНЯТИЕ НАЛИЧНЫХ|OSTROVA|PEREKRESTOK|SHAKE SHACK|VOYKOVSKAYA|БИЛАЙН \d+|КВАРТПЛАТА|МЕГАФОН \d+|МТС \d+|DETSKIY MIR|LUKOIL AZS|MCDONALDS|MEGAFON.RU|MGTS|MOSENERGOSB|OSTIN|ULMART|ZARA|ВНЕСЕНИЕ НАЛИЧНЫХ|ВХОДЯЩИЙ ПЛАТЕЖ|ОПЛАТА ЗАДОЛЖЕННОСТИ ПО КРЕДИТНОЙ КАРТЕ|ПЕРЕВОД СРЕДСТВ|ПРОЦЕНТЫ НА ОСТАТОК|СНЯТИЕ НАЛИЧНЫХ).+$/g, '$1')
+				.replace(/^.*(Apteka|Aptech|DARSAN|FARGO FARMATSEVTIKA).*$/i, 'APTEKA')
+				.replace(/^.+TOPUP 6276/, 'МЕГАФОН 9264926276')
+				.replace(/^.+TOPUP 1833/, 'МЕГАФОН 9262001833')
+				.replace(/^ST7709735.+/, 'МЕГАФОН 9262220376')
+				.replace(/^(MAGNOLIYA|HYPERGLOBUS|КОМИССИЯ ЗА СНЯТИЕ НАЛИЧНЫХ|OSTROVA|PEREKRESTOK|SHAKE SHACK|VOYKOVSKAYA|БИЛАЙН \d+|КВАРТПЛАТА|МЕГАФОН \d+|МТС \d+|DETSKIY MIR|LUKOIL AZS|MCDONALDS|MGTS|MOSENERGOSB|OSTIN|ULMART|ZARA|ВНЕСЕНИЕ НАЛИЧНЫХ|ВХОДЯЩИЙ ПЛАТЕЖ|ОПЛАТА ЗАДОЛЖЕННОСТИ ПО КРЕДИТНОЙ КАРТЕ|ПЕРЕВОД СРЕДСТВ|ПРОЦЕНТЫ НА ОСТАТОК|СНЯТИЕ НАЛИЧНЫХ).*$/g, '$1')
 				.replace(/^ОПЛАТА ЗА \d+ ПОЕЗД.+$/, 'ОПЛАТА ЗА ПОЕЗДКИ')
+				.replace(/^(AVRORA RUSKO|KFS-AEROPORT)/, 'CAFETERA MAIL.RU')
+				.replace(/^GIPERMARKET UYUTERRA/, 'UYUTERRA')
+				.replace(/^(MOS.GOSUSLUGI.RU|MOSENERGOSB)/, 'КВАРТПЛАТА')
+				.replace(/Cafe Mu-Mu/, 'MUMU')
 				.replace(/^.*CAFETERA MAIL\.RU.+$/, 'CAFETERA MAIL.RU')
 				.replace(/^.+(АХМЕДОВА МАРИНА|ТУГОВИКОВА МАРИНА|МАРИНА ТУГОВИКОВА).+$/, 'ТУГОВИКОВА МАРИНА')
 				.replace(/^.+(АНО ФОНТ|ШКОЛА ЗНАЙКА).+$/, 'ДЕТСАД')
-				.replace(/^.+СОВЕТСКОЕ ОТДЕЛЕНИЕ.+$/, 'ТОМА')
 				.replace(/^.+ТУГОВИКОВ СТАНИСЛАВ ВИТАЛЬЕВИЧ.+$/, 'ИПОТЕКА')
 			;
 
