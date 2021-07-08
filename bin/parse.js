@@ -16,7 +16,7 @@ var outcome,
 function normalizeCategory(subcategory, category) {
 	//return category;
 
-	switch(subcategory) {
+	switch (subcategory) {
 		case 'Ипотека Карбышева':
 		case 'Квартплата Карбышева':
 		case 'Электричество Карбышева':
@@ -179,7 +179,7 @@ var source = require('fs').readFileSync(__dirname + '/../data/Report.csv', 'utf-
 			return nf(item, '# ###')
 
 		}, function(item) {
-			return item ? (item * 100).toFixed(1) : ''
+			return item ? (item * 100).toFixed(2) : ''
 		}
 	])
 	console.log();

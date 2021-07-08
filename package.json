@@ -1,6 +1,9 @@
 {
   "name": "budget",
   "version": "0.0.1",
+  "scripts": {
+	  "start": "node ./bin/parse.js"
+  },
   "dependencies": {
     "bar-horizontal": "^0.2.1",
     "format-number-with-string": "*",
