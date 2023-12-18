@@ -1,10 +1,26 @@
 #!/usr/bin/env node
-require('table-master');
-var nf = require('format-number-with-string');
-var bar = require('bar-horizontal');
+import printTable from 'table-master';
+import nf from 'format-number-with-string';
+import bar from 'bar-horizontal';
+import * as fs  from 'node:fs';
 
-var outcome,
-	tmp = [],
+type Data = {
+	date?: string,
+	category?: string,
+	subcategory: string,
+	amount: number,
+	account?: string,
+	payee?: string,
+	notes?: string,
+	device?: string
+}
+
+type Result = {category: string,
+	amount: number,
+	'%'?: number}
+
+let outcome,
+	tmp:Data[] = [],
 	RE_LINE = /^((\d{4})-(\d{2})-(\d{2})),"([^"]+)","([^"]+)","\s*(\d+\.\d+)","([^"]+)?","([^"]+)?","([^"]+)?","([^"]+)"$/,
 	total = 0,
 	category = {},
@@ -13,7 +29,7 @@ var outcome,
 	monthsCategory = {}
 ;
 
-function normalizeCategory(subcategory, category) {
+function normalizeCategory(subcategory: string, category: string):string {
 	//return category;
 
 	switch (subcategory) {
@@ -74,7 +90,7 @@ function normalizeCategory(subcategory, category) {
 	}
 }
 
-var source = require('fs').readFileSync(__dirname + '/../data/Report.csv', 'utf-8').split(/\n/).forEach(function(line,i) {
+var source = fs.readFileSync(__dirname + '/../data/Report.csv', 'utf-8').split(/\n/).forEach(function(line,i) {
 	if(outcome || !i) {
 		return;
 	}
@@ -142,7 +158,7 @@ var source = require('fs').readFileSync(__dirname + '/../data/Report.csv', 'utf-
 
 
 (function() {
-	var result = [];
+	var result:Result[] = [];
 
 	Object.keys(category).sort(function(a, b) {
 		return category[a] == category[b] ? 0 : (
@@ -174,7 +190,7 @@ var source = require('fs').readFileSync(__dirname + '/../data/Report.csv', 'utf-
 
 	console.log('По категориям');
 
-	console.table(result, 'lrr', [
+	printTable(result, 'lrr', [
 		true, function(item) {
 			return nf(item, '# ###')
 

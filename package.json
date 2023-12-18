@@ -2,11 +2,15 @@
   "name": "budget",
   "version": "0.0.1",
   "scripts": {
-	  "start": "node ./bin/parse.js"
+    "start": "npx tsc ./bin/parse.ts"
   },
   "dependencies": {
     "bar-horizontal": "^0.2.1",
     "format-number-with-string": "*",
-    "table-master": "*"
+    "table-master": "*",
+    "typescript": "^5.3.3"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.5"
   }
 }

@@ -1,12 +1,27 @@
 #!/usr/bin/env node
-var nf = require('format-number-with-string');
-require('table-master');
+import printTable from 'table-master';
+import nf from 'format-number-with-string';
+import * as fs  from 'node:fs';
+const root = __dirname + '/../data/bank/csv/';
+const RE_LINE = /^\uFEFF?"(\d{2})\/(\d{2})\/(\d{4})","(.+?)","(-?\d+\.\d+)","'(\d+)'"\s*/i;
 
-var fs = require('fs');
-var root = __dirname + '/../data/bank/csv/';
-var RE_LINE = /^\uFEFF?"(\d{2})\/(\d{2})\/(\d{4})","(.+?)","(-?\d+\.\d+)","'(\d+)'"\s*/i;
 
-var data = [];
+type Data = {
+	date?: string,
+	amount: number,
+	account: string,
+	currency: string,
+	descr: string
+}
+
+type Result = {
+	pos?: number,
+	descr: string,
+	outcome: number,
+	income: number,
+	count: number}
+
+	const data:Data[] = [];
 
 fs.readdirSync(root).forEach(function(path) {
 	if(!path.match(/\.csv$/)) {
@@ -54,7 +69,7 @@ fs.readdirSync(root).forEach(function(path) {
 });
 
 function showTable(data) {
-	var result = [], keys = {};
+	var result:Result[] = [], keys = {};
 	var total = {
 		descr: 'Total:',
 		income: 0,
@@ -78,7 +93,7 @@ function showTable(data) {
 				outcome: 0,
 				count: 0
 			});
-	
+
 			key = keys[item.descr] = {
 				data: [],
 				pos: result.length
@@ -109,7 +124,7 @@ function showTable(data) {
 
 	result.push(total)
 
-	console.table(result, 'rlrrr', [
+	printTable(result, 'rlrrr', [
 		true, true, function(item) {
 			var sign = item < 0 ? '-' : '';
 			return sign + nf(item, '# ###.00')
