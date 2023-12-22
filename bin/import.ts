@@ -100,12 +100,35 @@ program
       columns: true,
       trim: true,
       on_record: (record) => ({
-        id: hash([(record["Started Date"], record.Description, record.Amount)]),
+        id: hash(record),
         source: Source.Revolut,
         date: parseDate(record["Started Date"], "YYYY-MM-DD HH:mm:ss"),
         description: record.Description,
         amount: parseFloat(record.Amount),
         currency: enumFromStringValue(Currency, record.Currency),
+      }),
+    });
+
+    console.log(records);
+  });
+
+program
+  .command("hsbc")
+  .description("Import HSBC transactions")
+  .argument("<path>", "path to HSBC export file", parsePathToCSVFile)
+  .action((csvFilePath: string) => {
+    const fileContent = fs.readFileSync(csvFilePath, { encoding: "utf-8" });
+
+    const records: Transaction[] = parse(fileContent, {
+      delimiter: ",",
+      columns: false,
+      on_record: (record) => ({
+        id: hash(record),
+        source: Source.HSBC,
+        date: parseDate(record[0], "DD/MM/YYYY"),
+        description: record[1],
+        amount: parseFloat(record[2]),
+        currency: Currency.GBP,
       }),
     });
 
