@@ -62,8 +62,30 @@ program
   .command("monzo")
   .description("Import Monzo transactions")
   .argument("<path>", "path to Monzo export file", parsePathToCSVFile)
-  .action((filepath: string) => {
-    console.log(filepath);
+  .action((csvFilePath: string) => {
+    const fileContent = fs.readFileSync(csvFilePath, { encoding: "utf-8" });
+
+    const records: Transaction[] = parse(fileContent, {
+      delimiter: ",",
+      columns: true,
+      trim: true,
+      on_record: (record) => ({
+        id: record["Transaction ID"],
+        source: Source.Monzo,
+        date: parseDate(
+          [record.Date, record.Time].join(" "),
+          "YYYY-MM-DD HH:mm:ss"
+        ),
+        description: [record.name, record.Description]
+          .join(" ")
+          .trim()
+          .replace(/\s{2,}/g, " "),
+        amount: parseFloat(record.Amount),
+        currency: enumFromStringValue(Currency, record.Currency),
+      }),
+    });
+
+    console.log(records);
   });
 
 program
