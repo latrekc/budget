@@ -5,5 +5,14 @@
 
   "[typescript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
-  }
+  },
+  "sqltools.connections": [
+    {
+      "previewLimit": 50,
+      "driver": "SQLite",
+      "name": "DB",
+      "database": "${workspaceFolder:budget}/database.sqlite"
+    }
+  ],
+  "sqltools.useNodeRuntime": true
 }
