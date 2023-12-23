@@ -6,6 +6,7 @@ import { Command, InvalidArgumentError } from "commander";
 import { parse as parseDate } from "date-format-parse";
 import hash from "object-hash";
 import { PrismaClient } from "@prisma/client";
+import { OfxParser } from "@hublaw/ofx-parser";
 
 const prisma = new PrismaClient();
 
@@ -61,7 +62,28 @@ function parsePathToCSVFile(filepath: string): string {
   return csvFilePath;
 }
 
-async function upsertTransactions(records: Transaction[]): Promise<number> {
+function parsePathToOFXDirectory(filepath: string): string {
+  const directoryPath = path.resolve(__dirname, filepath);
+
+  if (!fs.existsSync(directoryPath)) {
+    throw new InvalidArgumentError(`Directory doesn't exist`);
+  }
+
+  if (!fs.statSync(directoryPath).isDirectory()) {
+    throw new InvalidArgumentError(`Path is not a directory`);
+  }
+
+  if (
+    fs.readdirSync(directoryPath).filter((value) => value.endsWith(".ofx"))
+      .length === 0
+  ) {
+    throw new InvalidArgumentError(`Directory doesn't contain OFX files`);
+  }
+
+  return directoryPath;
+}
+
+async function upsertTransactions(type: Source, records: Transaction[]) {
   const countBefore = await prisma.transaction.count();
 
   const inserts = records.map((record) =>
@@ -76,45 +98,25 @@ async function upsertTransactions(records: Transaction[]): Promise<number> {
   await prisma.$transaction(inserts);
   const countAfter = await prisma.transaction.count();
 
-  return countAfter - countBefore;
+  console.log(
+    `Imported ${countAfter - countBefore} out of ${
+      records.length
+    } ${type} transactions`
+  );
 }
 
 function parseTransactionsFile(
   csvFilePath: string,
-  {
-    columns = true,
-    trim = true,
-    on_record,
-  }: {
-    columns?: boolean;
-    trim?: boolean;
-    on_record: (record: any) => Transaction;
-  }
+  on_record: (record: any) => Transaction
 ): Transaction[] {
   const fileContent = fs.readFileSync(csvFilePath, { encoding: "utf-8" });
 
   return parse(fileContent, {
     delimiter: ",",
-    columns,
-    trim,
+    columns: true,
+    trim: true,
     on_record,
   });
-}
-
-async function parseAndImportTransactions(
-  type: Source,
-  csvFilePath: string,
-  opts: {
-    columns?: boolean;
-    trim?: boolean;
-    on_record: (record: any) => Transaction;
-  }
-) {
-  const records = parseTransactionsFile(csvFilePath, opts);
-  const imported = await upsertTransactions(records);
-  console.log(
-    `Imported ${imported} out of ${records.length} ${type} transactions`
-  );
 }
 
 program
@@ -122,22 +124,22 @@ program
   .description("Import Monzo transactions")
   .argument("<path>", "path to Monzo export file", parsePathToCSVFile)
   .action(async (csvFilePath: string) => {
-    await parseAndImportTransactions(Source.Monzo, csvFilePath, {
-      on_record: (record) => ({
-        id: record["Transaction ID"],
-        source: Source.Monzo,
-        date: parseDate(
-          [record.Date, record.Time].join(" "),
-          "DD/MM/YYYY HH:mm:ss"
-        ),
-        description: [record.name, record.Description]
-          .join(" ")
-          .trim()
-          .replace(/\s{2,}/g, " "),
-        amount: parseFloat(record.Amount),
-        currency: enumFromStringValue(Currency, record.Currency),
-      }),
-    });
+    const records = parseTransactionsFile(csvFilePath, (record) => ({
+      id: record["Transaction ID"],
+      source: Source.Monzo,
+      date: parseDate(
+        [record.Date, record.Time].join(" "),
+        "DD/MM/YYYY HH:mm:ss"
+      ),
+      description: [record.name, record.Description]
+        .join(" ")
+        .trim()
+        .replace(/\s{2,}/g, " "),
+      amount: parseFloat(record.Amount),
+      currency: enumFromStringValue(Currency, record.Currency),
+    }));
+
+    await upsertTransactions(Source.Monzo, records);
   });
 
 program
@@ -145,35 +147,55 @@ program
   .description("Import Revolut transactions")
   .argument("<path>", "path to Revolut export file", parsePathToCSVFile)
   .action(async (csvFilePath: string) => {
-    await parseAndImportTransactions(Source.Revolut, csvFilePath, {
-      on_record: (record) => ({
-        id: hash(record),
-        source: Source.Revolut,
-        date: parseDate(record["Started Date"], "YYYY-MM-DD HH:mm:ss"),
-        description: record.Description,
-        amount: parseFloat(record.Amount),
-        currency: enumFromStringValue(Currency, record.Currency),
-      }),
-    });
+    const records = parseTransactionsFile(csvFilePath, (record) => ({
+      id: hash(record),
+      source: Source.Revolut,
+      date: parseDate(record["Started Date"], "YYYY-MM-DD HH:mm:ss"),
+      description: record.Description,
+      amount: parseFloat(record.Amount),
+      currency: enumFromStringValue(Currency, record.Currency),
+    }));
+
+    await upsertTransactions(Source.Revolut, records);
   });
 
 program
   .command("hsbc")
   .description("Import HSBC transactions")
-  .argument("<path>", "path to HSBC export file", parsePathToCSVFile)
-  .action(async (csvFilePath: string) => {
-    await parseAndImportTransactions(Source.HSBC, csvFilePath, {
-      columns: false,
-      trim: false,
-      on_record: (record) => ({
-        id: hash(record),
-        source: Source.HSBC,
-        date: parseDate(record[0], "DD/MM/YYYY"),
-        description: record[1],
-        amount: parseFloat(record[2]),
-        currency: Currency.GBP,
-      }),
-    });
+  .argument(
+    "<path>",
+    "path to a HSBC directory with ofx files",
+    parsePathToOFXDirectory
+  )
+  .action(async (directoryPath: string) => {
+    const records: Transaction[] = [];
+    const ofxParser = new OfxParser();
+
+    fs.readdirSync(directoryPath)
+      .filter((value) => value.endsWith(".ofx"))
+      .map((filePath) => path.resolve(directoryPath, filePath))
+      .forEach(async (filePath) => {
+        const content = fs.readFileSync(filePath, "utf-8");
+        const ofx = await ofxParser.parseStatement(content);
+        const currencyMatch = content.match(/<CURDEF>([A-Z]{3})<\/CURDEF>/);
+        const currency = enumFromStringValue(
+          Currency,
+          (currencyMatch || [])[1]
+        );
+
+        ofx.transactions?.forEach((transaction) => {
+          records.push({
+            id: transaction.fitId ?? "",
+            source: Source.HSBC,
+            date: transaction.datePosted ?? new Date(),
+            description: [transaction.name, transaction.memo].join(" "),
+            amount: transaction.amount ?? 0,
+            currency,
+          });
+        });
+      });
+
+    await upsertTransactions(Source.HSBC, records);
   });
 
 program.parse();

@@ -5,6 +5,7 @@
     "start": "npx tsc ./bin/parse.ts"
   },
   "dependencies": {
+    "@hublaw/ofx-parser": "^1.1.0",
     "@prisma/client": "^5.7.1",
     "bar-horizontal": "^0.2.1",
     "commander": "^11.1.0",
