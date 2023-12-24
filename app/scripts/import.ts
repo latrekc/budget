@@ -8,7 +8,7 @@ import hash from "object-hash";
 import { PrismaClient } from "@prisma/client";
 import { OfxParser } from "@hublaw/ofx-parser";
 
-import { Currency, Source, Transaction } from "../src/types";
+import { Currency, Source, Transaction } from "../types";
 
 const prisma = new PrismaClient();
 
