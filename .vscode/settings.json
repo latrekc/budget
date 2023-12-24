@@ -14,5 +14,8 @@
       "database": "${workspaceFolder:budget}/database.sqlite"
     }
   ],
+  "files.associations": {
+    "*.css": "tailwindcss"
+  },
   "sqltools.useNodeRuntime": true
 }
