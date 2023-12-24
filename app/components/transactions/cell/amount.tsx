@@ -1,4 +1,4 @@
-import { Transaction } from "@app/types";
+import { Transaction } from "@app/lib/types";
 
 export default function TransactionAmountCell({
   transaction: { amount, currency },

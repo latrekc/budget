@@ -1,7 +1,7 @@
 import Header from "./components/header";
 import TransactionsTable from "./components/transactions/table";
 
-import transactions from "./mock-transactions";
+import transactions from "./lib/mock-transactions";
 
 export default function Page() {
   return (
