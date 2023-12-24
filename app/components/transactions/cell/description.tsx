@@ -1,4 +1,4 @@
-import { Transaction } from "../../../types";
+import { Transaction } from "@app/types";
 
 export default function TransactionDescriptionCell({
   transaction: { description },

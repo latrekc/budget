@@ -8,7 +8,7 @@ import {
   TableRow,
   TableCell,
 } from "@nextui-org/react";
-import { Transaction } from "../../types";
+import { Transaction } from "@app/types";
 import { useCallback, useMemo } from "react";
 import TransactionDateCell from "./cell/date";
 import TransactionDescriptionCell from "./cell/description";
