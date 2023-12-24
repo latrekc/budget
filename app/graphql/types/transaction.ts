@@ -30,14 +30,11 @@ builder.prismaObject("Transaction", {
   }),
 });
 
-// 1.
 builder.queryField("transactions", (t) =>
-  // 2.
-  t.prismaField({
-    // 3.
-    type: ["Transaction"],
-    // 4.
+  t.prismaConnection({
+    type: "Transaction",
+    cursor: "id",
     resolve: (query, _parent, _args, _ctx, _info) =>
-      prisma.transaction.findMany({ ...query }),
+      prisma.transaction.findMany({ ...query, orderBy: [{ date: 'desc'}] }),
   }),
 );
