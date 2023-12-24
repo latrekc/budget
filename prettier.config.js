@@ -1,4 +1,8 @@
 module.exports = {
-  plugins: ["prettier-plugin-tailwindcss"],
-  tailwindConfig: "./styles/tailwind.config.js",
+  plugins: [
+    "prettier-plugin-prisma",
+    "prettier-plugin-organize-imports",
+    "prettier-plugin-tailwindcss",
+  ],
+  tailwindConfig: "./tailwind.config.js",
 };

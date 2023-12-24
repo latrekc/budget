@@ -1,4 +1,4 @@
-import { Source, Transaction, Currency } from "./types";
+import { Currency, Source, Transaction } from "./types";
 
 const transactions: Transaction[] = [
   {

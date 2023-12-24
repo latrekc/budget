@@ -1,4 +1,4 @@
-import { Transaction } from "@app/types";
+import { Transaction } from "@app/lib/types";
 import Image from "next/image";
 
 export default function TransactionSourceCell({

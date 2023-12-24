@@ -1,24 +1,19 @@
 #!/usr/bin/env ts-node-script
-import * as fs from "fs";
-import * as path from "path";
-import { parse } from "csv-parse/sync";
-import { Command, InvalidArgumentError } from "commander";
-import { parse as parseDate } from "date-format-parse";
-import hash from "object-hash";
-import { PrismaClient } from "@prisma/client";
+import prisma from "@app/lib/prisma";
 import { OfxParser } from "@hublaw/ofx-parser";
+import { Command, InvalidArgumentError } from "commander";
+import { parse } from "csv-parse/sync";
+import { parse as parseDate } from "date-format-parse";
+import * as fs from "fs";
+import hash from "object-hash";
+import * as path from "path";
 
-import { Currency, Source, Transaction } from "@app/types";
-
-const prisma = new PrismaClient();
-
-function enumFromStringValue<T>(enm: { [s: string]: T }, value: string): T {
-  if ((Object.values(enm) as unknown as string[]).includes(value)) {
-    return value as unknown as T;
-  }
-
-  throw new Error(`Undefined value ${value} of ${enm}`);
-}
+import {
+  Currency,
+  Source,
+  Transaction,
+  enumFromStringValue,
+} from "@app/lib/types";
 
 const program = new Command();
 

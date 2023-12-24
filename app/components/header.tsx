@@ -1,4 +1,4 @@
-import { Navbar, NavbarContent, NavbarItem, Link } from "@nextui-org/react";
+import { Link, Navbar, NavbarContent, NavbarItem } from "@nextui-org/react";
 
 export default function Header() {
   return (

@@ -1,18 +1,18 @@
 "use client";
 
+import { Transaction } from "@app/lib/types";
 import {
   Table,
-  TableHeader,
-  TableColumn,
   TableBody,
-  TableRow,
   TableCell,
+  TableColumn,
+  TableHeader,
+  TableRow,
 } from "@nextui-org/react";
-import { Transaction } from "@app/types";
 import { useCallback, useMemo } from "react";
+import TransactionAmountCell from "./cell/amount";
 import TransactionDateCell from "./cell/date";
 import TransactionDescriptionCell from "./cell/description";
-import TransactionAmountCell from "./cell/amount";
 import TransactionSourceCell from "./cell/source";
 
 enum Colunms {
