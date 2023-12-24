@@ -8,32 +8,9 @@ import hash from "object-hash";
 import { PrismaClient } from "@prisma/client";
 import { OfxParser } from "@hublaw/ofx-parser";
 
+import { Currency, Source, Transaction } from "../src/types";
+
 const prisma = new PrismaClient();
-
-enum Source {
-  Monzo = "Monzo",
-  Revolut = "Revolut",
-  HSBC = "HSBC",
-  Sberbank = "Sberbank",
-  Raiffeisen = "Raiffeisen",
-  Tinkoff = "Tinkoff",
-}
-
-enum Currency {
-  GBP = "GBP",
-  EUR = "EUR",
-  USD = "USD",
-  RUB = "RUB",
-}
-
-type Transaction = {
-  id: string;
-  source: Source;
-  date: Date;
-  description: string;
-  amount: number;
-  currency: Currency;
-};
 
 function enumFromStringValue<T>(enm: { [s: string]: T }, value: string): T {
   if ((Object.values(enm) as unknown as string[]).includes(value)) {
@@ -92,7 +69,7 @@ async function upsertTransactions(type: Source, records: Transaction[]) {
       update: {},
       create: { ...record },
       select: { id: true },
-    })
+    }),
   );
 
   await prisma.$transaction(inserts);
@@ -101,13 +78,13 @@ async function upsertTransactions(type: Source, records: Transaction[]) {
   console.log(
     `Imported ${countAfter - countBefore} out of ${
       records.length
-    } ${type} transactions`
+    } ${type} transactions`,
   );
 }
 
 function parseTransactionsFile(
   csvFilePath: string,
-  on_record: (record: any) => Transaction
+  on_record: (record: any) => Transaction,
 ): Transaction[] {
   const fileContent = fs.readFileSync(csvFilePath, { encoding: "utf-8" });
 
@@ -129,7 +106,7 @@ program
       source: Source.Monzo,
       date: parseDate(
         [record.Date, record.Time].join(" "),
-        "DD/MM/YYYY HH:mm:ss"
+        "DD/MM/YYYY HH:mm:ss",
       ),
       description: [record.name, record.Description]
         .join(" ")
@@ -165,7 +142,7 @@ program
   .argument(
     "<path>",
     "path to a HSBC directory with ofx files",
-    parsePathToOFXDirectory
+    parsePathToOFXDirectory,
   )
   .action(async (directoryPath: string) => {
     const records: Transaction[] = [];
@@ -180,7 +157,7 @@ program
         const currencyMatch = content.match(/<CURDEF>([A-Z]{3})<\/CURDEF>/);
         const currency = enumFromStringValue(
           Currency,
-          (currencyMatch || [])[1]
+          (currencyMatch || [])[1],
         );
 
         ofx.transactions?.forEach((transaction) => {
