@@ -1,4 +1,4 @@
-import { Transaction } from "../../../../src/types";
+import { Transaction } from "../../../types";
 import Image from "next/image";
 
 export default function TransactionSourceCell({

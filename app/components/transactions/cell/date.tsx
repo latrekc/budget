@@ -1,5 +1,5 @@
 import { format } from "date-format-parse";
-import { Transaction } from "../../../../src/types";
+import { Transaction } from "../../../types";
 
 export default function TransactionDateCell({
   transaction: { date },
