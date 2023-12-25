@@ -1,14 +1,17 @@
 import { PrismaClient } from "@prisma/client";
 
-let prisma: PrismaClient;
+const prismaClientPropertyName = `__prevent-name-collision__prisma`;
+type GlobalThisWithPrismaClient = typeof globalThis & {
+  [prismaClientPropertyName]: PrismaClient;
+};
 
-declare global {
-  var prisma: PrismaClient;
-}
-
-if (!global.prisma) {
-  global.prisma = new PrismaClient();
-}
-prisma = global.prisma;
+const getPrismaClient = () => {
+  const newGlobalThis = globalThis as GlobalThisWithPrismaClient;
+  if (!newGlobalThis[prismaClientPropertyName]) {
+    newGlobalThis[prismaClientPropertyName] = new PrismaClient();
+  }
+  return newGlobalThis[prismaClientPropertyName];
+};
+const prisma = getPrismaClient();
 
 export default prisma;

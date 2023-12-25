@@ -1,5 +1,5 @@
 #!/usr/bin/env ts-node-script
-import prisma from "@app/lib/prisma";
+import prisma from "@/lib/prisma";
 import { OfxParser } from "@hublaw/ofx-parser";
 import { Command, InvalidArgumentError } from "commander";
 import { parse } from "csv-parse/sync";
@@ -13,7 +13,7 @@ import {
   Source,
   Transaction,
   enumFromStringValue,
-} from "@app/lib/types";
+} from "@/lib/types";
 
 const program = new Command();
 
