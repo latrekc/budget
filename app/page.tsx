@@ -1,14 +1,13 @@
-import Header from "./components/header";
-import TransactionsTable from "./components/transactions/table";
+"use client";
 
-import transactions from "./lib/mock-transactions";
+import Header from "./components/Header";
+import Transactions from "./components/Transactions";
 
 export default function Page() {
   return (
     <>
       <Header />
-
-      <TransactionsTable transactions={transactions} />
+      <Transactions />
     </>
   );
 }

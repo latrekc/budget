@@ -1,4 +1,5 @@
-import { Currency, Source, enumFromStringValue } from "@app/lib/types";
+import prisma from "../../lib/prisma";
+import { Currency, Source, enumFromStringValue } from "../../lib/types";
 import { builder } from "../builder";
 
 builder.enumType(Currency, {
@@ -34,7 +35,7 @@ builder.queryField("transactions", (t) =>
   t.prismaConnection({
     type: "Transaction",
     cursor: "id",
-    resolve: (query, _parent, _args, _ctx, _info) =>
-      prisma.transaction.findMany({ ...query, orderBy: [{ date: 'desc'}] }),
+    resolve: (query) =>
+      prisma.transaction.findMany({ ...query, orderBy: [{ date: "desc" }] }),
   }),
 );
