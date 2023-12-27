@@ -1,4 +1,5 @@
 import { graphql, useLazyLoadQuery } from "react-relay";
+import TransactionsStatistic from "./TransactionsStatistic";
 import TransactionsTable, { PER_PAGE } from "./TransactionsTable";
 import { TransactionsQuery } from "./__generated__/TransactionsQuery.graphql";
 
@@ -7,9 +8,20 @@ export default function Transactions() {
     graphql`
       query TransactionsQuery($first: Int, $after: ID) {
         ...TransactionsTable_transactions
+        ...TransactionsStatistic_statistic
       }
     `,
     { first: PER_PAGE },
   );
-  return <TransactionsTable transactions={data} />;
+
+  return (
+    <div className="flex flex-row">
+      <div className="basis-3/4">
+        <TransactionsTable transactions={data} />
+      </div>
+      <div className="basis-1/4">
+        <TransactionsStatistic statistic={data} />
+      </div>
+    </div>
+  );
 }

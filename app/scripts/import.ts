@@ -1,5 +1,4 @@
 #!/usr/bin/env ts-node-script
-import prisma from "@/lib/prisma";
 import { OfxParser } from "@hublaw/ofx-parser";
 import { Command, InvalidArgumentError } from "commander";
 import { parse } from "csv-parse/sync";
@@ -7,13 +6,14 @@ import { parse as parseDate } from "date-format-parse";
 import * as fs from "fs";
 import hash from "object-hash";
 import * as path from "path";
+import prisma from "../lib/prisma";
 
 import {
   Currency,
   Source,
   Transaction,
   enumFromStringValue,
-} from "@/lib/types";
+} from "../lib/types";
 
 const program = new Command();
 
@@ -143,17 +143,30 @@ program
     const records: Transaction[] = [];
     const ofxParser = new OfxParser();
 
+    const accountCurrencies = new Map([
+      ["40119990876714", Currency.EUR],
+      ["40119990719539", Currency.USD],
+      ["40010432086735", Currency.GBP],
+      ["40126540108227", Currency.GBP],
+      ["40100018059063", Currency.GBP],
+    ]);
+
     fs.readdirSync(directoryPath)
       .filter((value) => value.endsWith(".ofx"))
       .map((filePath) => path.resolve(directoryPath, filePath))
       .forEach(async (filePath) => {
         const content = fs.readFileSync(filePath, "utf-8");
         const ofx = await ofxParser.parseStatement(content);
-        const currencyMatch = content.match(/<CURDEF>([A-Z]{3})<\/CURDEF>/);
-        const currency = enumFromStringValue(
-          Currency,
-          (currencyMatch || [])[1],
-        );
+
+        const accountMatch = content.match(/<ACCTID>([0-9]+)<\/ACCTID>/);
+        const accountId = (accountMatch || [])[1];
+
+        const currency = accountCurrencies.get(accountId);
+
+        if (currency == undefined) {
+          console.error(`Unknown account ${accountId}`);
+          process.exit();
+        }
 
         ofx.transactions?.forEach((transaction) => {
           records.push({

@@ -1,3 +1,4 @@
+import AmountValue, { Size } from "@/components/amount";
 import { graphql, useFragment } from "react-relay";
 import { TransactionAmountCell__transaction$key } from "./__generated__/TransactionAmountCell__transaction.graphql";
 
@@ -16,12 +17,5 @@ export default function TransactionAmountCell({
     transaction$key,
   );
 
-  return (
-    <span className={`${amount > 0 ? "text-green-900" : ""} text-mono text-lg`}>
-      {new Intl.NumberFormat("en-GB", {
-        style: "currency",
-        currency: currency,
-      }).format(amount)}
-    </span>
-  );
+  return <AmountValue amount={amount} currency={currency} size={Size.Big} />;
 }
