@@ -54,6 +54,7 @@
     "prettier": "^3.1.1",
     "prettier-plugin-organize-imports": "^3.2.4",
     "prettier-plugin-prisma": "^5.0.0",
+    "prettier-plugin-sql": "^0.18.0",
     "prettier-plugin-tailwindcss": "^0.5.9",
     "prisma": "^5.7.1",
     "relay-compiler": "^16.1.0",
