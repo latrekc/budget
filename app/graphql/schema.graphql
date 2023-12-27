@@ -25,6 +25,7 @@ type Query {
     first: Int
     last: Int
   ): QueryTransactionsConnection!
+  transactions_statistic_per_months: [StatisticPerMonths!]!
 }
 
 type QueryTransactionsConnection {
@@ -44,6 +45,14 @@ enum Source {
   Revolut
   Sberbank
   Tinkoff
+}
+
+type StatisticPerMonths {
+  id: ID!
+  income: Float!
+  month: Int!
+  outcome: Float!
+  year: Int!
 }
 
 type Transaction {

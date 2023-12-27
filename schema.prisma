@@ -1,15 +1,17 @@
-datasource db {
-  provider = "sqlite"
-  url      = "file:./database.sqlite"
-}
-
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["views"]
 }
 
 generator pothos {
-  provider    = "prisma-pothos-types"
-  prismaUtils = true
+  provider        = "prisma-pothos-types"
+  previewFeatures = ["views"]
+  prismaUtils     = "true"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./database.sqlite"
 }
 
 model Transaction {
@@ -21,4 +23,14 @@ model Transaction {
   currency    String
 
   @@map("transactions")
+}
+
+view StatisticPerMonths {
+  id      String @id @unique
+  year    Int
+  month   Int
+  income  Float
+  outcome Float
+
+  @@map("transactions_statistic_per_months")
 }
