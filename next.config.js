@@ -1,4 +1,5 @@
 module.exports = {
+  productionBrowserSourceMaps: true,
   compiler: {
     relay: {
       // This should match relay.config.js

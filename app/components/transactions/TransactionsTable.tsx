@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Spinner,
   Table,
   TableBody,
   TableCell,
@@ -8,10 +9,15 @@ import {
   TableHeader,
   TableRow,
 } from "@nextui-org/react";
-import { useCallback, useMemo } from "react";
+import { useInfiniteScroll } from "@nextui-org/use-infinite-scroll";
+import { useAsyncList } from "@react-stately/data";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { graphql, useFragment, usePaginationFragment } from "react-relay";
 import { TransactionsTable__transaction$key } from "./__generated__/TransactionsTable__transaction.graphql";
-import { TransactionsTable_transactions$key } from "./__generated__/TransactionsTable_transactions.graphql";
+import {
+  TransactionsTable_transactions$data,
+  TransactionsTable_transactions$key,
+} from "./__generated__/TransactionsTable_transactions.graphql";
 import TransactionAmountCell from "./cell/TransactionAmountCell";
 import TransactionDateCell from "./cell/TransactionDateCell";
 import TransactionDescriptionCell from "./cell/TransactionDescriptionCell";
@@ -24,6 +30,10 @@ enum Colunms {
   "Amount" = "Amount",
 }
 
+export const PER_PAGE = 20;
+
+type Item = TransactionsTable_transactions$data["transactions"]["edges"][0];
+
 export default function TransactionsTable({
   transactions: transactions$key,
 }: {
@@ -31,15 +41,8 @@ export default function TransactionsTable({
 }) {
   const {
     data: { transactions },
-    /*
-        loadNext,
-        loadPrevious,
-     hasNext,
-     hasPrevious,
-     isLoadingNext,
-     isLoadingPrevious,
-     refetch, // For refetching connection
-     */
+    loadNext,
+    hasNext,
   } = usePaginationFragment(
     graphql`
       fragment TransactionsTable_transactions on Query
@@ -51,7 +54,7 @@ export default function TransactionsTable({
             hasNextPage
           }
           edges {
-            # cursor
+            cursor
             node {
               id
               ...TransactionsTable__transaction
@@ -62,6 +65,52 @@ export default function TransactionsTable({
     `,
     transactions$key,
   );
+
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasMore, setHasMore] = useState(false);
+  const [inited, setInited] = useState(false);
+  useEffect(() => {
+    setInited(true);
+  }, []);
+
+  const list = useAsyncList<Item, string>({
+    async load({ cursor }) {
+      if (cursor) {
+        setIsLoading(false);
+      }
+
+      if (inited) {
+        await new Promise((success, failure) => {
+          loadNext(PER_PAGE, {
+            onComplete(error) {
+              if (error != null) {
+                console.error(error);
+                failure(error);
+              } else {
+                success(null);
+              }
+            },
+          });
+        });
+      }
+
+      const nextCursor = transactions.pageInfo.endCursor ?? "null";
+
+      console.log("TOTAL EDGES", transactions.edges.length);
+
+      setHasMore(nextCursor != null);
+
+      return {
+        items: transactions?.edges,
+        cursor: nextCursor,
+      };
+    },
+  });
+
+  const [loaderRef, scrollerRef] = useInfiniteScroll({
+    hasMore: hasNext,
+    onLoadMore: list.loadMore,
+  });
 
   const columns = useMemo(
     () =>
@@ -94,6 +143,18 @@ export default function TransactionsTable({
       radius="none"
       shadow="none"
       isHeaderSticky
+      baseRef={scrollerRef}
+      bottomContent={
+        hasMore ? (
+          <div className="flex w-full justify-center">
+            <Spinner ref={loaderRef} color="default" />
+          </div>
+        ) : null
+      }
+      classNames={{
+        base: "max-h-[520px] overflow-scroll",
+        table: "min-h-[400px]",
+      }}
     >
       <TableHeader columns={columns}>
         {(column) => (
@@ -106,7 +167,11 @@ export default function TransactionsTable({
         )}
       </TableHeader>
 
-      <TableBody items={transactions?.edges ?? []}>
+      <TableBody
+        items={list.items}
+        isLoading={isLoading}
+        loadingContent={<Spinner color="default" />}
+      >
         {(item) => (
           <TableRow key={item?.node.id}>
             {(columnKey) => (

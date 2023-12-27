@@ -7,7 +7,9 @@ export default function Page() {
   return (
     <>
       <Header />
-      <Transactions />
+      <div suppressHydrationWarning>
+        <Transactions />
+      </div>
     </>
   );
 }
