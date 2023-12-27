@@ -1,5 +1,5 @@
 import { graphql, useLazyLoadQuery } from "react-relay";
-import TransactionsTable from "./TransactionsTable";
+import TransactionsTable, { PER_PAGE } from "./TransactionsTable";
 import { TransactionsQuery } from "./__generated__/TransactionsQuery.graphql";
 
 export default function Transactions() {
@@ -9,7 +9,7 @@ export default function Transactions() {
         ...TransactionsTable_transactions
       }
     `,
-    { first: 20 },
+    { first: PER_PAGE },
   );
   return <TransactionsTable transactions={data} />;
 }

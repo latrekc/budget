@@ -13,11 +13,13 @@
   "dependencies": {
     "@hublaw/ofx-parser": "^1.1.0",
     "@nextui-org/react": "^2.2.9",
+    "@nextui-org/use-infinite-scroll": "^2.1.2",
     "@pothos/core": "^3.41.0",
     "@pothos/plugin-prisma": "^3.63.0",
     "@pothos/plugin-prisma-utils": "^0.14.0",
     "@pothos/plugin-relay": "^3.45.1",
     "@prisma/client": "^5.7.1",
+    "@react-stately/data": "^3.11.0",
     "commander": "^11.1.0",
     "csv-parse": "^5.5.3",
     "date-format-parse": "^0.2.7",
