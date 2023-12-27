@@ -1,4 +1,4 @@
-import AmountValue, { Size } from "@/components/amount";
+import AmountValue, { Size } from "@/components/AmountValue";
 import { graphql, useFragment } from "react-relay";
 import { TransactionAmountCell__transaction$key } from "./__generated__/TransactionAmountCell__transaction.graphql";
 

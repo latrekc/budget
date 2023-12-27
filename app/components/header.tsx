@@ -1,26 +1,38 @@
 import { Link, Navbar, NavbarContent, NavbarItem } from "@nextui-org/react";
 
-export default function Header() {
+export enum PageType {
+  Transactions = "Transactions",
+  Balances = "Balances",
+  Shares = "Shares",
+  Dashboard = "Dashboard",
+}
+
+export default function Header({ active }: { active: PageType }) {
+  const pages = [
+    { id: PageType.Transactions },
+    { id: PageType.Balances, disabled: true },
+    { id: PageType.Shares, disabled: true },
+    { id: PageType.Dashboard },
+  ];
+
   return (
     <Navbar isBordered maxWidth="full">
       <NavbarContent className="flex gap-4" justify="start">
-        <NavbarItem isActive>
-          <Link color="foreground" href="/" aria-current="page">
-            Transactions
-          </Link>
-        </NavbarItem>
-
-        <NavbarItem>
-          <Link isDisabled>Balances</Link>
-        </NavbarItem>
-
-        <NavbarItem>
-          <Link isDisabled>Shares</Link>
-        </NavbarItem>
-
-        <NavbarItem>
-          <Link isDisabled>Dashboard</Link>
-        </NavbarItem>
+        {pages.map((page) => (
+          <NavbarItem key={page.id} isActive={page.id === active}>
+            {page.disabled ? (
+              <Link isDisabled>{page.id}</Link>
+            ) : (
+              <Link
+                color={page.id === active ? "foreground" : "primary"}
+                href={`/${page.id.toLowerCase()}`}
+                aria-current="page"
+              >
+                {page.id}
+              </Link>
+            )}
+          </NavbarItem>
+        ))}
       </NavbarContent>
     </Navbar>
   );
