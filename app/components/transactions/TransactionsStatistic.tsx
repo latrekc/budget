@@ -1,7 +1,7 @@
 import { Accordion, AccordionItem } from "@nextui-org/react";
 import { useCallback, useState } from "react";
 import { graphql, useFragment } from "react-relay";
-import AmountValue, { Size } from "../amount";
+import AmountValue, { Size } from "../AmountValue";
 import { TransactionsStatistic_statistic$key } from "./__generated__/TransactionsStatistic_statistic.graphql";
 
 type Year = {
