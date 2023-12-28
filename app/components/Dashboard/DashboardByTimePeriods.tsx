@@ -25,24 +25,6 @@ export default function DashboardByTimePeriods({
     statistic$key,
   );
 
-  const income_data = useMemo(
-    () =>
-      data.transactions_statistic_per_months.map(({ id, income }) => [
-        id,
-        Math.round(income),
-      ]),
-    [data.transactions_statistic_per_months],
-  );
-
-  const outcome_data = useMemo(
-    () =>
-      data.transactions_statistic_per_months.map(({ id, outcome }) => [
-        id,
-        Math.round(Math.abs(outcome)),
-      ]),
-    [data.transactions_statistic_per_months],
-  );
-
   const option: EChartsOption = useMemo(
     () => ({
       tooltip: {
@@ -81,7 +63,10 @@ export default function DashboardByTimePeriods({
           type: "line",
           step: "middle",
           color: "#14532d",
-          data: income_data,
+          data: data.transactions_statistic_per_months.map(({ id, income }) => [
+            id,
+            Math.round(income),
+          ]),
         },
 
         {
@@ -89,7 +74,37 @@ export default function DashboardByTimePeriods({
           type: "line",
           step: "middle",
           color: "#7f1d1d",
-          data: outcome_data,
+          data: data.transactions_statistic_per_months.map(
+            ({ id, outcome }) => [id, Math.round(Math.abs(outcome))],
+          ),
+        },
+        {
+          name: "Saldo",
+          type: "line",
+          symbol: "none",
+          step: "middle",
+          data: data.transactions_statistic_per_months.map(
+            ({ id, income, outcome }) => [id, Math.round(income + outcome)],
+          ),
+          areaStyle: {},
+          tooltip: false,
+          color: "#000",
+        },
+      ],
+      visualMap: [
+        {
+          type: "continuous",
+          splitNumber: 0,
+          show: false,
+          dimension: 1,
+          seriesIndex: 2,
+          min: 0,
+          max: 1,
+          inRange: {
+            color: ["red", "green"],
+          },
+          text: [">0", "<0"],
+          calculable: true,
         },
       ],
     }),
