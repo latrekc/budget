@@ -7,15 +7,33 @@ import { DashboardByTimePeriods_statistic$key } from "./__generated__/DashboardB
 
 type EChartsOption = echarts.EChartsOption;
 
+export enum Period {
+  Years = "Years",
+  Months = "Months",
+  Days = "Days",
+}
+
 export default function DashboardByTimePeriods({
   statistic: statistic$key,
+  period,
 }: {
   statistic: DashboardByTimePeriods_statistic$key;
+  period: Period;
 }) {
   const data = useFragment(
     graphql`
-      fragment DashboardByTimePeriods_statistic on Query {
-        transactions_statistic_per_months {
+      fragment DashboardByTimePeriods_statistic on Query
+      @argumentDefinitions(
+        include_months: { type: "Boolean!" }
+        include_years: { type: "Boolean!" }
+      ) {
+        transactions_statistic_per_months @include(if: $include_months) {
+          id
+          income
+          outcome
+        }
+
+        transactions_statistic_per_years @include(if: $include_years) {
           id
           income
           outcome
@@ -24,6 +42,18 @@ export default function DashboardByTimePeriods({
     `,
     statistic$key,
   );
+
+  const records =
+    useMemo(() => {
+      switch (period) {
+        case Period.Years:
+          return data.transactions_statistic_per_years;
+        case Period.Months:
+          return data.transactions_statistic_per_months;
+        case Period.Days:
+          return [];
+      }
+    }, [data, period]) ?? [];
 
   const option: EChartsOption = useMemo(
     () => ({
@@ -49,24 +79,25 @@ export default function DashboardByTimePeriods({
         type: "value",
         boundaryGap: [0, "20%"],
       },
-      dataZoom: [
-        {
-          type: "slider",
-          start: 90,
-          end: 100,
-          minSpan: 10,
-        },
-      ],
+      dataZoom:
+        period === Period.Years
+          ? [{ type: "slider", start: 0, end: 100, show: false }]
+          : [
+              {
+                type: "slider",
+                start: 90,
+                end: 100,
+                minSpan: 10,
+                show: true,
+              },
+            ],
       series: [
         {
           name: "Income",
           type: "line",
           step: "middle",
           color: "#14532d",
-          data: data.transactions_statistic_per_months.map(({ id, income }) => [
-            id,
-            Math.round(income),
-          ]),
+          data: records.map(({ id, income }) => [id, Math.round(income)]),
         },
 
         {
@@ -74,18 +105,20 @@ export default function DashboardByTimePeriods({
           type: "line",
           step: "middle",
           color: "#7f1d1d",
-          data: data.transactions_statistic_per_months.map(
-            ({ id, outcome }) => [id, Math.round(Math.abs(outcome))],
-          ),
+          data: records.map(({ id, outcome }) => [
+            id,
+            Math.round(Math.abs(outcome)),
+          ]),
         },
         {
           name: "Saldo",
           type: "line",
           symbol: "none",
           step: "middle",
-          data: data.transactions_statistic_per_months.map(
-            ({ id, income, outcome }) => [id, Math.round(income + outcome)],
-          ),
+          data: records.map(({ id, income, outcome }) => [
+            id,
+            Math.round(income + outcome),
+          ]),
           areaStyle: {},
           color: "#000",
         },
@@ -107,7 +140,7 @@ export default function DashboardByTimePeriods({
         },
       ],
     }),
-    [],
+    [period, records],
   );
 
   return <ReactECharts option={option} className="min-h-[720px] bg-white" />;
