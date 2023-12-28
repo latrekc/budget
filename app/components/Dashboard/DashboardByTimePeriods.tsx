@@ -87,7 +87,6 @@ export default function DashboardByTimePeriods({
             ({ id, income, outcome }) => [id, Math.round(income + outcome)],
           ),
           areaStyle: {},
-          tooltip: false,
           color: "#000",
         },
       ],
