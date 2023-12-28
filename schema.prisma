@@ -34,3 +34,12 @@ view StatisticPerMonths {
 
   @@map("transactions_statistic_per_months")
 }
+
+view StatisticPerYears {
+  id      String @id @unique
+  year    Int
+  income  Float
+  outcome Float
+
+  @@map("transactions_statistic_per_years")
+}

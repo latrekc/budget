@@ -20,3 +20,22 @@ builder.queryField("transactions_statistic_per_months", (t) =>
       }),
   }),
 );
+
+builder.prismaObject("StatisticPerYears", {
+  fields: (t) => ({
+    id: t.exposeID("id"),
+    year: t.exposeInt("year"),
+    income: t.exposeFloat("income"),
+    outcome: t.exposeFloat("outcome"),
+  }),
+});
+
+builder.queryField("transactions_statistic_per_years", (t) =>
+  t.prismaField({
+    type: ["StatisticPerYears"],
+    resolve: (query) =>
+      prisma.statisticPerYears.findMany({
+        ...query,
+      }),
+  }),
+);
