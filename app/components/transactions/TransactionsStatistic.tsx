@@ -1,3 +1,5 @@
+"use client";
+
 import { Accordion, AccordionItem } from "@nextui-org/react";
 import { useCallback, useState } from "react";
 import { graphql, useFragment } from "react-relay";
@@ -53,7 +55,7 @@ export default function TransactionsStatistic({
   );
 
   const years: Result =
-    data == null
+    data == null || data.transactions_statistic_per_months == null
       ? new Map()
       : data.transactions_statistic_per_months.reduce(
           (accumulator: Result, currentValue) => {
@@ -77,7 +79,7 @@ export default function TransactionsStatistic({
         );
 
   const [selectedKeys, setSelectedKeys] = useState<string[]>([
-    [...years.keys()][0].toString(),
+    [...years.keys()][0]?.toString(),
   ]);
   const onSelectionChange = useCallback((keys: "all" | Set<React.Key>) => {
     if (keys instanceof Set) {
