@@ -15,14 +15,40 @@ datasource db {
 }
 
 model Transaction {
-  id          String   @id @unique
+  id          String                     @id @unique
   source      String
   date        DateTime
   description String
   amount      Float
   currency    String
+  categories  TransactionsOnCategories[]
 
   @@map("transactions")
+}
+
+model Category {
+  id               Int                        @id @default(autoincrement())
+  name             String
+  parentCategory   Category?                  @relation("ParentCategory", fields: [parentCategoryId], references: [id])
+  parentCategoryId Int?
+  subCategories    Category[]                 @relation("ParentCategory")
+  transactions     TransactionsOnCategories[]
+
+  @@unique([name, parentCategoryId])
+  @@map("categories")
+}
+
+model TransactionsOnCategories {
+  transaction   Transaction @relation(fields: [transactionId], references: [id])
+  transactionId String
+
+  category   Category @relation(fields: [categoryId], references: [id])
+  categoryId Int
+
+  amount Int
+
+  @@id([transactionId, categoryId])
+  @@map("transactions2categories")
 }
 
 view StatisticPerMonths {
