@@ -24,7 +24,7 @@ export default function TransactionCategoryButtons({
   );
 
   return (
-    <ButtonGroup className="invisible group-hover:visible">
+    <ButtonGroup>
       {withAddButton ? (
         <TransactionCategoryAddButton parent={category.id} />
       ) : null}

@@ -24,7 +24,11 @@ type Error {
 type Mutation {
   createCategory(name: String!, parent: ID): MutationCreateCategoryResult!
   deleteCategory(id: ID!): MutationDeleteCategoryResult!
-  updateCategory(id: ID!, name: String!, parent: ID): MutationUpdateCategoryResult!
+  updateCategory(
+    id: ID!
+    name: String!
+    parent: ID
+  ): MutationUpdateCategoryResult!
 }
 
 union MutationCreateCategoryResult = Error | MutationCreateCategorySuccess
@@ -55,7 +59,12 @@ type PageInfo {
 type Query {
   categories: [Category!]!
   ok: Boolean!
-  transactions(after: ID, before: ID, first: Int, last: Int): QueryTransactionsConnection!
+  transactions(
+    after: ID
+    before: ID
+    first: Int
+    last: Int
+  ): QueryTransactionsConnection!
   transactions_statistic_per_months: [StatisticPerMonths!]!
   transactions_statistic_per_years: [StatisticPerYears!]!
 }

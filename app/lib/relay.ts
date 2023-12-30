@@ -3,10 +3,12 @@ import {
   Network,
   Observable,
   RecordSource,
+  RelayFeatureFlags,
   RequestParameters,
   Store,
   Variables,
 } from "relay-runtime";
+RelayFeatureFlags.ENABLE_RELAY_RESOLVERS = true;
 
 /**
  * Custom fetch function to handle GraphQL requests for a Relay environment.
