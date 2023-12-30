@@ -1,5 +1,6 @@
-import { useCallback } from "react";
+import { useMemo } from "react";
 import { graphql, useRefetchableFragment } from "react-relay";
+import { TransactionsCategoriesContext } from "./TransactionsContext";
 import { TransactionsCategories_categories$key } from "./__generated__/TransactionsCategories_categories.graphql";
 import TransactionAddButton from "./category/TransactionAddButton";
 import TransactionCategory from "./category/TransactionCategory";
@@ -25,24 +26,25 @@ export default function TransactionsCategories({
     categories$key,
   );
 
-  const onUpdate = useCallback(() => {
-    refetch({}, { fetchPolicy: "network-only" });
-  }, []);
+  const refetchCategoriesValue = useMemo(
+    () => ({
+      refetchCategories: () => refetch({}, { fetchPolicy: "network-only" }),
+    }),
+    [],
+  );
 
   return (
-    <div className="max-h-[720px] min-h-[720px] overflow-scroll bg-stone-50">
-      <div className="divide-y-small">
-        {categories
-          ?.filter((category) => category.parentCategory == null)
-          .map((category) => (
-            <TransactionCategory
-              key={category.id}
-              category={category}
-              onUpdate={onUpdate}
-            />
-          ))}
+    <TransactionsCategoriesContext.Provider value={refetchCategoriesValue}>
+      <div className="max-h-[720px] min-h-[720px] overflow-scroll bg-stone-50">
+        <div className="divide-y-small">
+          {categories
+            ?.filter((category) => category.parentCategory == null)
+            .map((category) => (
+              <TransactionCategory key={category.id} category={category} />
+            ))}
+        </div>
+        <TransactionAddButton />
       </div>
-      <TransactionAddButton onUpdate={onUpdate} />
-    </div>
+    </TransactionsCategoriesContext.Provider>
   );
 }

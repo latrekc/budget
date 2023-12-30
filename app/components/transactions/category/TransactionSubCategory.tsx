@@ -4,10 +4,8 @@ import { TransactionSubCategory_subcategory$key } from "./__generated__/Transact
 
 export default function TransactionSubCategory({
   subCategory: subCategory$key,
-  onUpdate,
 }: {
   subCategory: TransactionSubCategory_subcategory$key;
-  onUpdate: () => void;
 }) {
   const subCategory = useFragment(
     graphql`
@@ -22,7 +20,7 @@ export default function TransactionSubCategory({
     <div className="p-4">
       <div className="group flex flex-row items-center gap-4">
         <div>{subCategory.name}</div>
-        <TransactionButtons category={subCategory} onUpdate={onUpdate} />
+        <TransactionButtons category={subCategory} />
       </div>
     </div>
   );

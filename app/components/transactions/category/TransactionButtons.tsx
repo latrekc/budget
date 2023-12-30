@@ -1,18 +1,18 @@
 import { Button, ButtonGroup, Input } from "@nextui-org/react";
-import { FormEvent, useCallback, useMemo, useState } from "react";
+import { FormEvent, useCallback, useContext, useMemo, useState } from "react";
 import { TiDelete, TiEdit } from "react-icons/ti";
 import { graphql, useFragment, useMutation } from "react-relay";
+import { TransactionsCategoriesContext } from "../TransactionsContext";
 import { TransactionButtonsDeleteMutation } from "./__generated__/TransactionButtonsDeleteMutation.graphql";
 import { TransactionButtonsEditMutation } from "./__generated__/TransactionButtonsEditMutation.graphql";
 import { TransactionButtons_category$key } from "./__generated__/TransactionButtons_category.graphql";
 
 export default function TransactionButtons({
   category: category$key,
-  onUpdate,
 }: {
   category: TransactionButtons_category$key;
-  onUpdate: () => void;
 }) {
+  const { refetchCategories } = useContext(TransactionsCategoriesContext);
   const [editMode, setEditMode] = useState(false);
 
   const category = useFragment(
@@ -67,7 +67,7 @@ export default function TransactionButtons({
         if (result.deleteCategory.error) {
           alert(result.deleteCategory.error);
         } else {
-          onUpdate();
+          refetchCategories();
         }
       },
     });
@@ -108,7 +108,7 @@ export default function TransactionButtons({
               setValue(value);
               setError(null);
               setEditMode(false);
-              onUpdate();
+              refetchCategories();
             }
           },
         });

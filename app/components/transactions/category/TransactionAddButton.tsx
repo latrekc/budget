@@ -1,15 +1,11 @@
 import { Input } from "@nextui-org/react";
-import { FormEvent, useCallback, useMemo, useState } from "react";
+import { FormEvent, useCallback, useContext, useMemo, useState } from "react";
 import { graphql, useMutation } from "react-relay";
+import { TransactionsCategoriesContext } from "../TransactionsContext";
 import { TransactionAddButtonMutation } from "./__generated__/TransactionAddButtonMutation.graphql";
 
-export default function TransactionAddButton({
-  parent,
-  onUpdate,
-}: {
-  parent?: string;
-  onUpdate: () => void;
-}) {
+export default function TransactionAddButton({ parent }: { parent?: string }) {
+  const { refetchCategories } = useContext(TransactionsCategoriesContext);
   const [value, setValue] = useState("");
   const [error, setError] = useState<Error | null>(null);
 
@@ -56,7 +52,7 @@ export default function TransactionAddButton({
             } else {
               setValue("");
               setError(null);
-              onUpdate();
+              refetchCategories();
             }
           },
         });
