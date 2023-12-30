@@ -1,10 +1,14 @@
 import { Input } from "@nextui-org/react";
 import { FormEvent, useCallback, useContext, useMemo, useState } from "react";
 import { graphql, useMutation } from "react-relay";
-import { TransactionsCategoriesContext } from "../TransactionsContext";
-import { TransactionAddButtonMutation } from "./__generated__/TransactionAddButtonMutation.graphql";
+import { TransactionsCategoriesContext } from "../../TransactionsContext";
+import { TransactionCategoryAddButtonMutation } from "./__generated__/TransactionCategoryAddButtonMutation.graphql";
 
-export default function TransactionAddButton({ parent }: { parent?: string }) {
+export default function TransactionCategoryAddButton({
+  parent,
+}: {
+  parent?: string;
+}) {
   const { refetchCategories } = useContext(TransactionsCategoriesContext);
   const [value, setValue] = useState("");
   const [error, setError] = useState<Error | null>(null);
@@ -19,8 +23,11 @@ export default function TransactionAddButton({ parent }: { parent?: string }) {
   }, [value]);
 
   const [commitMutation, isMutationInFlight] =
-    useMutation<TransactionAddButtonMutation>(graphql`
-      mutation TransactionAddButtonMutation($name: String!, $parent: ID) {
+    useMutation<TransactionCategoryAddButtonMutation>(graphql`
+      mutation TransactionCategoryAddButtonMutation(
+        $name: String!
+        $parent: ID
+      ) {
         createCategory(name: $name, parent: $parent) {
           ... on MutationCreateCategorySuccess {
             data {

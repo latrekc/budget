@@ -2,8 +2,8 @@ import { useMemo } from "react";
 import { graphql, useRefetchableFragment } from "react-relay";
 import { TransactionsCategoriesContext } from "./TransactionsContext";
 import { TransactionsCategories_categories$key } from "./__generated__/TransactionsCategories_categories.graphql";
-import TransactionAddButton from "./category/TransactionAddButton";
 import TransactionCategory from "./category/TransactionCategory";
+import TransactionAddButton from "./category/buttons/TransactionCategoryAddButton";
 
 export default function TransactionsCategories({
   categories: categories$key,
