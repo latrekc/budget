@@ -13,10 +13,10 @@ import { TransactionCategoryAddButtonMutation } from "./__generated__/Transactio
 
 export default function TransactionCategoryAddButton({
   parent,
-  withLabel,
+  longLabel,
 }: {
   parent?: string;
-  withLabel?: boolean;
+  longLabel?: boolean;
 }) {
   const { refetchCategories } = useContext(TransactionsCategoriesContext);
   const [value, setValue] = useState("");
@@ -104,10 +104,9 @@ export default function TransactionCategoryAddButton({
           variant="solid"
           radius="full"
           title={label}
-          isIconOnly={!withLabel}
-          startContent={withLabel ? <TiPlus size="2em" /> : null}
+          startContent={<TiPlus size="2em" />}
         >
-          {withLabel ? label : <TiPlus size="2em" />}
+          {longLabel ? label : "Add"}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[320px]">

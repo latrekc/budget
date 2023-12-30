@@ -37,7 +37,7 @@ export default function TransactionsCategories({
     <TransactionsCategoriesContext.Provider value={refetchCategoriesValue}>
       <div className="max-h-[720px] min-h-[720px] overflow-scroll bg-stone-50">
         <div className="p-4">
-          <TransactionAddButton withLabel />
+          <TransactionAddButton longLabel />
         </div>
 
         <div className="divide-y-small">
