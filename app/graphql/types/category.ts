@@ -26,6 +26,13 @@ builder.queryField("categories", (t) =>
   }),
 );
 
+function parseId(id: string | number | null | undefined) {
+  if (id != null) {
+    return Number(id);
+  }
+  return null;
+}
+
 async function validateCategoryOrThrow({
   id,
   name,
@@ -78,19 +85,22 @@ builder.mutationType({
       type: "Category",
       args: {
         name: t.arg.string({ required: true }),
-        parent: t.arg.int(),
+        parent: t.arg.id(),
+      },
+      errors: {
+        types: [Error],
       },
       resolve: async (query, _root, args) => {
         await validateCategoryOrThrow({
           name: args.name,
-          parentId: args.parent,
+          parentId: parseId(args.parent),
         });
 
         const category = await prisma.category.create({
           ...query,
           data: {
             name: args.name,
-            parentCategoryId: args.parent,
+            parentCategoryId: parseId(args.parent),
           },
         });
 
@@ -100,25 +110,57 @@ builder.mutationType({
     updateCategory: t.prismaField({
       type: "Category",
       args: {
-        id: t.arg.int({ required: true }),
+        id: t.arg.id({ required: true }),
         name: t.arg.string({ required: true }),
-        parent: t.arg.int(),
+        parent: t.arg.id(),
+      },
+      errors: {
+        types: [Error],
       },
       resolve: async (query, _root, args) => {
         await validateCategoryOrThrow({
-          id: args.id,
+          id: parseId(args.id),
           name: args.name,
-          parentId: args.parent,
+          parentId: parseId(args.parent),
         });
 
         const category = await prisma.category.update({
           ...query,
           data: {
             name: args.name,
-            parentCategoryId: args.parent,
+            parentCategoryId: parseId(args.parent),
           },
           where: {
-            id: args.id,
+            id: parseId(args.id)!,
+          },
+        });
+
+        return category;
+      },
+    }),
+    deleteCategory: t.prismaField({
+      type: "Category",
+      args: {
+        id: t.arg.id({ required: true }),
+      },
+      errors: {
+        types: [Error],
+      },
+      resolve: async (query, _root, args) => {
+        const category = await prisma.category.findFirst({
+          where: {
+            id: parseId(args.id)!,
+          },
+        });
+
+        if (category == null) {
+          throw new Error(`Category ${args.id} does not exist`);
+        }
+
+        await prisma.category.delete({
+          ...query,
+          where: {
+            id: parseId(args.id)!,
           },
         });
 

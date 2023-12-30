@@ -118,7 +118,7 @@ export default function TransactionsStatistic({
           >
             <div className="flex flex-row flex-wrap text-right">
               {year.months.map(({ month, id, income, outcome }) => (
-                <div key={id} className="basis-1/3 p-2">
+                <div key={id} className="basis-1/12 p-2">
                   <div className="text-xl">
                     {monthNames.get(month)}{" "}
                     <AmountValue
