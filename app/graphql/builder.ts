@@ -1,4 +1,5 @@
 import SchemaBuilder from "@pothos/core";
+import ErrorsPlugin from "@pothos/plugin-errors";
 import PrismaPlugin from "@pothos/plugin-prisma";
 import PrismaUtils from "@pothos/plugin-prisma-utils";
 import type PrismaTypes from "@pothos/plugin-prisma/generated";
@@ -15,11 +16,21 @@ export const builder = new SchemaBuilder<{
     };
   };
 }>({
-  plugins: [PrismaPlugin, PrismaUtils, RelayPlugin],
+  plugins: [PrismaPlugin, PrismaUtils, RelayPlugin, ErrorsPlugin],
   relayOptions: {},
   prisma: {
     client: prisma,
   },
+  errorOptions: {
+    defaultTypes: [],
+  },
+});
+
+builder.objectType(Error, {
+  name: "Error",
+  fields: (t) => ({
+    message: t.exposeString("message"),
+  }),
 });
 
 builder.queryType({

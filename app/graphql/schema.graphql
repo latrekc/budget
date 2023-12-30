@@ -17,8 +17,32 @@ A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `dat
 """
 scalar Date
 
+type Error {
+  message: String!
+}
+
 type Mutation {
-  createCategory(name: String!, parent: Int): Category!
+  createCategory(name: String!, parent: ID): MutationCreateCategoryResult!
+  deleteCategory(id: ID!): MutationDeleteCategoryResult!
+  updateCategory(id: ID!, name: String!, parent: ID): MutationUpdateCategoryResult!
+}
+
+union MutationCreateCategoryResult = Error | MutationCreateCategorySuccess
+
+type MutationCreateCategorySuccess {
+  data: Category!
+}
+
+union MutationDeleteCategoryResult = Error | MutationDeleteCategorySuccess
+
+type MutationDeleteCategorySuccess {
+  data: Category!
+}
+
+union MutationUpdateCategoryResult = Error | MutationUpdateCategorySuccess
+
+type MutationUpdateCategorySuccess {
+  data: Category!
 }
 
 type PageInfo {
