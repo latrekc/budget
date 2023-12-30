@@ -7,8 +7,10 @@ import { TransactionCategoryButtons_category$key } from "./__generated__/Transac
 
 export default function TransactionCategoryButtons({
   category: category$key,
+  withAddButton = true,
 }: {
   category: TransactionCategoryButtons_category$key;
+  withAddButton?: boolean;
 }) {
   const category = useFragment(
     graphql`
@@ -23,7 +25,9 @@ export default function TransactionCategoryButtons({
 
   return (
     <ButtonGroup className="invisible group-hover:visible">
-      <TransactionCategoryAddButton parent={category.id} />
+      {withAddButton ? (
+        <TransactionCategoryAddButton parent={category.id} />
+      ) : null}
       <TransactionCategoryEditButton category={category} />
       <TransactionCategoryDeleteButton category={category} />
     </ButtonGroup>

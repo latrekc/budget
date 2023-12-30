@@ -1,6 +1,7 @@
 import { graphql, useFragment } from "react-relay";
+import TransactionCategoryContent from "./TransactionCategoryContent";
+import TransactionSubSubCategory from "./TransactionSubSubCategory";
 import { TransactionSubCategory_subcategory$key } from "./__generated__/TransactionSubCategory_subcategory.graphql";
-import TransactionButtons from "./buttons/TransactionCategoryButtons";
 
 export default function TransactionSubCategory({
   subCategory: subCategory$key,
@@ -10,18 +11,29 @@ export default function TransactionSubCategory({
   const subCategory = useFragment(
     graphql`
       fragment TransactionSubCategory_subcategory on Category {
-        name
-        ...TransactionCategoryButtons_category
+        ...TransactionCategoryContent_category
+        subCategories {
+          id
+          ...TransactionSubSubCategory_subcategory
+        }
       }
     `,
     subCategory$key,
   );
   return (
     <div className="p-4">
-      <div className="group flex flex-row items-center gap-4">
-        <div>{subCategory.name}</div>
-        <TransactionButtons category={subCategory} />
-      </div>
+      <TransactionCategoryContent category={subCategory} />
+
+      {subCategory.subCategories.length > 0 ? (
+        <div className="divide-y-small">
+          {subCategory.subCategories.map((subSubCategory) => (
+            <TransactionSubSubCategory
+              key={subSubCategory.id}
+              subCategory={subSubCategory}
+            />
+          ))}
+        </div>
+      ) : null}
     </div>
   );
 }

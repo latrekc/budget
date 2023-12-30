@@ -110,9 +110,9 @@ export default function TransactionCategoryEditButton({
           variant="solid"
           radius="full"
           title="Edit category"
-          isIconOnly
+          startContent={<TiEdit size="2em" />}
         >
-          <TiEdit size="2em" />
+          Edit
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[320px]">

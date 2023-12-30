@@ -72,9 +72,9 @@ export default function TransactionCategoryDeleteButton({
           variant="solid"
           radius="full"
           title="Remove category"
-          isIconOnly
+          startContent={<TiDelete color="white" size="2em" />}
         >
-          <TiDelete color="white" size="2em" />
+          Remove
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[320px]">
