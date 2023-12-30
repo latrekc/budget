@@ -18,7 +18,6 @@ export default function Transactions() {
 
   return (
     <>
-      {" "}
       <div className="flex flex-row">
         <div className="basis-3/4">
           <TransactionsTable transactions={data} />
