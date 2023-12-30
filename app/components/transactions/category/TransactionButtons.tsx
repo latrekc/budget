@@ -1,9 +1,9 @@
 import { Button, ButtonGroup, Input } from "@nextui-org/react";
 import { FormEvent, useCallback, useContext, useMemo, useState } from "react";
-import { TiDelete, TiEdit } from "react-icons/ti";
+import { TiEdit } from "react-icons/ti";
 import { graphql, useFragment, useMutation } from "react-relay";
 import { TransactionsCategoriesContext } from "../TransactionsContext";
-import { TransactionButtonsDeleteMutation } from "./__generated__/TransactionButtonsDeleteMutation.graphql";
+import TransactionCategoryDeleteButton from "./TransactionCategoryDeleteButton";
 import { TransactionButtonsEditMutation } from "./__generated__/TransactionButtonsEditMutation.graphql";
 import { TransactionButtons_category$key } from "./__generated__/TransactionButtons_category.graphql";
 
@@ -23,21 +23,11 @@ export default function TransactionButtons({
         parentCategory {
           id
         }
+        ...TransactionCategoryDeleteButton_category
       }
     `,
     category$key,
   );
-
-  const [commitDeleteMutation, isDeleteMutationInFlight] =
-    useMutation<TransactionButtonsDeleteMutation>(graphql`
-      mutation TransactionButtonsDeleteMutation($id: ID!) {
-        deleteCategory(id: $id) {
-          ... on Error {
-            error: message
-          }
-        }
-      }
-    `);
 
   const [commitEditMutation, isEditMutationInFlight] =
     useMutation<TransactionButtonsEditMutation>(graphql`
@@ -53,25 +43,6 @@ export default function TransactionButtons({
         }
       }
     `);
-
-  const onDelete = useCallback(() => {
-    if (category == null) {
-      alert("Null category");
-      return;
-    }
-    commitDeleteMutation({
-      variables: {
-        id: category.id,
-      },
-      onCompleted(result) {
-        if (result.deleteCategory.error) {
-          alert(result.deleteCategory.error);
-        } else {
-          refetchCategories();
-        }
-      },
-    });
-  }, []);
 
   const [value, setValue] = useState(category.name);
   const [error, setError] = useState<Error | null>(null);
@@ -142,19 +113,7 @@ export default function TransactionButtons({
     </form>
   ) : (
     <ButtonGroup className="invisible group-hover:visible">
-      <Button
-        color="danger"
-        size="sm"
-        variant="solid"
-        radius="full"
-        title="Remove category"
-        isDisabled={isDeleteMutationInFlight}
-        startContent={<TiDelete color="white" size="2em" />}
-        onClick={onDelete}
-      >
-        Remove
-      </Button>
-
+      <TransactionCategoryDeleteButton category={category} />
       <Button
         size="sm"
         variant="solid"
