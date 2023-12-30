@@ -64,7 +64,7 @@ export default function TransactionCategoryDeleteButton({
   }, []);
 
   return (
-    <Popover showArrow>
+    <Popover showArrow backdrop="opaque">
       <PopoverTrigger>
         <Button
           color="danger"
@@ -77,7 +77,7 @@ export default function TransactionCategoryDeleteButton({
           <TiDelete color="white" size="2em" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[240px]">
+      <PopoverContent className="w-[320px]">
         {() => (
           <div className="w-full p-4">
             <p className="text-small text-foreground">
