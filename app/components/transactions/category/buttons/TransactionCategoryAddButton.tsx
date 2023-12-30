@@ -1,13 +1,22 @@
-import { Input } from "@nextui-org/react";
+import {
+  Button,
+  Input,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@nextui-org/react";
 import { FormEvent, useCallback, useContext, useMemo, useState } from "react";
+import { TiPlus } from "react-icons/ti";
 import { graphql, useMutation } from "react-relay";
 import { TransactionsCategoriesContext } from "../../TransactionsContext";
 import { TransactionCategoryAddButtonMutation } from "./__generated__/TransactionCategoryAddButtonMutation.graphql";
 
 export default function TransactionCategoryAddButton({
   parent,
+  withLabel,
 }: {
   parent?: string;
+  withLabel?: boolean;
 }) {
   const { refetchCategories } = useContext(TransactionsCategoriesContext);
   const [value, setValue] = useState("");
@@ -59,6 +68,7 @@ export default function TransactionCategoryAddButton({
             } else {
               setValue("");
               setError(null);
+              setIsOpen(false);
               refetchCategories();
             }
           },
@@ -68,22 +78,61 @@ export default function TransactionCategoryAddButton({
     [value],
   );
 
+  const [isOpen, setIsOpen] = useState(false);
+
+  const onOpenChange = useCallback(
+    (open: boolean) => {
+      setIsOpen(open);
+      setValue("");
+      setError(null);
+    },
+    [value],
+  );
+
+  const label = parent != null ? "Add subcategory" : "Add category";
+
   return (
-    <form onSubmit={onSubmit}>
-      <Input
-        label={parent != null ? "Add subcategory" : "Add category"}
-        labelPlacement="inside"
-        className="p-4"
-        isClearable
-        onClear={onClear}
-        isDisabled={isMutationInFlight}
-        isInvalid={error != null}
-        errorMessage={error?.message}
-        size="sm"
-        value={value}
-        variant={variant}
-        onValueChange={setValue}
-      />
-    </form>
+    <Popover
+      showArrow
+      onOpenChange={onOpenChange}
+      isOpen={isOpen}
+      backdrop="opaque"
+    >
+      <PopoverTrigger>
+        <Button
+          size="sm"
+          variant="solid"
+          radius="full"
+          title={label}
+          isIconOnly={!withLabel}
+          startContent={withLabel ? <TiPlus size="2em" /> : null}
+        >
+          {withLabel ? label : <TiPlus size="2em" />}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-[320px]">
+        {() => (
+          <div className="w-full p-4">
+            <form onSubmit={onSubmit}>
+              <Input
+                label={label}
+                labelPlacement="inside"
+                className="p-4"
+                isClearable
+                onClear={onClear}
+                isDisabled={isMutationInFlight}
+                isInvalid={error != null}
+                errorMessage={error?.message}
+                size="sm"
+                value={value}
+                variant={variant}
+                onValueChange={setValue}
+                autoFocus
+              />
+            </form>
+          </div>
+        )}
+      </PopoverContent>
+    </Popover>
   );
 }

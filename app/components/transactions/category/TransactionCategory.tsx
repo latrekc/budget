@@ -1,7 +1,6 @@
 import { graphql, useFragment } from "react-relay";
 import TransactionSubCategory from "./TransactionSubCategory";
 import { TransactionCategory_category$key } from "./__generated__/TransactionCategory_category.graphql";
-import TransactionAddButton from "./buttons/TransactionCategoryAddButton";
 import TransactionButtons from "./buttons/TransactionCategoryButtons";
 
 export default function TransactionCategory({
@@ -37,7 +36,6 @@ export default function TransactionCategory({
             subCategory={subCategory}
           />
         ))}
-        <TransactionAddButton parent={category.id} />
       </div>
     </div>
   );

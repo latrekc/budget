@@ -1,5 +1,6 @@
 import { ButtonGroup } from "@nextui-org/react";
 import { graphql, useFragment } from "react-relay";
+import TransactionCategoryAddButton from "./TransactionCategoryAddButton";
 import TransactionCategoryDeleteButton from "./TransactionCategoryDeleteButton";
 import TransactionCategoryEditButton from "./TransactionCategoryEditButton";
 import { TransactionCategoryButtons_category$key } from "./__generated__/TransactionCategoryButtons_category.graphql";
@@ -12,6 +13,7 @@ export default function TransactionCategoryButtons({
   const category = useFragment(
     graphql`
       fragment TransactionCategoryButtons_category on Category {
+        id
         ...TransactionCategoryDeleteButton_category
         ...TransactionCategoryEditButton_category
       }
@@ -21,8 +23,9 @@ export default function TransactionCategoryButtons({
 
   return (
     <ButtonGroup className="invisible group-hover:visible">
-      <TransactionCategoryDeleteButton category={category} />
+      <TransactionCategoryAddButton parent={category.id} />
       <TransactionCategoryEditButton category={category} />
+      <TransactionCategoryDeleteButton category={category} />
     </ButtonGroup>
   );
 }

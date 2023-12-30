@@ -36,6 +36,10 @@ export default function TransactionsCategories({
   return (
     <TransactionsCategoriesContext.Provider value={refetchCategoriesValue}>
       <div className="max-h-[720px] min-h-[720px] overflow-scroll bg-stone-50">
+        <div className="p-4">
+          <TransactionAddButton withLabel />
+        </div>
+
         <div className="divide-y-small">
           {categories
             ?.filter((category) => category.parentCategory == null)
@@ -43,7 +47,6 @@ export default function TransactionsCategories({
               <TransactionCategory key={category.id} category={category} />
             ))}
         </div>
-        <TransactionAddButton />
       </div>
     </TransactionsCategoriesContext.Provider>
   );

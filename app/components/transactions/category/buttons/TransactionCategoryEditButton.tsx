@@ -98,7 +98,12 @@ export default function TransactionCategoryEditButton({
   );
 
   return (
-    <Popover showArrow onOpenChange={onOpenChange} isOpen={isOpen}>
+    <Popover
+      showArrow
+      onOpenChange={onOpenChange}
+      isOpen={isOpen}
+      backdrop="opaque"
+    >
       <PopoverTrigger>
         <Button
           size="sm"
@@ -110,7 +115,7 @@ export default function TransactionCategoryEditButton({
           <TiEdit size="2em" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[240px]">
+      <PopoverContent className="w-[320px]">
         {() => (
           <div className="w-full p-4">
             <form onSubmit={onEdit}>
