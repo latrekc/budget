@@ -16,7 +16,7 @@ export default function TransactionSubSubCategory({
     subCategory$key,
   );
   return (
-    <div className="p-4">
+    <div className="p-x-4">
       <TransactionCategoryContent
         category={subCategory}
         withAddButton={false}
