@@ -1,6 +1,6 @@
 import { graphql, useFragment } from "react-relay";
-import TransactionButtons from "./TransactionButtons";
 import { TransactionSubCategory_subcategory$key } from "./__generated__/TransactionSubCategory_subcategory.graphql";
+import TransactionButtons from "./buttons/TransactionCategoryButtons";
 
 export default function TransactionSubCategory({
   subCategory: subCategory$key,
@@ -11,7 +11,7 @@ export default function TransactionSubCategory({
     graphql`
       fragment TransactionSubCategory_subcategory on Category {
         name
-        ...TransactionButtons_category
+        ...TransactionCategoryButtons_category
       }
     `,
     subCategory$key,

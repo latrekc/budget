@@ -9,9 +9,9 @@ import {
 import { useCallback, useContext } from "react";
 import { TiDelete } from "react-icons/ti";
 import { graphql, useFragment, useMutation } from "react-relay";
-import { TransactionsCategoriesContext } from "../TransactionsContext";
-import { TransactionCategoryDeleteButtonMutation } from "./__generated__/TransactionCategoryDeleteButtonMutation.graphql";
-import { TransactionCategoryDeleteButton_category$key } from "./__generated__/TransactionCategoryDeleteButton_category.graphql";
+import { TransactionsCategoriesContext } from "../../TransactionsContext";
+import { TransactionCategoryDeleteButtonMutation } from "../__generated__/TransactionCategoryDeleteButtonMutation.graphql";
+import { TransactionCategoryDeleteButton_category$key } from "../__generated__/TransactionCategoryDeleteButton_category.graphql";
 
 export default function TransactionCategoryDeleteButton({
   category: category$key,

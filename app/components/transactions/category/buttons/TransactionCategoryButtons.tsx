@@ -2,22 +2,22 @@ import { Button, ButtonGroup, Input } from "@nextui-org/react";
 import { FormEvent, useCallback, useContext, useMemo, useState } from "react";
 import { TiEdit } from "react-icons/ti";
 import { graphql, useFragment, useMutation } from "react-relay";
-import { TransactionsCategoriesContext } from "../TransactionsContext";
+import { TransactionsCategoriesContext } from "../../TransactionsContext";
 import TransactionCategoryDeleteButton from "./TransactionCategoryDeleteButton";
-import { TransactionButtonsEditMutation } from "./__generated__/TransactionButtonsEditMutation.graphql";
-import { TransactionButtons_category$key } from "./__generated__/TransactionButtons_category.graphql";
+import { TransactionCategoryButtonsEditMutation } from "./__generated__/TransactionCategoryButtonsEditMutation.graphql";
+import { TransactionCategoryButtons_category$key } from "./__generated__/TransactionCategoryButtons_category.graphql";
 
-export default function TransactionButtons({
+export default function TransactionCategoryButtons({
   category: category$key,
 }: {
-  category: TransactionButtons_category$key;
+  category: TransactionCategoryButtons_category$key;
 }) {
   const { refetchCategories } = useContext(TransactionsCategoriesContext);
   const [editMode, setEditMode] = useState(false);
 
   const category = useFragment(
     graphql`
-      fragment TransactionButtons_category on Category {
+      fragment TransactionCategoryButtons_category on Category {
         id
         name
         parentCategory {
@@ -30,8 +30,8 @@ export default function TransactionButtons({
   );
 
   const [commitEditMutation, isEditMutationInFlight] =
-    useMutation<TransactionButtonsEditMutation>(graphql`
-      mutation TransactionButtonsEditMutation(
+    useMutation<TransactionCategoryButtonsEditMutation>(graphql`
+      mutation TransactionCategoryButtonsEditMutation(
         $id: ID!
         $name: String!
         $parent: ID
