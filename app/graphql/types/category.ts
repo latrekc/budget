@@ -1,4 +1,4 @@
-import prisma from "../../lib/prisma";
+import prisma, { parseId } from "../../lib/prisma";
 import { builder } from "../builder";
 
 builder.prismaObject("Category", {
@@ -25,13 +25,6 @@ builder.queryField("categories", (t) =>
       prisma.category.findMany({ ...query, orderBy: [{ name: "asc" }] }),
   }),
 );
-
-function parseId(id: string | number | null | undefined) {
-  if (id != null) {
-    return Number(id);
-  }
-  return null;
-}
 
 async function validateCategoryOrThrow({
   id,
