@@ -10,8 +10,7 @@ import {
   TableRow,
 } from "@nextui-org/react";
 import { useInfiniteScroll } from "@nextui-org/use-infinite-scroll";
-import { useAsyncList } from "@react-stately/data";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo } from "react";
 import { graphql, useFragment, usePaginationFragment } from "react-relay";
 import { TransactionsTable__transaction$key } from "./__generated__/TransactionsTable__transaction.graphql";
 import {
@@ -42,6 +41,7 @@ export default function TransactionsTable({
   const {
     data: { transactions },
     loadNext,
+    isLoadingNext,
     hasNext,
   } = usePaginationFragment(
     graphql`
@@ -66,50 +66,13 @@ export default function TransactionsTable({
     transactions$key,
   );
 
-  const [isLoading, setIsLoading] = useState(true);
-  const [hasMore, setHasMore] = useState(false);
-  const [inited, setInited] = useState(false);
-  useEffect(() => {
-    setInited(true);
-  }, []);
-
-  const list = useAsyncList<Item, string>({
-    async load({ cursor }) {
-      if (cursor) {
-        setIsLoading(false);
-      }
-
-      if (inited) {
-        await new Promise((success, failure) => {
-          loadNext(PER_PAGE, {
-            onComplete(error) {
-              if (error != null) {
-                console.error(error);
-                failure(error);
-              } else {
-                success(null);
-              }
-            },
-          });
-        });
-      }
-
-      const nextCursor = transactions.pageInfo.endCursor ?? "null";
-
-      console.log("TOTAL EDGES", transactions.edges.length);
-
-      setHasMore(nextCursor != null);
-
-      return {
-        items: transactions?.edges,
-        cursor: nextCursor,
-      };
-    },
-  });
+  const loadMore = useCallback(() => {
+    loadNext(PER_PAGE);
+  }, [loadNext]);
 
   const [loaderRef, scrollerRef] = useInfiniteScroll({
     hasMore: hasNext,
-    onLoadMore: list.loadMore,
+    onLoadMore: loadMore,
   });
 
   const columns = useMemo(
@@ -145,7 +108,7 @@ export default function TransactionsTable({
       isHeaderSticky
       baseRef={scrollerRef}
       bottomContent={
-        hasMore ? (
+        hasNext ? (
           <div className="flex w-full justify-center">
             <Spinner ref={loaderRef} color="default" />
           </div>
@@ -168,8 +131,8 @@ export default function TransactionsTable({
       </TableHeader>
 
       <TableBody
-        items={list.items}
-        isLoading={isLoading}
+        items={transactions?.edges}
+        isLoading={isLoadingNext}
         loadingContent={<Spinner color="default" />}
       >
         {(item) => (
