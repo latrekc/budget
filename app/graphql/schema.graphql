@@ -24,6 +24,9 @@ type Error {
 type Mutation {
   createCategory(name: String!, parent: ID): MutationCreateCategoryResult!
   deleteCategory(id: ID!): MutationDeleteCategoryResult!
+  updateCategoriesForTransactions(
+    transactions: [updateCategoriesForTransactionsInput!]!
+  ): MutationUpdateCategoriesForTransactionsResult!
   updateCategory(
     id: ID!
     name: String!
@@ -41,6 +44,14 @@ union MutationDeleteCategoryResult = Error | MutationDeleteCategorySuccess
 
 type MutationDeleteCategorySuccess {
   data: Category!
+}
+
+union MutationUpdateCategoriesForTransactionsResult =
+    Error
+  | MutationUpdateCategoriesForTransactionsSuccess
+
+type MutationUpdateCategoriesForTransactionsSuccess {
+  data: [Transaction!]!
 }
 
 union MutationUpdateCategoryResult = Error | MutationUpdateCategorySuccess
@@ -105,9 +116,22 @@ type StatisticPerYears {
 
 type Transaction {
   amount: Float!
+  categories: [TransactionsOnCategories!]!
   currency: Currency!
   date: Date!
   description: String!
   id: ID!
   source: Source!
+}
+
+type TransactionsOnCategories {
+  amount: Float!
+  category: Category!
+  transaction: Transaction!
+}
+
+input updateCategoriesForTransactionsInput {
+  amount: Int!
+  category: ID!
+  transaction: ID!
 }

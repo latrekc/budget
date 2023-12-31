@@ -30,4 +30,18 @@ const prisma = getPrismaClient().$extends({
   },
 });
 
+export function parseId(id: string | number | null | undefined) {
+  if (id != null) {
+    return Number(id);
+  }
+  return null;
+}
+
+export function parseIdString(id: string | number | null | undefined) {
+  if (id != null) {
+    return String(id);
+  }
+  return null;
+}
+
 export default prisma;
