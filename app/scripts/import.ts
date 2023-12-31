@@ -103,7 +103,7 @@ program
         [record.Date, record.Time].join(" "),
         "DD/MM/YYYY HH:mm:ss",
       ),
-      description: [record.name, record.Description]
+      description: [record.Name, record.Description]
         .join(" ")
         .trim()
         .replace(/\s{2,}/g, " "),
