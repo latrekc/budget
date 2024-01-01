@@ -15,6 +15,7 @@ import { graphql, useFragment, usePaginationFragment } from "react-relay";
 import { TransactionsTable__transaction$key } from "./__generated__/TransactionsTable__transaction.graphql";
 import { TransactionsTable_transactions$key } from "./__generated__/TransactionsTable_transactions.graphql";
 import TransactionAmountCell from "./cell/TransactionAmountCell";
+import TransactionCategoriesButtonCell from "./cell/TransactionCategoriesButtonCell";
 import TransactionCategoriesCell from "./cell/TransactionCategoriesCell";
 import TransactionDateCell from "./cell/TransactionDateCell";
 import TransactionDescriptionCell from "./cell/TransactionDescriptionCell";
@@ -27,6 +28,7 @@ enum Colunms {
   "Date" = "Date",
   "Description" = "Description",
   "Categories" = "Categories",
+  "CategoriesButton" = "",
   "Amount" = "Amount",
 }
 
@@ -102,6 +104,9 @@ export default function TransactionsTable({
 
       case Colunms.Categories:
         return "text-left";
+
+      case Colunms.CategoriesButton:
+        return "text-center";
     }
   }, []);
 
@@ -144,8 +149,10 @@ export default function TransactionsTable({
           <TableRow
             key={item?.node.id}
             className={`${
-              item?.node.completed ? "bg-lime-100" : ""
-            } hover:bg-default-100`}
+              item?.node.completed
+                ? "bg-white hover:bg-stone-100"
+                : "bg-lime-50 hover:bg-lime-100"
+            } `}
           >
             {(columnKey) => (
               <TableCell className={cellAlign(columnKey as Colunms)}>
@@ -180,6 +187,7 @@ function RenderCell({
         ...TransactionAmountCell__transaction
         ...TransactionSourceCell__transaction
         ...TransactionCategoriesCell__transaction
+        ...TransactionCategoriesButtonCell
       }
     `,
     transaction$key,
@@ -203,5 +211,8 @@ function RenderCell({
 
     case Colunms.Categories:
       return <TransactionCategoriesCell transaction={transaction} />;
+
+    case Colunms.CategoriesButton:
+      return <TransactionCategoriesButtonCell transaction={transaction} />;
   }
 }

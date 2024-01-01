@@ -70,7 +70,6 @@ export default function TransactionCategoryDeleteButton({
           color="danger"
           size="sm"
           variant="solid"
-          radius="full"
           title="Remove category"
           startContent={<TiDelete color="white" size="2em" />}
         >

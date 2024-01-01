@@ -173,9 +173,8 @@ builder.mutationFields((t) => ({
         }),
       );
 
-      const inserts = args.transactions
-        .filter(({ amount }) => amount > 0)
-        .map(({ transaction, category, amount }) =>
+      const inserts = args.transactions.map(
+        ({ transaction, category, amount }) =>
           prisma.transactionsOnCategories.create({
             data: {
               categoryId: parseId(category)!,
@@ -183,7 +182,7 @@ builder.mutationFields((t) => ({
               amount,
             },
           }),
-        );
+      );
 
       await prisma.$transaction([...inserts, ...updates]);
 

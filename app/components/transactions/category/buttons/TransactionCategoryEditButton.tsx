@@ -6,7 +6,7 @@ import {
   PopoverTrigger,
 } from "@nextui-org/react";
 import { FormEvent, useCallback, useContext, useMemo, useState } from "react";
-import { TiEdit } from "react-icons/ti";
+import { LuTextCursorInput } from "react-icons/lu";
 import { graphql, useFragment, useMutation } from "react-relay";
 import { TransactionsCategoriesContext } from "../../TransactionsContext";
 import { TransactionCategoryEditButtonMutation } from "./__generated__/TransactionCategoryEditButtonMutation.graphql";
@@ -107,10 +107,9 @@ export default function TransactionCategoryEditButton({
       <PopoverTrigger>
         <Button
           size="sm"
-          variant="solid"
-          radius="full"
+          variant="flat"
           title="Edit category"
-          startContent={<TiEdit size="2em" />}
+          startContent={<LuTextCursorInput size="2em" />}
         >
           Edit
         </Button>
