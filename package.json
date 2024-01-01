@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "scripts": {
     "relay": "relay-compiler",
-    "schema": "npx ts-node ./app/scripts/schema.ts",
+    "schema": "npx ts-node ./app/scripts/schema.ts && npx prettier . --write",
     "import": "npx ts-node ./app/scripts/import.ts",
     "dev": "next dev",
     "build": "next build",

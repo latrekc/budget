@@ -23,6 +23,9 @@ type Error {
 
 type Mutation {
   createCategory(name: String!, parent: ID): MutationCreateCategoryResult!
+  deleteCategoriesForTransactions(
+    transactions: [updateCategoriesForTransactionsInput!]!
+  ): MutationDeleteCategoriesForTransactionsResult!
   deleteCategory(id: ID!): MutationDeleteCategoryResult!
   updateCategoriesForTransactions(
     transactions: [updateCategoriesForTransactionsInput!]!
@@ -38,6 +41,14 @@ union MutationCreateCategoryResult = Error | MutationCreateCategorySuccess
 
 type MutationCreateCategorySuccess {
   data: Category!
+}
+
+union MutationDeleteCategoriesForTransactionsResult =
+    Error
+  | MutationDeleteCategoriesForTransactionsSuccess
+
+type MutationDeleteCategoriesForTransactionsSuccess {
+  data: [Transaction!]!
 }
 
 union MutationDeleteCategoryResult = Error | MutationDeleteCategorySuccess

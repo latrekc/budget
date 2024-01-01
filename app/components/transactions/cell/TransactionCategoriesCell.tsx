@@ -1,6 +1,7 @@
 import { graphql, useFragment } from "react-relay";
 import TransactionCategoryChip from "../category/TransactionCategoryChip";
 import { TransactionCategoriesCell__transaction$key } from "./__generated__/TransactionCategoriesCell__transaction.graphql";
+import TransactionCellDeleteCategoryButton from "./buttons/TransactionCellDeleteCategoryButton";
 
 export default function TransactionCategoriesCell({
   transaction: transaction$key,
@@ -19,6 +20,7 @@ export default function TransactionCategoriesCell({
             ...TransactionCategoryChip_category
           }
           amount
+          ...TransactionCellDeleteCategoryButton
         }
       }
     `,
@@ -27,12 +29,13 @@ export default function TransactionCategoriesCell({
 
   return (
     <div className="flex shrink flex-row flex-wrap">
-      {categories.map(({ category, amount }) => (
-        <div key={category.id} className="p-1">
+      {categories.map((record) => (
+        <div key={record.category.id} className="p-1">
           <TransactionCategoryChip
-            category={category}
+            category={record.category}
             currency={currency}
-            amount={categories.length > 1 ? amount : null}
+            amount={categories.length > 1 || !completed ? record.amount : null}
+            button={<TransactionCellDeleteCategoryButton record={record} />}
           />
         </div>
       ))}
