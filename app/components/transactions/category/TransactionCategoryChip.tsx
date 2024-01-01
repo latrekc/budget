@@ -9,11 +9,13 @@ export default function TransactionCategoryChip({
   onlyLeaf = false,
   amount,
   currency,
+  button,
 }: {
   category: TransactionCategoryChip_category$key;
   onlyLeaf?: boolean;
   amount?: number | null;
   currency?: Currency;
+  button?: React.ReactNode;
 }) {
   const category = useFragment(
     graphql`
@@ -42,6 +44,7 @@ export default function TransactionCategoryChip({
         color={category.color}
         amount={amount}
         currency={currency}
+        button={button}
       />
     );
   } else if (category.parentCategory.parentCategory == null) {
@@ -55,6 +58,7 @@ export default function TransactionCategoryChip({
           color={category.color}
           amount={amount}
           currency={currency}
+          button={button}
         />
       </Chip>
     );
@@ -73,6 +77,7 @@ export default function TransactionCategoryChip({
             color={category.color}
             amount={amount}
             currency={currency}
+            button={button}
           />
         </Chip>
       </Chip>
@@ -86,12 +91,14 @@ function Chip({
   children,
   amount,
   currency,
+  button,
 }: {
   name: string | null;
   color?: string | null;
   children?: React.ReactNode;
   amount?: number | null;
   currency?: Currency;
+  button?: React.ReactNode;
 }) {
   const luminance = chroma(color!).luminance();
 
@@ -109,6 +116,7 @@ function Chip({
           <AmountValue amount={amount} currency={currency} size={Size.Small} />
         </div>
       ) : null}
+      {button}
       {children}
     </div>
   );

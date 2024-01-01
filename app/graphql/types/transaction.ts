@@ -67,6 +67,57 @@ const updateCategoriesForTransactionsInput = builder
   });
 
 builder.mutationFields((t) => ({
+  deleteCategoriesForTransactions: t.prismaField({
+    type: ["Transaction"],
+    args: {
+      transactions: t.arg({
+        type: [updateCategoriesForTransactionsInput],
+        required: true,
+      }),
+    },
+    errors: {
+      types: [Error],
+    },
+    resolve: async (query, _root, args) => {
+      const transactionIds = args.transactions.map(
+        ({ transaction }) => parseIdString(transaction)!,
+      );
+
+      const deletes = args.transactions.map(({ transaction, category }) =>
+        prisma.transactionsOnCategories.delete({
+          where: {
+            transactionId_categoryId: {
+              transactionId: parseIdString(transaction)!,
+              categoryId: parseId(category)!,
+            },
+          },
+        }),
+      );
+
+      await prisma.$transaction([...deletes]);
+
+      await prisma.transaction.updateMany({
+        where: {
+          id: {
+            in: transactionIds,
+          },
+        },
+        data: {
+          completed: false,
+        },
+      });
+
+      return await prisma.transaction.findMany({
+        ...query,
+        where: {
+          id: {
+            in: transactionIds,
+          },
+        },
+      });
+    },
+  }),
+
   updateCategoriesForTransactions: t.prismaField({
     type: ["Transaction"],
     args: {
@@ -122,8 +173,9 @@ builder.mutationFields((t) => ({
         }),
       );
 
-      const inserts = args.transactions.map(
-        ({ transaction, category, amount }) =>
+      const inserts = args.transactions
+        .filter(({ amount }) => amount > 0)
+        .map(({ transaction, category, amount }) =>
           prisma.transactionsOnCategories.create({
             data: {
               categoryId: parseId(category)!,
@@ -131,7 +183,7 @@ builder.mutationFields((t) => ({
               amount,
             },
           }),
-      );
+        );
 
       await prisma.$transaction([...inserts, ...updates]);
 
