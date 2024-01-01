@@ -101,8 +101,7 @@ export default function TransactionCategoryAddButton({
       <PopoverTrigger>
         <Button
           size="sm"
-          variant="solid"
-          radius="full"
+          variant="flat"
           title={label}
           startContent={<TiPlus size="2em" />}
         >
