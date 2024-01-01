@@ -29,6 +29,7 @@ builder.prismaObject("Transaction", {
       resolve: (transaction) => enumFromStringValue(Source, transaction.source),
     }),
     categories: t.relation("categories"),
+    completed: t.exposeBoolean("completed"),
   }),
 });
 
@@ -61,7 +62,7 @@ const updateCategoriesForTransactionsInput = builder
         required: true,
       }),
       category: t.id({ required: true }),
-      amount: t.int({ required: true }),
+      amount: t.float({ required: true }),
     }),
   });
 
@@ -82,11 +83,44 @@ builder.mutationFields((t) => ({
         ({ transaction }) => parseIdString(transaction)!,
       );
 
+      const transactions = await prisma.transaction.findMany({
+        ...query,
+        where: {
+          id: {
+            in: transactionIds,
+          },
+        },
+      });
+
       await prisma.transactionsOnCategories.deleteMany({
         where: {
           transactionId: { in: transactionIds },
         },
       });
+
+      const transactionAmounts = args.transactions.reduce(
+        (amounts, { transaction, amount }) => {
+          amounts.set(
+            transaction,
+            ((amounts.get(transaction) ?? 0) * 100 + Math.abs(amount) * 100) /
+              100,
+          );
+
+          return amounts;
+        },
+        new Map<string | number, number>(),
+      );
+
+      const updates = transactions.map(({ id, amount }) =>
+        prisma.transaction.update({
+          where: {
+            id: id,
+          },
+          data: {
+            completed: Math.abs(amount) <= transactionAmounts.get(id)!,
+          },
+        }),
+      );
 
       const inserts = args.transactions.map(
         ({ transaction, category, amount }) =>
@@ -99,7 +133,7 @@ builder.mutationFields((t) => ({
           }),
       );
 
-      await prisma.$transaction(inserts);
+      await prisma.$transaction([...inserts, ...updates]);
 
       return await prisma.transaction.findMany({
         ...query,

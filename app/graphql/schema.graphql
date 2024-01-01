@@ -117,6 +117,7 @@ type StatisticPerYears {
 type Transaction {
   amount: Float!
   categories: [TransactionsOnCategories!]!
+  completed: Boolean!
   currency: Currency!
   date: Date!
   description: String!
@@ -131,7 +132,7 @@ type TransactionsOnCategories {
 }
 
 input updateCategoriesForTransactionsInput {
-  amount: Int!
+  amount: Float!
   category: ID!
   transaction: ID!
 }
