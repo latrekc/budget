@@ -22,6 +22,7 @@ model Transaction {
   amount      Float
   currency    String
   categories  TransactionsOnCategories[]
+  completed   Boolean                    @default(false)
 
   @@map("transactions")
 }
@@ -45,7 +46,7 @@ model TransactionsOnCategories {
   category   Category @relation(fields: [categoryId], references: [id])
   categoryId Int
 
-  amount Int
+  amount Float
 
   @@id([transactionId, categoryId])
   @@map("transactions2categories")

@@ -13,25 +13,24 @@ import { useInfiniteScroll } from "@nextui-org/use-infinite-scroll";
 import { useCallback, useMemo } from "react";
 import { graphql, useFragment, usePaginationFragment } from "react-relay";
 import { TransactionsTable__transaction$key } from "./__generated__/TransactionsTable__transaction.graphql";
-import {
-  TransactionsTable_transactions$data,
-  TransactionsTable_transactions$key,
-} from "./__generated__/TransactionsTable_transactions.graphql";
+import { TransactionsTable_transactions$key } from "./__generated__/TransactionsTable_transactions.graphql";
 import TransactionAmountCell from "./cell/TransactionAmountCell";
+import TransactionCategoriesCell from "./cell/TransactionCategoriesCell";
 import TransactionDateCell from "./cell/TransactionDateCell";
 import TransactionDescriptionCell from "./cell/TransactionDescriptionCell";
+import TransactionIdCell from "./cell/TransactionIdCell";
 import TransactionSourceCell from "./cell/TransactionSourceCell";
 
 enum Colunms {
+  "Id" = "ID",
   "Source" = "Source",
   "Date" = "Date",
   "Description" = "Description",
+  "Categories" = "Categories",
   "Amount" = "Amount",
 }
 
 export const PER_PAGE = 20;
-
-type Item = TransactionsTable_transactions$data["transactions"]["edges"][0];
 
 export default function TransactionsTable({
   transactions: transactions$key,
@@ -54,9 +53,9 @@ export default function TransactionsTable({
             hasNextPage
           }
           edges {
-            cursor
             node {
               id
+              completed
               ...TransactionsTable__transaction
             }
           }
@@ -86,6 +85,9 @@ export default function TransactionsTable({
 
   const cellAlign = useCallback((columnKey: Colunms) => {
     switch (columnKey) {
+      case Colunms.Id:
+        return "text-center";
+
       case Colunms.Date:
         return "text-center";
 
@@ -96,7 +98,10 @@ export default function TransactionsTable({
         return "text-right";
 
       case Colunms.Source:
-        return "flex justify-center items-center";
+        return "justify-center items-center align-middle";
+
+      case Colunms.Categories:
+        return "text-left";
     }
   }, []);
 
@@ -136,7 +141,12 @@ export default function TransactionsTable({
         loadingContent={<Spinner color="default" />}
       >
         {(item) => (
-          <TableRow key={item?.node.id}>
+          <TableRow
+            key={item?.node.id}
+            className={`${
+              item?.node.completed ? "bg-lime-100" : ""
+            } hover:bg-default-100`}
+          >
             {(columnKey) => (
               <TableCell className={cellAlign(columnKey as Colunms)}>
                 {item?.node == null ? null : (
@@ -164,16 +174,21 @@ function RenderCell({
   const transaction = useFragment(
     graphql`
       fragment TransactionsTable__transaction on Transaction {
+        ...TransactionIdCell__transaction
         ...TransactionDateCell__transaction
         ...TransactionDescriptionCell__transaction
         ...TransactionAmountCell__transaction
         ...TransactionSourceCell__transaction
+        ...TransactionCategoriesCell__transaction
       }
     `,
     transaction$key,
   );
 
   switch (columnKey) {
+    case Colunms.Id:
+      return <TransactionIdCell transaction={transaction} />;
+
     case Colunms.Date:
       return <TransactionDateCell transaction={transaction} />;
 
@@ -185,5 +200,8 @@ function RenderCell({
 
     case Colunms.Source:
       return <TransactionSourceCell transaction={transaction} />;
+
+    case Colunms.Categories:
+      return <TransactionCategoriesCell transaction={transaction} />;
   }
 }

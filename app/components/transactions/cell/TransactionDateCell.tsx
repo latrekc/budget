@@ -17,5 +17,5 @@ export default function TransactionDateCell({
     transaction$key,
   );
 
-  return <span className="text-sm">{format(date, "dddd, D MMM YYYY")}</span>;
+  return <span className="text-sm">{format(date, "ddd, D MMM YYYY")}</span>;
 }
