@@ -1,19 +1,24 @@
 import { Source } from "@/lib/types";
 import { Select, SelectItem, Switch } from "@nextui-org/react";
 import { Dispatch, useCallback, useMemo } from "react";
+import { graphql, useFragment } from "react-relay";
 import SourceImage from "../SourceImage";
 import {
   ReducerAction,
   ReducerActionType,
   ReducerState,
 } from "./TransactionsFiltersReducer";
+import { monthNames } from "./TransactionsStatistic";
+import { TransactionsFilters_months$key } from "./__generated__/TransactionsFilters_months.graphql";
 
 export default function TransactionsFilters({
   state,
   dispatch,
+  months: months$key,
 }: {
   state: ReducerState;
   dispatch: Dispatch<ReducerAction>;
+  months: TransactionsFilters_months$key;
 }) {
   const onOnlyUncomplitedToggle = useCallback(
     () => dispatch({ type: ReducerActionType.toggleOnlyUncomplited }),
@@ -34,6 +39,32 @@ export default function TransactionsFilters({
     }
   }, []);
 
+  const { transactions_statistic_per_months: months } = useFragment(
+    graphql`
+      fragment TransactionsFilters_months on Query {
+        transactions_statistic_per_months {
+          id
+          year
+          month
+        }
+      }
+    `,
+    months$key,
+  );
+
+  const onMonthSelect = useCallback((keys: Set<React.Key> | "all") => {
+    if (keys instanceof Set) {
+      const values = [...keys.values()];
+
+      dispatch({
+        type: ReducerActionType.setMonth,
+        payload: values.length > 0 ? values[0].toString() : null,
+      });
+    } else {
+      dispatch({ type: ReducerActionType.setMonth, payload: null });
+    }
+  }, []);
+
   return (
     <div className="flex flex-row flex-wrap gap-x-6 p-6">
       <Switch
@@ -50,7 +81,7 @@ export default function TransactionsFilters({
         className="max-w-xs"
         selectionMode="multiple"
         onSelectionChange={onSourceSelect}
-        selectedKeys={state.sources ?? "all"}
+        selectedKeys={state.sources != null ? state.sources : undefined}
       >
         {([value, label]) => (
           <SelectItem key={value} textValue={label}>
@@ -59,6 +90,20 @@ export default function TransactionsFilters({
               <span>{label}</span>
             </div>
           </SelectItem>
+        )}
+      </Select>
+
+      <Select
+        items={months}
+        label="Select month"
+        className="max-w-xs"
+        onSelectionChange={onMonthSelect}
+        selectedKeys={state.month != null ? [state.month] : undefined}
+      >
+        {({ id, month, year }) => (
+          <SelectItem key={id}>{`${year}, ${monthNames.get(
+            month,
+          )!}`}</SelectItem>
         )}
       </Select>
     </div>
