@@ -1,4 +1,4 @@
-import Image from "next/image";
+import SourceImage from "@/components/SourceImage";
 import { graphql, useFragment } from "react-relay";
 import { TransactionSourceCell__transaction$key } from "./__generated__/TransactionSourceCell__transaction.graphql";
 
@@ -15,6 +15,5 @@ export default function TransactionSourceCell({
     `,
     transaction$key,
   );
-  const path = `/assets/sources/${source}.svg`;
-  return <Image priority src={path} height={24} width={24} alt={source} />;
+  return <SourceImage source={source} />;
 }

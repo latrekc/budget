@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import prisma, { parseId, parseIdString } from "../../lib/prisma";
 import { Currency, Source, enumFromStringValue } from "../../lib/types";
 import { builder } from "../builder";
@@ -41,12 +42,55 @@ builder.prismaObject("TransactionsOnCategories", {
   }),
 });
 
+const filterTransactionsInput = builder
+  .inputRef<{
+    onlyUncomplited?: boolean;
+    sources?: string[];
+  }>("filterTransactionsInput")
+  .implement({
+    fields: (t) => ({
+      onlyUncomplited: t.boolean({
+        required: false,
+        defaultValue: false,
+      }),
+      sources: t.stringList({
+        required: false,
+      }),
+    }),
+  });
+
 builder.queryField("transactions", (t) =>
   t.prismaConnection({
     type: "Transaction",
     cursor: "id",
-    resolve: (query) =>
-      prisma.transaction.findMany({ ...query, orderBy: [{ date: "desc" }] }),
+    args: {
+      filters: t.arg({
+        type: filterTransactionsInput,
+        required: false,
+      }),
+    },
+    resolve: async (query, _, args) => {
+      let where: Prisma.TransactionWhereInput | undefined = undefined;
+
+      if (args.filters != null) {
+        where = {};
+
+        if (args.filters.onlyUncomplited) {
+          where.completed = false;
+        }
+        if (args.filters.sources != null) {
+          where.source = {
+            in: args.filters.sources,
+          };
+        }
+      }
+
+      return await prisma.transaction.findMany({
+        ...query,
+        orderBy: [{ date: "desc" }],
+        where,
+      });
+    },
   }),
 );
 
