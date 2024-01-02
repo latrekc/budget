@@ -38,7 +38,7 @@ export default function Transactions() {
     }
 
     if (params.has("search")) {
-      state.month = decodeURIComponent(params.get("search")!);
+      state.search = decodeURIComponent(params.get("search")!);
     }
 
     return state;
