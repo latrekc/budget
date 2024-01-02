@@ -48,6 +48,7 @@ const filterTransactionsInput = builder
     onlyUncomplited?: boolean;
     sources?: string[];
     month?: string;
+    search?: string;
   }>("filterTransactionsInput")
   .implement({
     fields: (t) => ({
@@ -59,6 +60,9 @@ const filterTransactionsInput = builder
         required: false,
       }),
       month: t.string({
+        required: false,
+      }),
+      search: t.string({
         required: false,
       }),
     }),
@@ -83,6 +87,7 @@ builder.queryField("transactions", (t) =>
         if (args.filters.onlyUncomplited) {
           where.completed = false;
         }
+
         if (args.filters.sources != null && args.filters.sources.length > 0) {
           where.source = {
             in: args.filters.sources,
@@ -96,6 +101,15 @@ builder.queryField("transactions", (t) =>
           where.date = {
             gte: month,
             lt: nextMonth,
+          };
+        }
+
+        if (
+          args.filters.search != null &&
+          args.filters.search.trim().length > 0
+        ) {
+          where.description = {
+            contains: args.filters.search.trim(),
           };
         }
       }

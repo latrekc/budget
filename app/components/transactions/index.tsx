@@ -37,6 +37,10 @@ export default function Transactions() {
       state.month = params.get("month")!;
     }
 
+    if (params.has("search")) {
+      state.month = decodeURIComponent(params.get("search")!);
+    }
+
     return state;
   }, []);
 
@@ -64,6 +68,12 @@ export default function Transactions() {
       params.set("month", filtersState.month);
     } else {
       params.delete("month");
+    }
+
+    if (filtersState.search != null) {
+      params.set("search", encodeURIComponent(filtersState.search));
+    } else {
+      params.delete("search");
     }
 
     router.replace(`${pathname}?${params}`);

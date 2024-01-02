@@ -1,7 +1,8 @@
 import { Source } from "@/lib/types";
-import { Select, SelectItem, Switch } from "@nextui-org/react";
-import { Dispatch, useCallback, useMemo } from "react";
+import { Input, Select, SelectItem, Switch } from "@nextui-org/react";
+import { Dispatch, useCallback, useEffect, useMemo, useState } from "react";
 import { graphql, useFragment } from "react-relay";
+import { useDebounce } from "usehooks-ts";
 import SourceImage from "../SourceImage";
 import {
   ReducerAction,
@@ -65,6 +66,19 @@ export default function TransactionsFilters({
     }
   }, []);
 
+  const [searchValue, setSearchValue] = useState<string>(state.search ?? "");
+  const debouncedSearch = useDebounce<string>(searchValue, 500);
+
+  const onSearch = useCallback((search: string) => setSearchValue(search), []);
+
+  useEffect(() => {
+    dispatch({
+      type: ReducerActionType.setSearch,
+      payload:
+        debouncedSearch.trim().length > 0 ? debouncedSearch.trim() : null,
+    });
+  }, [debouncedSearch]);
+
   return (
     <div className="flex flex-row flex-wrap gap-x-6 p-6">
       <Switch
@@ -74,6 +88,14 @@ export default function TransactionsFilters({
       >
         Only uncategorised
       </Switch>
+
+      <Input
+        label="Search by description"
+        className="w-auto"
+        isClearable
+        value={searchValue}
+        onValueChange={onSearch}
+      />
 
       <Select
         items={sources}
