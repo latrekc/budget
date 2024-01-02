@@ -27,7 +27,14 @@ export default function Transactions() {
     }
 
     if (params.has("sources")) {
-      state.sources = params.get("sources")!.split(",");
+      state.sources = params
+        .get("sources")!
+        .split(",")
+        .filter((str) => str.length > 0);
+    }
+
+    if (params.has("month")) {
+      state.month = params.get("month")!;
     }
 
     return state;
@@ -47,10 +54,16 @@ export default function Transactions() {
       params.delete("onlyUncomplited");
     }
 
-    if (filtersState.sources != null) {
+    if (filtersState.sources != null && filtersState.sources.length > 0) {
       params.set("sources", filtersState.sources.join(","));
     } else {
       params.delete("sources");
+    }
+
+    if (filtersState.month != null) {
+      params.set("month", filtersState.month);
+    } else {
+      params.delete("month");
     }
 
     router.replace(`${pathname}?${params}`);
@@ -66,6 +79,7 @@ export default function Transactions() {
         ...TransactionsTable_transactions
         ...TransactionsStatistic_statistic
         ...TransactionsCategories_categories
+        ...TransactionsFilters_months
       }
     `,
     { first: PER_PAGE, filters: filtersState },
@@ -73,7 +87,11 @@ export default function Transactions() {
 
   return (
     <>
-      <TransactionsFilters state={filtersState} dispatch={dispatch} />
+      <TransactionsFilters
+        state={filtersState}
+        dispatch={dispatch}
+        months={data}
+      />
 
       <div className="flex flex-row">
         <div className="basis-3/4">

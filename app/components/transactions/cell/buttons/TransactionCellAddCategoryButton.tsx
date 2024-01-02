@@ -123,7 +123,12 @@ export default function TransactionCellAddCategoryButton({
   }, []);
 
   return (
-    <Popover showArrow backdrop="opaque" isOpen={isOpen}>
+    <Popover
+      showArrow
+      backdrop="opaque"
+      isOpen={isOpen}
+      onClose={() => setIsOpen(false)}
+    >
       <PopoverTrigger onClick={() => setIsOpen(true)}>
         <Button
           size="sm"
@@ -148,7 +153,6 @@ export default function TransactionCellAddCategoryButton({
                   content: "w-[450px]",
                 },
               }}
-              autoFocus
               onSelectionChange={onSelect}
               isDisabled={isMutationInFlight}
               isInvalid={error != null}

@@ -1,4 +1,5 @@
 import { Prisma } from "@prisma/client";
+import { parse as parseDate } from "date-format-parse";
 import prisma, { parseId, parseIdString } from "../../lib/prisma";
 import { Currency, Source, enumFromStringValue } from "../../lib/types";
 import { builder } from "../builder";
@@ -46,6 +47,7 @@ const filterTransactionsInput = builder
   .inputRef<{
     onlyUncomplited?: boolean;
     sources?: string[];
+    month?: string;
   }>("filterTransactionsInput")
   .implement({
     fields: (t) => ({
@@ -54,6 +56,9 @@ const filterTransactionsInput = builder
         defaultValue: false,
       }),
       sources: t.stringList({
+        required: false,
+      }),
+      month: t.string({
         required: false,
       }),
     }),
@@ -78,9 +83,19 @@ builder.queryField("transactions", (t) =>
         if (args.filters.onlyUncomplited) {
           where.completed = false;
         }
-        if (args.filters.sources != null) {
+        if (args.filters.sources != null && args.filters.sources.length > 0) {
           where.source = {
             in: args.filters.sources,
+          };
+        }
+
+        if (args.filters.month != null) {
+          const month = parseDate(args.filters.month, "YYYY-MM");
+          const nextMonth = new Date(month);
+          nextMonth.setMonth(month.getMonth() + 1);
+          where.date = {
+            gte: month,
+            lt: nextMonth,
           };
         }
       }

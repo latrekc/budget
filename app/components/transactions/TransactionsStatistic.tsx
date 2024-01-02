@@ -19,7 +19,7 @@ type Year = {
 };
 type Result = Map<number, Year>;
 
-const monthNames = new Map([
+export const monthNames = new Map([
   [1, "Jan"],
   [2, "Feb"],
   [3, "Mar"],
