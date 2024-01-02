@@ -48,7 +48,7 @@ export default function TransactionsTable({
     graphql`
       fragment TransactionsTable_transactions on Query
       @refetchable(queryName: "TransactionsPaginationQuery") {
-        transactions(first: $first, after: $after)
+        transactions(first: $first, after: $after, filters: $filters)
           @connection(key: "TransactionsTable_transactions") {
           pageInfo {
             endCursor
