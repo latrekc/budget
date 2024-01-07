@@ -11,18 +11,18 @@ import { TiDelete } from "react-icons/ti";
 import { graphql, useFragment, useMutation } from "react-relay";
 import { TransactionsCategoriesContext } from "../../TransactionsContext";
 import { TransactionCategoryDeleteButtonMutation } from "../__generated__/TransactionCategoryDeleteButtonMutation.graphql";
-import { TransactionCategoryDeleteButton_category$key } from "../__generated__/TransactionCategoryDeleteButton_category.graphql";
+import { TransactionCategoryDeleteButton$key } from "./__generated__/TransactionCategoryDeleteButton.graphql";
 
 export default function TransactionCategoryDeleteButton({
   category: category$key,
 }: {
-  category: TransactionCategoryDeleteButton_category$key;
+  category: TransactionCategoryDeleteButton$key;
 }) {
   const { refetchCategories } = useContext(TransactionsCategoriesContext);
 
   const category = useFragment(
     graphql`
-      fragment TransactionCategoryDeleteButton_category on Category {
+      fragment TransactionCategoryDeleteButton on Category {
         id
         name
         parentCategory {

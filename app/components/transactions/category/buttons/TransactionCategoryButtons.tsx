@@ -3,21 +3,21 @@ import { graphql, useFragment } from "react-relay";
 import TransactionCategoryAddButton from "./TransactionCategoryAddButton";
 import TransactionCategoryDeleteButton from "./TransactionCategoryDeleteButton";
 import TransactionCategoryEditButton from "./TransactionCategoryEditButton";
-import { TransactionCategoryButtons_category$key } from "./__generated__/TransactionCategoryButtons_category.graphql";
+import { TransactionCategoryButtons$key } from "./__generated__/TransactionCategoryButtons.graphql";
 
 export default function TransactionCategoryButtons({
   category: category$key,
   withAddButton = true,
 }: {
-  category: TransactionCategoryButtons_category$key;
+  category: TransactionCategoryButtons$key;
   withAddButton?: boolean;
 }) {
   const category = useFragment(
     graphql`
-      fragment TransactionCategoryButtons_category on Category {
+      fragment TransactionCategoryButtons on Category {
         id
-        ...TransactionCategoryDeleteButton_category
-        ...TransactionCategoryEditButton_category
+        ...TransactionCategoryDeleteButton
+        ...TransactionCategoryEditButton
       }
     `,
     category$key,

@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Selection,
   Spinner,
   Table,
   TableBody,
@@ -12,8 +13,8 @@ import {
 import { useInfiniteScroll } from "@nextui-org/use-infinite-scroll";
 import { useCallback, useMemo } from "react";
 import { graphql, useFragment, usePaginationFragment } from "react-relay";
-import { TransactionsTable__transaction$key } from "./__generated__/TransactionsTable__transaction.graphql";
-import { TransactionsTable_transactions$key } from "./__generated__/TransactionsTable_transactions.graphql";
+import { TransactionsTable$key } from "./__generated__/TransactionsTable.graphql";
+import { TransactionsTable__RenderCell$key } from "./__generated__/TransactionsTable__RenderCell.graphql";
 import TransactionAmountCell from "./cell/TransactionAmountCell";
 import TransactionCategoriesButtonCell from "./cell/TransactionCategoriesButtonCell";
 import TransactionCategoriesCell from "./cell/TransactionCategoriesCell";
@@ -35,9 +36,13 @@ enum Colunms {
 export const PER_PAGE = 20;
 
 export default function TransactionsTable({
+  selectedTransactions,
+  setSelectedTransactions,
   transactions: transactions$key,
 }: {
-  transactions: TransactionsTable_transactions$key;
+  transactions: TransactionsTable$key;
+  selectedTransactions: Selection;
+  setSelectedTransactions: (selected: Selection) => void;
 }) {
   const {
     data: { transactions },
@@ -46,7 +51,7 @@ export default function TransactionsTable({
     hasNext,
   } = usePaginationFragment(
     graphql`
-      fragment TransactionsTable_transactions on Query
+      fragment TransactionsTable on Query
       @refetchable(queryName: "TransactionsPaginationQuery") {
         transactions(first: $first, after: $after, filters: $filters)
           @connection(key: "TransactionsTable_transactions") {
@@ -58,7 +63,7 @@ export default function TransactionsTable({
             node {
               id
               completed
-              ...TransactionsTable__transaction
+              ...TransactionsTable__RenderCell
             }
           }
         }
@@ -117,6 +122,9 @@ export default function TransactionsTable({
       shadow="none"
       isHeaderSticky
       baseRef={scrollerRef}
+      selectionMode="multiple"
+      selectedKeys={selectedTransactions}
+      onSelectionChange={setSelectedTransactions}
       bottomContent={
         hasNext ? (
           <div className="flex w-full justify-center">
@@ -176,17 +184,17 @@ function RenderCell({
   transaction: transaction$key,
 }: {
   columnKey: Colunms;
-  transaction: TransactionsTable__transaction$key;
+  transaction: TransactionsTable__RenderCell$key;
 }) {
   const transaction = useFragment(
     graphql`
-      fragment TransactionsTable__transaction on Transaction {
-        ...TransactionIdCell__transaction
-        ...TransactionDateCell__transaction
-        ...TransactionDescriptionCell__transaction
-        ...TransactionAmountCell__transaction
-        ...TransactionSourceCell__transaction
-        ...TransactionCategoriesCell__transaction
+      fragment TransactionsTable__RenderCell on Transaction {
+        ...TransactionIdCell
+        ...TransactionDateCell
+        ...TransactionDescriptionCell
+        ...TransactionAmountCell
+        ...TransactionSourceCell
+        ...TransactionCategoriesCell
         ...TransactionCategoriesButtonCell
       }
     `,

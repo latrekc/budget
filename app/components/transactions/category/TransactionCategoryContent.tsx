@@ -1,22 +1,22 @@
 import { Snippet, Tooltip } from "@nextui-org/react";
 import { graphql, useFragment } from "react-relay";
 import TransactionCategoryChip from "./TransactionCategoryChip";
-import { TransactionCategoryContent_category$key } from "./__generated__/TransactionCategoryContent_category.graphql";
+import { TransactionCategoryContent$key } from "./__generated__/TransactionCategoryContent.graphql";
 import TransactionCategoryButtons from "./buttons/TransactionCategoryButtons";
 
 export default function TransactionCategoryContent({
   category: category$key,
   withAddButton = true,
 }: {
-  category: TransactionCategoryContent_category$key;
+  category: TransactionCategoryContent$key;
   withAddButton?: boolean;
 }) {
   const category = useFragment(
     graphql`
-      fragment TransactionCategoryContent_category on Category {
+      fragment TransactionCategoryContent on Category {
         id
-        ...TransactionCategoryButtons_category
-        ...TransactionCategoryChip_category
+        ...TransactionCategoryButtons
+        ...TransactionCategoryChip
       }
     `,
     category$key,

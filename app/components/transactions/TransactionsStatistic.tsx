@@ -4,7 +4,6 @@ import { Accordion, AccordionItem } from "@nextui-org/react";
 import { useCallback, useState } from "react";
 import { graphql, useFragment } from "react-relay";
 import AmountValue, { Size } from "../AmountValue";
-import { TransactionsStatistic_statistic$key } from "./__generated__/TransactionsStatistic_statistic.graphql";
 
 type Year = {
   income: number;
@@ -37,11 +36,11 @@ export const monthNames = new Map([
 export default function TransactionsStatistic({
   statistic: statistic$key,
 }: {
-  statistic: TransactionsStatistic_statistic$key;
+  statistic: TransactionsStatistic$key;
 }) {
   const data = useFragment(
     graphql`
-      fragment TransactionsStatistic_statistic on Query {
+      fragment TransactionsStatistic on Query {
         transactions_statistic_per_months {
           id
           year

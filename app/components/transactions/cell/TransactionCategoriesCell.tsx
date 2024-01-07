@@ -1,23 +1,23 @@
 import { graphql, useFragment } from "react-relay";
 import TransactionCategoryChip from "../category/TransactionCategoryChip";
-import { TransactionCategoriesCell__transaction$key } from "./__generated__/TransactionCategoriesCell__transaction.graphql";
+import { TransactionCategoriesCell$key } from "./__generated__/TransactionCategoriesCell.graphql";
 import TransactionCellDeleteCategoryButton from "./buttons/TransactionCellDeleteCategoryButton";
 
 export default function TransactionCategoriesCell({
   transaction: transaction$key,
 }: {
-  transaction: TransactionCategoriesCell__transaction$key;
+  transaction: TransactionCategoriesCell$key;
 }) {
   const { completed, categories, currency } = useFragment(
     graphql`
-      fragment TransactionCategoriesCell__transaction on Transaction {
+      fragment TransactionCategoriesCell on Transaction {
         completed
         amount
         currency
         categories {
           category {
             id
-            ...TransactionCategoryChip_category
+            ...TransactionCategoryChip
           }
           amount
           ...TransactionCellDeleteCategoryButton

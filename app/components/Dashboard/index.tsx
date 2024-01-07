@@ -31,7 +31,7 @@ export default function Dashboard() {
         $include_months: Boolean!
         $include_years: Boolean!
       ) {
-        ...DashboardByTimePeriods_statistic
+        ...DashboardByTimePeriods
           @arguments(
             include_months: $include_months
             include_years: $include_years

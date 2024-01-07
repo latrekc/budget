@@ -1,5 +1,6 @@
+import { Selection } from "@nextui-org/react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useReducer } from "react";
+import { useEffect, useMemo, useReducer, useState } from "react";
 import { graphql, useLazyLoadQuery } from "react-relay";
 import TransactionsCategories from "./TransactionsCategories";
 import TransactionsFilters from "./TransactionsFilters";
@@ -11,6 +12,14 @@ import TransactionsTable, { PER_PAGE } from "./TransactionsTable";
 import { TransactionsQuery } from "./__generated__/TransactionsQuery.graphql";
 
 export default function Transactions() {
+  const [selectedTransactions, setSelectedTransactions] = useState<Selection>(
+    new Set([]),
+  );
+
+  useEffect(() => {
+    console.log("selectedTransactions", selectedTransactions);
+  }, [selectedTransactions]);
+
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -86,10 +95,10 @@ export default function Transactions() {
         $after: ID
         $filters: filterTransactionsInput
       ) {
-        ...TransactionsTable_transactions
-        ...TransactionsStatistic_statistic
-        ...TransactionsCategories_categories
-        ...TransactionsFilters_months
+        ...TransactionsTable
+        ...TransactionsStatistic
+        ...TransactionsCategories
+        ...TransactionsFilters
       }
     `,
     { first: PER_PAGE, filters: filtersState },
@@ -105,7 +114,11 @@ export default function Transactions() {
 
       <div className="flex flex-row">
         <div className="basis-3/4">
-          <TransactionsTable transactions={data} />
+          <TransactionsTable
+            transactions={data}
+            selectedTransactions={selectedTransactions}
+            setSelectedTransactions={setSelectedTransactions}
+          />
         </div>
 
         <div className="basis-1/4">
