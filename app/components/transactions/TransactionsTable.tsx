@@ -20,11 +20,9 @@ import TransactionCategoriesButtonCell from "./cell/TransactionCategoriesButtonC
 import TransactionCategoriesCell from "./cell/TransactionCategoriesCell";
 import TransactionDateCell from "./cell/TransactionDateCell";
 import TransactionDescriptionCell from "./cell/TransactionDescriptionCell";
-import TransactionIdCell from "./cell/TransactionIdCell";
 import TransactionSourceCell from "./cell/TransactionSourceCell";
 
 enum Colunms {
-  "Id" = "ID",
   "Source" = "Source",
   "Date" = "Date",
   "Description" = "Description",
@@ -35,14 +33,21 @@ enum Colunms {
 
 export const PER_PAGE = 20;
 
+export type TransactionsSelection =
+  | "all"
+  | Set<{
+      transaction: string;
+      amount: number;
+    }>;
+
 export default function TransactionsTable({
   selectedTransactions,
   setSelectedTransactions,
   transactions: transactions$key,
 }: {
   transactions: TransactionsTable$key;
-  selectedTransactions: Selection;
-  setSelectedTransactions: (selected: Selection) => void;
+  selectedTransactions: TransactionsSelection;
+  setSelectedTransactions: (selected: TransactionsSelection) => void;
 }) {
   const {
     data: { transactions },
@@ -63,6 +68,7 @@ export default function TransactionsTable({
             node {
               id
               completed
+              amount
               ...TransactionsTable__RenderCell
             }
           }
@@ -70,6 +76,52 @@ export default function TransactionsTable({
       }
     `,
     transactions$key,
+  );
+
+  const selectedIds = useMemo<"all" | Set<string>>(() => {
+    if (selectedTransactions === "all") {
+      return "all";
+    }
+
+    let ids: string[] = [];
+
+    if (selectedTransactions instanceof Set) {
+      ids = [...selectedTransactions.values()].map(
+        (select) => select.transaction,
+      );
+    }
+
+    return new Set(ids);
+  }, [selectedTransactions]);
+
+  const transactionAmounts: Map<string, number> = useMemo(
+    () =>
+      transactions.edges.reduce((amounts, edge) => {
+        amounts.set(edge?.node.id, edge?.node.amount);
+
+        return amounts;
+      }, new Map()),
+    [transactions],
+  );
+
+  const onSelectionChange = useCallback(
+    (selected: Selection) => {
+      if (selected === "all") {
+        setSelectedTransactions("all");
+      }
+
+      if (selected instanceof Set) {
+        setSelectedTransactions(
+          new Set(
+            [...selected.values()].map((select) => ({
+              transaction: select.toString(),
+              amount: transactionAmounts.get(select.toString()) ?? 0,
+            })),
+          ),
+        );
+      }
+    },
+    [selectedTransactions],
   );
 
   const loadMore = useCallback(() => {
@@ -92,9 +144,6 @@ export default function TransactionsTable({
 
   const cellAlign = useCallback((columnKey: Colunms) => {
     switch (columnKey) {
-      case Colunms.Id:
-        return "text-center";
-
       case Colunms.Date:
         return "text-center";
 
@@ -123,8 +172,8 @@ export default function TransactionsTable({
       isHeaderSticky
       baseRef={scrollerRef}
       selectionMode="multiple"
-      selectedKeys={selectedTransactions}
-      onSelectionChange={setSelectedTransactions}
+      selectedKeys={selectedIds}
+      onSelectionChange={onSelectionChange}
       bottomContent={
         hasNext ? (
           <div className="flex w-full justify-center">
@@ -189,7 +238,6 @@ function RenderCell({
   const transaction = useFragment(
     graphql`
       fragment TransactionsTable__RenderCell on Transaction {
-        ...TransactionIdCell
         ...TransactionDateCell
         ...TransactionDescriptionCell
         ...TransactionAmountCell
@@ -202,9 +250,6 @@ function RenderCell({
   );
 
   switch (columnKey) {
-    case Colunms.Id:
-      return <TransactionIdCell transaction={transaction} />;
-
     case Colunms.Date:
       return <TransactionDateCell transaction={transaction} />;
 

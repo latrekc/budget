@@ -1,4 +1,3 @@
-import { Selection } from "@nextui-org/react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useReducer, useState } from "react";
 import { graphql, useLazyLoadQuery } from "react-relay";
@@ -8,13 +7,15 @@ import TransactionsFiltersReducer, {
   initialState,
 } from "./TransactionsFiltersReducer";
 import TransactionsStatistic from "./TransactionsStatistic";
-import TransactionsTable, { PER_PAGE } from "./TransactionsTable";
+import TransactionsTable, {
+  PER_PAGE,
+  TransactionsSelection,
+} from "./TransactionsTable";
 import { TransactionsQuery } from "./__generated__/TransactionsQuery.graphql";
 
 export default function Transactions() {
-  const [selectedTransactions, setSelectedTransactions] = useState<Selection>(
-    new Set([]),
-  );
+  const [selectedTransactions, setSelectedTransactions] =
+    useState<TransactionsSelection>(new Set([]));
 
   useEffect(() => {
     console.log("selectedTransactions", selectedTransactions);
@@ -110,6 +111,8 @@ export default function Transactions() {
         state={filtersState}
         dispatch={dispatch}
         months={data}
+        selectedTransactions={selectedTransactions}
+        setSelectedTransactions={setSelectedTransactions}
       />
 
       <div className="flex flex-row">

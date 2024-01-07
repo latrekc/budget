@@ -47,7 +47,7 @@ export default function TransactionMonthFilter({
   return (
     <Select
       items={months}
-      label="Select month"
+      label="Search by month"
       className="max-w-xs"
       onSelectionChange={onMonthSelect}
       selectedKeys={state.month != null ? [state.month] : undefined}
