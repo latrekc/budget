@@ -40,7 +40,7 @@ export default function TransactionsCategories({
           <TransactionAddButton longLabel />
         </div>
 
-        <div className="divide-y-small">
+        <div>
           {categories
             ?.filter((category) => category.parentCategory == null)
             .map((category) => (

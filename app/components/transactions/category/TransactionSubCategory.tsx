@@ -25,7 +25,7 @@ export default function TransactionSubCategory({
       <TransactionCategoryContent category={subCategory} />
 
       {subCategory.subCategories.length > 0 ? (
-        <div className="divide-y-small pl-4">
+        <div className="pl-4">
           {subCategory.subCategories.map((subSubCategory) => (
             <TransactionSubSubCategory
               key={subSubCategory.id}
