@@ -9,19 +9,19 @@ import { FormEvent, useCallback, useContext, useMemo, useState } from "react";
 import { LuTextCursorInput } from "react-icons/lu";
 import { graphql, useFragment, useMutation } from "react-relay";
 import { TransactionsCategoriesContext } from "../../TransactionsContext";
+import { TransactionCategoryEditButton$key } from "./__generated__/TransactionCategoryEditButton.graphql";
 import { TransactionCategoryEditButtonMutation } from "./__generated__/TransactionCategoryEditButtonMutation.graphql";
-import { TransactionCategoryEditButton_category$key } from "./__generated__/TransactionCategoryEditButton_category.graphql";
 
 export default function TransactionCategoryEditButton({
   category: category$key,
 }: {
-  category: TransactionCategoryEditButton_category$key;
+  category: TransactionCategoryEditButton$key;
 }) {
   const { refetchCategories } = useContext(TransactionsCategoriesContext);
 
   const category = useFragment(
     graphql`
-      fragment TransactionCategoryEditButton_category on Category {
+      fragment TransactionCategoryEditButton on Category {
         id
         name
         parentCategory {

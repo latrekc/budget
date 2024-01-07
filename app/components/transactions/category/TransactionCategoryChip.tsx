@@ -2,7 +2,7 @@ import AmountValue, { Size } from "@/components/AmountValue";
 import chroma from "chroma-js";
 import { graphql, useFragment } from "react-relay";
 import { Currency } from "../cell/__generated__/TransactionAmountCell__transactio.graphql";
-import { TransactionCategoryChip_category$key } from "./__generated__/TransactionCategoryChip_category.graphql";
+import { TransactionCategoryChip$key } from "./__generated__/TransactionCategoryChip.graphql";
 
 export default function TransactionCategoryChip({
   category: category$key,
@@ -11,7 +11,7 @@ export default function TransactionCategoryChip({
   currency,
   button,
 }: {
-  category: TransactionCategoryChip_category$key;
+  category: TransactionCategoryChip$key;
   onlyLeaf?: boolean;
   amount?: number | null;
   currency?: Currency;
@@ -19,7 +19,7 @@ export default function TransactionCategoryChip({
 }) {
   const category = useFragment(
     graphql`
-      fragment TransactionCategoryChip_category on Category {
+      fragment TransactionCategoryChip on Category {
         name
         color
 

@@ -1,25 +1,25 @@
 import { useMemo } from "react";
 import { graphql, useRefetchableFragment } from "react-relay";
 import { TransactionsCategoriesContext } from "./TransactionsContext";
-import { TransactionsCategories_categories$key } from "./__generated__/TransactionsCategories_categories.graphql";
+import { TransactionsCategories$key } from "./__generated__/TransactionsCategories.graphql";
 import TransactionCategory from "./category/TransactionCategory";
 import TransactionAddButton from "./category/buttons/TransactionCategoryAddButton";
 
 export default function TransactionsCategories({
   categories: categories$key,
 }: {
-  categories: TransactionsCategories_categories$key;
+  categories: TransactionsCategories$key;
 }) {
   const [{ categories }, refetch] = useRefetchableFragment(
     graphql`
-      fragment TransactionsCategories_categories on Query
+      fragment TransactionsCategories on Query
       @refetchable(queryName: "TransactionsCategoriesRefetchQuery") {
         categories {
           id
           parentCategory {
             __typename
           }
-          ...TransactionCategory_category
+          ...TransactionCategory
         }
       }
     `,

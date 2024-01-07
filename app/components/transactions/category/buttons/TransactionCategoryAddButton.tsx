@@ -40,7 +40,7 @@ export default function TransactionCategoryAddButton({
         createCategory(name: $name, parent: $parent) {
           ... on MutationCreateCategorySuccess {
             data {
-              ...TransactionCategory_category
+              ...TransactionCategory
             }
           }
           ... on Error {

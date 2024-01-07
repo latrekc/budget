@@ -75,7 +75,7 @@ export default function TransactionCellAddCategoryButton({
                 name
               }
             }
-            ...TransactionCategoryChip_category
+            ...TransactionCategoryChip
           }
         }
       `,

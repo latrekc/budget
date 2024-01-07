@@ -22,7 +22,7 @@ export default function TransactionCellSplitCategoryButton({
         amount
         categories {
           category {
-            ...TransactionCategoryChip_category
+            ...TransactionCategoryChip
             id
           }
           amount

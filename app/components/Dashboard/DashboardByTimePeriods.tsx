@@ -3,7 +3,7 @@
 import ReactECharts from "echarts-for-react";
 import { useMemo } from "react";
 import { graphql, useFragment } from "react-relay";
-import { DashboardByTimePeriods_statistic$key } from "./__generated__/DashboardByTimePeriods_statistic.graphql";
+import { DashboardByTimePeriods$key } from "./__generated__/DashboardByTimePeriods.graphql";
 
 type EChartsOption = echarts.EChartsOption;
 
@@ -17,12 +17,12 @@ export default function DashboardByTimePeriods({
   statistic: statistic$key,
   period,
 }: {
-  statistic: DashboardByTimePeriods_statistic$key;
+  statistic: DashboardByTimePeriods$key;
   period: Period;
 }) {
   const data = useFragment(
     graphql`
-      fragment DashboardByTimePeriods_statistic on Query
+      fragment DashboardByTimePeriods on Query
       @argumentDefinitions(
         include_months: { type: "Boolean!" }
         include_years: { type: "Boolean!" }
