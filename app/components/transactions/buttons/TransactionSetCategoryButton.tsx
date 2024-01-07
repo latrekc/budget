@@ -1,16 +1,20 @@
 import { Autocomplete, AutocompleteItem } from "@nextui-org/react";
 import { useCallback, useState } from "react";
 import { graphql, useLazyLoadQuery, useMutation } from "react-relay";
+import { ReducerState } from "../TransactionsFiltersReducer";
 import TransactionCategoryChip from "../category/TransactionCategoryChip";
+import { TransactionSetCategoryButtonAllMutation } from "./__generated__/TransactionSetCategoryButtonAllMutation.graphql";
 import { TransactionSetCategoryButtonMutation } from "./__generated__/TransactionSetCategoryButtonMutation.graphql";
 import { TransactionSetCategoryButtonQuery } from "./__generated__/TransactionSetCategoryButtonQuery.graphql";
 
 export default function TransactionSetCategoryButton({
+  state: filters,
   onCompleted,
   transactions,
 }: {
+  state: ReducerState;
   onCompleted: () => void;
-  transactions: { transaction: string; amount: number }[];
+  transactions: "all" | { transaction: string; amount: number }[];
 }) {
   const [error, setError] = useState<string | null>(null);
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
@@ -33,6 +37,23 @@ export default function TransactionSetCategoryButton({
               }
             }
           }
+          ... on Error {
+            message
+          }
+        }
+      }
+    `);
+
+  const [commitAllMutation, isMutationAllInFlight] =
+    useMutation<TransactionSetCategoryButtonAllMutation>(graphql`
+      mutation TransactionSetCategoryButtonAllMutation(
+        $category: String!
+        $filters: filterTransactionsInput!
+      ) {
+        updateCategoriesForAllTransactions(
+          category: $category
+          filters: $filters
+        ) {
           ... on Error {
             message
           }
@@ -81,22 +102,39 @@ export default function TransactionSetCategoryButton({
 
   const onSelect = useCallback(
     (key: React.Key) => {
-      commitMutation({
-        variables: {
-          transactions: transactions.map((transaction) => ({
-            ...transaction,
+      if (transactions === "all") {
+        commitAllMutation({
+          variables: {
             category: key.toString(),
-          })),
-        },
-        onCompleted(result) {
-          setSelectedKey(null);
-          if (result.updateCategoriesForTransactions.message) {
-            setError(result.updateCategoriesForTransactions.message);
-          } else {
-            onCompleted();
-          }
-        },
-      });
+            filters,
+          },
+          onCompleted(result) {
+            setSelectedKey(null);
+            if (result.updateCategoriesForAllTransactions.message) {
+              setError(result.updateCategoriesForAllTransactions.message);
+            } else {
+              onCompleted();
+            }
+          },
+        });
+      } else {
+        commitMutation({
+          variables: {
+            transactions: transactions.map((transaction) => ({
+              ...transaction,
+              category: key.toString(),
+            })),
+          },
+          onCompleted(result) {
+            setSelectedKey(null);
+            if (result.updateCategoriesForTransactions.message) {
+              setError(result.updateCategoriesForTransactions.message);
+            } else {
+              onCompleted();
+            }
+          },
+        });
+      }
     },
     [transactions],
   );
@@ -114,7 +152,9 @@ export default function TransactionSetCategoryButton({
         },
       }}
       onSelectionChange={onSelect}
-      isDisabled={isMutationInFlight || transactions.length == 0}
+      isDisabled={
+        isMutationInFlight || isMutationAllInFlight || transactions.length == 0
+      }
       isInvalid={error != null}
       errorMessage={error}
     >

@@ -96,7 +96,7 @@ export default function TransactionsTable({
 
   const transactionAmounts: Map<string, number> = useMemo(
     () =>
-      transactions.edges.reduce((amounts, edge) => {
+      transactions?.edges.reduce((amounts, edge) => {
         amounts.set(edge?.node.id, edge?.node.amount);
 
         return amounts;
@@ -183,7 +183,6 @@ export default function TransactionsTable({
       }
       classNames={{
         base: "max-h-[720px] overflow-scroll",
-        table: "min-h-[600px]",
       }}
     >
       <TableHeader columns={columns}>

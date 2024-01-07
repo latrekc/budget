@@ -43,13 +43,15 @@ builder.prismaObject("TransactionsOnCategories", {
   }),
 });
 
+type TransactionFilter = {
+  onlyUncomplited?: boolean | null;
+  sources?: string[] | null;
+  month?: string | null;
+  search?: string | null;
+};
+
 const filterTransactionsInput = builder
-  .inputRef<{
-    onlyUncomplited?: boolean;
-    sources?: string[];
-    month?: string;
-    search?: string;
-  }>("filterTransactionsInput")
+  .inputRef<TransactionFilter>("filterTransactionsInput")
   .implement({
     fields: (t) => ({
       onlyUncomplited: t.boolean({
@@ -68,6 +70,42 @@ const filterTransactionsInput = builder
     }),
   });
 
+function filtersToWhere(filters: TransactionFilter | null | undefined) {
+  let where: Prisma.TransactionWhereInput | undefined = undefined;
+
+  if (filters != null) {
+    where = {};
+
+    if (filters.onlyUncomplited) {
+      where.completed = false;
+    }
+
+    if (filters.sources != null && filters.sources.length > 0) {
+      where.source = {
+        in: filters.sources,
+      };
+    }
+
+    if (filters.month != null) {
+      const month = parseDate(filters.month, "YYYY-MM");
+      const nextMonth = new Date(month);
+      nextMonth.setMonth(month.getMonth() + 1);
+      where.date = {
+        gte: month,
+        lt: nextMonth,
+      };
+    }
+
+    if (filters.search != null && filters.search.trim().length > 0) {
+      where.description = {
+        contains: filters.search.trim(),
+      };
+    }
+  }
+
+  return where;
+}
+
 builder.queryField("transactions", (t) =>
   t.prismaConnection({
     type: "Transaction",
@@ -79,45 +117,27 @@ builder.queryField("transactions", (t) =>
       }),
     },
     resolve: async (query, _, args) => {
-      let where: Prisma.TransactionWhereInput | undefined = undefined;
-
-      if (args.filters != null) {
-        where = {};
-
-        if (args.filters.onlyUncomplited) {
-          where.completed = false;
-        }
-
-        if (args.filters.sources != null && args.filters.sources.length > 0) {
-          where.source = {
-            in: args.filters.sources,
-          };
-        }
-
-        if (args.filters.month != null) {
-          const month = parseDate(args.filters.month, "YYYY-MM");
-          const nextMonth = new Date(month);
-          nextMonth.setMonth(month.getMonth() + 1);
-          where.date = {
-            gte: month,
-            lt: nextMonth,
-          };
-        }
-
-        if (
-          args.filters.search != null &&
-          args.filters.search.trim().length > 0
-        ) {
-          where.description = {
-            contains: args.filters.search.trim(),
-          };
-        }
-      }
-
       return await prisma.transaction.findMany({
         ...query,
         orderBy: [{ date: "desc" }],
-        where,
+        where: filtersToWhere(args.filters),
+      });
+    },
+  }),
+);
+
+builder.queryField("transactions_total", (t) =>
+  t.int({
+    args: {
+      filters: t.arg({
+        type: filterTransactionsInput,
+        required: false,
+      }),
+    },
+    resolve: async (_, args) => {
+      return await prisma.transaction.count({
+        orderBy: [{ date: "desc" }],
+        where: filtersToWhere(args.filters),
       });
     },
   }),
@@ -188,6 +208,64 @@ builder.mutationFields((t) => ({
           },
         },
       });
+    },
+  }),
+
+  updateCategoriesForAllTransactions: t.prismaField({
+    type: ["Transaction"],
+    args: {
+      category: t.arg.string({
+        required: true,
+      }),
+      filters: t.arg({
+        type: filterTransactionsInput,
+        required: true,
+      }),
+    },
+    errors: {
+      types: [Error],
+    },
+    resolve: async (query, _root, args) => {
+      const transactions = await prisma.transaction.findMany({
+        ...query,
+        orderBy: [{ date: "desc" }],
+        where: filtersToWhere(args.filters),
+      });
+
+      const transactionIds = transactions.map(({ id }) => id);
+
+      await prisma.transactionsOnCategories.deleteMany({
+        where: {
+          transactionId: { in: transactionIds },
+        },
+      });
+
+      await prisma.transaction.updateMany({
+        where: {
+          id: {
+            in: transactionIds,
+          },
+        },
+        data: {
+          completed: true,
+        },
+      });
+
+      const categoryId = parseId(args.category)!;
+
+      const inserts = transactions.map(({ id: transactionId, amount }) =>
+        prisma.transactionsOnCategories.create({
+          data: {
+            categoryId,
+            transactionId,
+            amount,
+          },
+        }),
+      );
+
+      await prisma.$transaction([...inserts]);
+
+      return [];
     },
   }),
 

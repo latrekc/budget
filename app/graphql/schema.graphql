@@ -27,6 +27,10 @@ type Mutation {
     transactions: [updateCategoriesForTransactionsInput!]!
   ): MutationDeleteCategoriesForTransactionsResult!
   deleteCategory(id: ID!): MutationDeleteCategoryResult!
+  updateCategoriesForAllTransactions(
+    category: String!
+    filters: filterTransactionsInput!
+  ): MutationUpdateCategoriesForAllTransactionsResult!
   updateCategoriesForTransactions(
     transactions: [updateCategoriesForTransactionsInput!]!
   ): MutationUpdateCategoriesForTransactionsResult!
@@ -55,6 +59,14 @@ union MutationDeleteCategoryResult = Error | MutationDeleteCategorySuccess
 
 type MutationDeleteCategorySuccess {
   data: Category!
+}
+
+union MutationUpdateCategoriesForAllTransactionsResult =
+    Error
+  | MutationUpdateCategoriesForAllTransactionsSuccess
+
+type MutationUpdateCategoriesForAllTransactionsSuccess {
+  data: [Transaction!]!
 }
 
 union MutationUpdateCategoriesForTransactionsResult =
@@ -90,6 +102,7 @@ type Query {
   ): QueryTransactionsConnection!
   transactions_statistic_per_months: [StatisticPerMonths!]!
   transactions_statistic_per_years: [StatisticPerYears!]!
+  transactions_total(filters: filterTransactionsInput): Int!
 }
 
 type QueryTransactionsConnection {
