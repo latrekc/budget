@@ -33,7 +33,7 @@ export default function TransactionComplitedFilter({
   return (
     <Select
       items={sources}
-      label="Select source"
+      label="Search by source"
       className="max-w-xs"
       selectionMode="multiple"
       onSelectionChange={onSourceSelect}
