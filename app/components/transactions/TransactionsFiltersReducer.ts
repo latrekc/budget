@@ -1,4 +1,4 @@
-export type ReducerState = {
+export type FiltersState = {
   onlyUncomplited: boolean;
   sources: ReadonlyArray<string> | null;
   month: string | null;
@@ -16,11 +16,11 @@ export type ReducerAction =
   | {
       type: ReducerActionType.toggleOnlyUncomplited;
     }
-  | { type: ReducerActionType.setSources; payload: ReducerState["sources"] }
-  | { type: ReducerActionType.setMonth; payload: ReducerState["month"] }
-  | { type: ReducerActionType.setSearch; payload: ReducerState["search"] };
+  | { type: ReducerActionType.setSources; payload: FiltersState["sources"] }
+  | { type: ReducerActionType.setMonth; payload: FiltersState["month"] }
+  | { type: ReducerActionType.setSearch; payload: FiltersState["search"] };
 
-export const initialState: ReducerState = {
+export const initialState: FiltersState = {
   onlyUncomplited: false,
   sources: null,
   month: null,
@@ -28,7 +28,7 @@ export const initialState: ReducerState = {
 };
 
 export default function TransactionsFiltersReducer(
-  state: ReducerState,
+  state: FiltersState,
   action: ReducerAction,
 ) {
   switch (action.type) {

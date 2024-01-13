@@ -1,5 +1,7 @@
 "use client";
 
+import { PubSubChannels } from "@/lib/types";
+import { usePubSub } from "@/lib/usePubSub";
 import {
   Selection,
   Spinner,
@@ -11,8 +13,9 @@ import {
   TableRow,
 } from "@nextui-org/react";
 import { useInfiniteScroll } from "@nextui-org/use-infinite-scroll";
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { graphql, useFragment, usePaginationFragment } from "react-relay";
+import { FiltersState } from "./TransactionsFiltersReducer";
 import { TransactionsTable$key } from "./__generated__/TransactionsTable.graphql";
 import { TransactionsTable__RenderCell$key } from "./__generated__/TransactionsTable__RenderCell.graphql";
 import TransactionAmountCell from "./cell/TransactionAmountCell";
@@ -41,10 +44,12 @@ export type TransactionsSelection =
     }>;
 
 export default function TransactionsTable({
+  filters,
   selectedTransactions,
   setSelectedTransactions,
   transactions: transactions$key,
 }: {
+  filters: FiltersState;
   transactions: TransactionsTable$key;
   selectedTransactions: TransactionsSelection;
   setSelectedTransactions: (selected: TransactionsSelection) => void;
@@ -54,6 +59,7 @@ export default function TransactionsTable({
     loadNext,
     isLoadingNext,
     hasNext,
+    refetch,
   } = usePaginationFragment(
     graphql`
       fragment TransactionsTable on Query
@@ -77,6 +83,14 @@ export default function TransactionsTable({
     `,
     transactions$key,
   );
+
+  const { subscribe } = usePubSub();
+
+  useEffect(() => {
+    return subscribe(PubSubChannels.Transactions, () => {
+      refetch({ filters }, { fetchPolicy: "network-only" });
+    });
+  }, [filters]);
 
   const selectedIds = useMemo<"all" | Set<string>>(() => {
     if (selectedTransactions === "all") {

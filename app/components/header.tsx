@@ -16,7 +16,7 @@ export default function Header({ active }: { active: PageType }) {
   ];
 
   return (
-    <Navbar isBordered maxWidth="full" className="bg-white/50">
+    <Navbar isBordered maxWidth="full">
       <NavbarContent className="flex gap-4" justify="start">
         {pages.map((page) => (
           <NavbarItem key={page.id} isActive={page.id === active}>

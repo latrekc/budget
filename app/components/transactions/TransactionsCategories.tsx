@@ -1,15 +1,21 @@
-import { useMemo } from "react";
+import { PubSubChannels } from "@/lib/types";
+import { usePubSub } from "@/lib/usePubSub";
+import { Switch } from "@nextui-org/react";
+import { createContext, useEffect, useState } from "react";
 import { graphql, useRefetchableFragment } from "react-relay";
-import { TransactionsCategoriesContext } from "./TransactionsContext";
 import { TransactionsCategories$key } from "./__generated__/TransactionsCategories.graphql";
 import TransactionCategory from "./category/TransactionCategory";
 import TransactionAddButton from "./category/buttons/TransactionCategoryAddButton";
+
+export const CategoriesModeContext = createContext<boolean>(false);
 
 export default function TransactionsCategories({
   categories: categories$key,
 }: {
   categories: TransactionsCategories$key;
 }) {
+  const [editMode, setEditMode] = useState(false);
+
   const [{ categories }, refetch] = useRefetchableFragment(
     graphql`
       fragment TransactionsCategories on Query
@@ -26,18 +32,22 @@ export default function TransactionsCategories({
     categories$key,
   );
 
-  const refetchCategoriesValue = useMemo(
-    () => ({
-      refetchCategories: () => refetch({}, { fetchPolicy: "network-only" }),
-    }),
-    [],
-  );
+  const { subscribe } = usePubSub();
+
+  useEffect(() => {
+    return subscribe(PubSubChannels.Categories, () => {
+      console.log("Refetch categories");
+      refetch({}, { fetchPolicy: "network-only" });
+    });
+  }, []);
 
   return (
-    <TransactionsCategoriesContext.Provider value={refetchCategoriesValue}>
-      <div className="max-h-[720px] min-h-[720px] overflow-scroll bg-stone-50">
+    <CategoriesModeContext.Provider value={editMode}>
+      <div className="max-h-[720px] min-h-[720px] overflow-scroll">
         <div className="p-4">
-          <TransactionAddButton longLabel />
+          <Switch isSelected={editMode} onValueChange={setEditMode} size="sm">
+            Edit
+          </Switch>
         </div>
 
         <div>
@@ -47,7 +57,13 @@ export default function TransactionsCategories({
               <TransactionCategory key={category.id} category={category} />
             ))}
         </div>
+
+        {editMode && (
+          <div className="p-4">
+            <TransactionAddButton withLabel />
+          </div>
+        )}
       </div>
-    </TransactionsCategoriesContext.Provider>
+    </CategoriesModeContext.Provider>
   );
 }

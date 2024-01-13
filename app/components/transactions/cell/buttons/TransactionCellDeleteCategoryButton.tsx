@@ -1,3 +1,5 @@
+import { PubSubChannels } from "@/lib/types";
+import { usePubSub } from "@/lib/usePubSub";
 import { useButton } from "@nextui-org/react";
 import { useCallback, useRef, useState } from "react";
 import { TiDelete } from "react-icons/ti";
@@ -10,6 +12,7 @@ export default function TransactionCellDeleteCategoryButton({
 }: {
   record: TransactionCellDeleteCategoryButton$key;
 }) {
+  const { publish } = usePubSub();
   const record = useFragment(
     graphql`
       fragment TransactionCellDeleteCategoryButton on TransactionsOnCategories {
@@ -56,6 +59,9 @@ export default function TransactionCellDeleteCategoryButton({
             amount: 0,
           },
         ],
+      },
+      onCompleted() {
+        publish(PubSubChannels.Transactions);
       },
     });
   }, []);

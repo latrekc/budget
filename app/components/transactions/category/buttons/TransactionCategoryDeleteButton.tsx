@@ -1,3 +1,5 @@
+import { PubSubChannels } from "@/lib/types";
+import { usePubSub } from "@/lib/usePubSub";
 import {
   Button,
   ButtonGroup,
@@ -6,10 +8,9 @@ import {
   PopoverTrigger,
   Spacer,
 } from "@nextui-org/react";
-import { useCallback, useContext } from "react";
+import { useCallback } from "react";
 import { TiDelete } from "react-icons/ti";
 import { graphql, useFragment, useMutation } from "react-relay";
-import { TransactionsCategoriesContext } from "../../TransactionsContext";
 import { TransactionCategoryDeleteButtonMutation } from "../__generated__/TransactionCategoryDeleteButtonMutation.graphql";
 import { TransactionCategoryDeleteButton$key } from "./__generated__/TransactionCategoryDeleteButton.graphql";
 
@@ -18,7 +19,7 @@ export default function TransactionCategoryDeleteButton({
 }: {
   category: TransactionCategoryDeleteButton$key;
 }) {
-  const { refetchCategories } = useContext(TransactionsCategoriesContext);
+  const { publish } = usePubSub();
 
   const category = useFragment(
     graphql`
@@ -57,7 +58,7 @@ export default function TransactionCategoryDeleteButton({
         if (result.deleteCategory.error) {
           alert(result.deleteCategory.error);
         } else {
-          refetchCategories();
+          publish(PubSubChannels.Categories);
         }
       },
     });
@@ -71,9 +72,9 @@ export default function TransactionCategoryDeleteButton({
           size="sm"
           variant="solid"
           title="Remove category"
-          startContent={<TiDelete color="white" size="2em" />}
+          isIconOnly
         >
-          Remove
+          <TiDelete color="white" size="2em" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[320px]">

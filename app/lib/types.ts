@@ -33,3 +33,8 @@ export function enumFromStringValue<T>(
 
   throw new Error(`Undefined value ${value} of ${enm}`);
 }
+
+export enum PubSubChannels {
+  Categories = "Categories",
+  Transactions = "Transactions",
+}

@@ -1,3 +1,5 @@
+import { PubSubChannels } from "@/lib/types";
+import { usePubSub } from "@/lib/usePubSub";
 import {
   Button,
   Input,
@@ -5,20 +7,20 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@nextui-org/react";
-import { FormEvent, useCallback, useContext, useMemo, useState } from "react";
+import { FormEvent, useCallback, useMemo, useState } from "react";
 import { TiPlus } from "react-icons/ti";
 import { graphql, useMutation } from "react-relay";
-import { TransactionsCategoriesContext } from "../../TransactionsContext";
 import { TransactionCategoryAddButtonMutation } from "./__generated__/TransactionCategoryAddButtonMutation.graphql";
 
 export default function TransactionCategoryAddButton({
   parent,
-  longLabel,
+  withLabel,
 }: {
   parent?: string;
-  longLabel?: boolean;
+  withLabel?: boolean;
 }) {
-  const { refetchCategories } = useContext(TransactionsCategoriesContext);
+  const { publish } = usePubSub();
+
   const [value, setValue] = useState("");
   const [error, setError] = useState<Error | null>(null);
 
@@ -69,7 +71,7 @@ export default function TransactionCategoryAddButton({
               setValue("");
               setError(null);
               setIsOpen(false);
-              refetchCategories();
+              publish(PubSubChannels.Categories);
             }
           },
         });
@@ -103,9 +105,10 @@ export default function TransactionCategoryAddButton({
           size="sm"
           variant="flat"
           title={label}
-          startContent={<TiPlus size="2em" />}
+          startContent={withLabel ? <TiPlus size="2em" /> : null}
+          isIconOnly={!withLabel}
         >
-          {longLabel ? label : "Add"}
+          {withLabel ? label : <TiPlus size="2em" />}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[320px]">

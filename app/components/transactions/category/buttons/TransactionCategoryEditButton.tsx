@@ -1,3 +1,5 @@
+import { PubSubChannels } from "@/lib/types";
+import { usePubSub } from "@/lib/usePubSub";
 import {
   Button,
   Input,
@@ -5,10 +7,9 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@nextui-org/react";
-import { FormEvent, useCallback, useContext, useMemo, useState } from "react";
+import { FormEvent, useCallback, useMemo, useState } from "react";
 import { LuTextCursorInput } from "react-icons/lu";
 import { graphql, useFragment, useMutation } from "react-relay";
-import { TransactionsCategoriesContext } from "../../TransactionsContext";
 import { TransactionCategoryEditButton$key } from "./__generated__/TransactionCategoryEditButton.graphql";
 import { TransactionCategoryEditButtonMutation } from "./__generated__/TransactionCategoryEditButtonMutation.graphql";
 
@@ -17,7 +18,7 @@ export default function TransactionCategoryEditButton({
 }: {
   category: TransactionCategoryEditButton$key;
 }) {
-  const { refetchCategories } = useContext(TransactionsCategoriesContext);
+  const { publish } = usePubSub();
 
   const category = useFragment(
     graphql`
@@ -88,7 +89,7 @@ export default function TransactionCategoryEditButton({
               setValue(value);
               setError(null);
               setIsOpen(false);
-              refetchCategories();
+              publish(PubSubChannels.Categories);
             }
           },
         });
@@ -105,13 +106,8 @@ export default function TransactionCategoryEditButton({
       backdrop="opaque"
     >
       <PopoverTrigger>
-        <Button
-          size="sm"
-          variant="flat"
-          title="Edit category"
-          startContent={<LuTextCursorInput size="2em" />}
-        >
-          Edit
+        <Button size="sm" variant="flat" title="Edit category" isIconOnly>
+          <LuTextCursorInput size="2em" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[320px]">

@@ -1,15 +1,21 @@
-import { graphql, useFragment } from "react-relay";
+import { PubSubChannels } from "@/lib/types";
+import { usePubSub } from "@/lib/usePubSub";
+import { useEffect } from "react";
+import { graphql, useRefetchableFragment } from "react-relay";
+import { FiltersState } from "./TransactionsFiltersReducer";
 import { TransactionsSelection } from "./TransactionsTable";
 import { TransactionsTotal$key } from "./__generated__/TransactionsTotal.graphql";
 
 export default function TransactionsTotal({
+  filters,
   data: data$key,
   selectedTransactions,
 }: {
+  filters: FiltersState;
   data: TransactionsTotal$key;
   selectedTransactions: TransactionsSelection;
 }) {
-  const { transactions_total } = useFragment(
+  const [{ transactions_total }, refetch] = useRefetchableFragment(
     graphql`
       fragment TransactionsTotal on Query
       @refetchable(queryName: "TransactionsTotalQuery") {
@@ -18,10 +24,21 @@ export default function TransactionsTotal({
     `,
     data$key,
   );
+
+  const { subscribe } = usePubSub();
+
+  useEffect(() => {
+    return subscribe(PubSubChannels.Transactions, () => {
+      refetch({ filters }, { fetchPolicy: "network-only" });
+    });
+  }, [filters]);
+
   return (
-    <div className="p-6 pt-0 text-xs">
-      <Content selectedTransactions={selectedTransactions} />{" "}
-      <b>{transactions_total}</b> transactions
+    <div className="inline-flex items-center justify-start text-xs">
+      <div>
+        <Content selectedTransactions={selectedTransactions} />{" "}
+        <b>{transactions_total}</b> transactions
+      </div>
     </div>
   );
 }

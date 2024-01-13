@@ -1,9 +1,15 @@
 "use client";
 
-import { Accordion, AccordionItem } from "@nextui-org/react";
-import { useCallback, useState } from "react";
+import { Accordion, AccordionItem, Radio, RadioGroup } from "@nextui-org/react";
+import { Dispatch, useCallback, useMemo, useState } from "react";
 import { graphql, useFragment } from "react-relay";
 import AmountValue, { Size } from "../AmountValue";
+import {
+  FiltersState,
+  ReducerAction,
+  ReducerActionType,
+} from "./TransactionsFiltersReducer";
+import { TransactionsStatistic$key } from "./__generated__/TransactionsStatistic.graphql";
 
 type Year = {
   income: number;
@@ -34,8 +40,12 @@ export const monthNames = new Map([
 ]);
 
 export default function TransactionsStatistic({
+  filters,
+  dispatch,
   statistic: statistic$key,
 }: {
+  filters: FiltersState;
+  dispatch: Dispatch<ReducerAction>;
   statistic: TransactionsStatistic$key;
 }) {
   const data = useFragment(
@@ -88,36 +98,49 @@ export default function TransactionsStatistic({
     return keys;
   }, []);
 
-  return (
-    <Accordion
-      onSelectionChange={onSelectionChange}
-      selectedKeys={selectedKeys}
-      selectionBehavior="replace"
-      selectionMode="single"
-    >
-      {[...years.keys()].map((yearNumber) => {
-        const year = years.get(yearNumber)!;
+  const onMonthChange = useCallback((value: string) => {
+    dispatch({
+      type: ReducerActionType.setMonth,
+      payload: value,
+    });
+  }, []);
 
-        return (
-          <AccordionItem
-            key={yearNumber.toString()}
-            aria-label={yearNumber.toString()}
-            subtitle={<Balance income={year.income} outcome={year.outcome} />}
-            title={
-              <>
-                <span className="text-2xl">{yearNumber}</span>{" "}
-                <AmountValue
-                  amount={(year.income * 100 + year.outcome * 100) / 100}
-                  currency="GBP"
-                  round
-                  size={Size.Big}
-                />
-              </>
-            }
-          >
-            <div className="flex flex-row flex-wrap text-right">
+  const value = useMemo(() => filters.month ?? undefined, [filters.month]);
+
+  return (
+    <RadioGroup value={value} onValueChange={onMonthChange}>
+      <Accordion
+        onSelectionChange={onSelectionChange}
+        selectedKeys={selectedKeys}
+        selectionBehavior="replace"
+        selectionMode="single"
+      >
+        {[...years.keys()].map((yearNumber) => {
+          const year = years.get(yearNumber)!;
+
+          return (
+            <AccordionItem
+              key={yearNumber.toString()}
+              aria-label={yearNumber.toString()}
+              subtitle={<Balance income={year.income} outcome={year.outcome} />}
+              title={
+                <>
+                  <span className="text-2xl">{yearNumber}</span>{" "}
+                  <AmountValue
+                    amount={(year.income * 100 + year.outcome * 100) / 100}
+                    currency="GBP"
+                    round
+                    size={Size.Big}
+                  />
+                </>
+              }
+            >
               {year.months.map(({ month, id, income, outcome }) => (
-                <div key={id} className="basis-1/12 p-2">
+                <Radio
+                  key={id}
+                  value={id}
+                  className="m-0 min-w-[100%] flex-none cursor-pointer gap-4 rounded-lg border-2 border-white p-4 hover:bg-content2 data-[selected=true]:border-primary"
+                >
                   <div className="text-xl">
                     {monthNames.get(month)}{" "}
                     <AmountValue
@@ -128,13 +151,13 @@ export default function TransactionsStatistic({
                     />
                   </div>
                   <Balance income={income} outcome={outcome} />
-                </div>
+                </Radio>
               ))}
-            </div>
-          </AccordionItem>
-        );
-      })}
-    </Accordion>
+            </AccordionItem>
+          );
+        })}
+      </Accordion>
+    </RadioGroup>
   );
 }
 
