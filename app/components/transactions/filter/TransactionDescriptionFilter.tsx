@@ -2,19 +2,19 @@ import { Input } from "@nextui-org/react";
 import { Dispatch, useCallback, useEffect, useState } from "react";
 import { useDebounce } from "usehooks-ts";
 import {
+  FiltersState,
   ReducerAction,
   ReducerActionType,
-  ReducerState,
 } from "../TransactionsFiltersReducer";
 
 export default function TransactionDescriptionFilter({
-  state,
+  filters,
   dispatch,
 }: {
-  state: ReducerState;
+  filters: FiltersState;
   dispatch: Dispatch<ReducerAction>;
 }) {
-  const [searchValue, setSearchValue] = useState<string>(state.search ?? "");
+  const [searchValue, setSearchValue] = useState<string>(filters.search ?? "");
   const debouncedSearch = useDebounce<string>(searchValue, 500);
 
   const onSearch = useCallback((search: string) => setSearchValue(search), []);

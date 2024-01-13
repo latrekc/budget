@@ -1,21 +1,24 @@
+import { PubSubChannels } from "@/lib/types";
+import { usePubSub } from "@/lib/usePubSub";
 import { Autocomplete, AutocompleteItem } from "@nextui-org/react";
 import { useCallback, useState } from "react";
 import { graphql, useLazyLoadQuery, useMutation } from "react-relay";
-import { ReducerState } from "../TransactionsFiltersReducer";
+import { FiltersState } from "../TransactionsFiltersReducer";
 import TransactionCategoryChip from "../category/TransactionCategoryChip";
 import { TransactionSetCategoryButtonAllMutation } from "./__generated__/TransactionSetCategoryButtonAllMutation.graphql";
 import { TransactionSetCategoryButtonMutation } from "./__generated__/TransactionSetCategoryButtonMutation.graphql";
 import { TransactionSetCategoryButtonQuery } from "./__generated__/TransactionSetCategoryButtonQuery.graphql";
 
 export default function TransactionSetCategoryButton({
-  state: filters,
+  filters,
   onCompleted,
   transactions,
 }: {
-  state: ReducerState;
+  filters?: FiltersState;
   onCompleted: () => void;
   transactions: "all" | { transaction: string; amount: number }[];
 }) {
+  const { publish } = usePubSub();
   const [error, setError] = useState<string | null>(null);
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
 
@@ -79,6 +82,7 @@ export default function TransactionSetCategoryButton({
         }
       `,
       {},
+      { fetchPolicy: "store-and-network" },
     );
 
   const [categories, setCategories] = useState(allCategories);
@@ -103,6 +107,10 @@ export default function TransactionSetCategoryButton({
   const onSelect = useCallback(
     (key: React.Key) => {
       if (transactions === "all") {
+        if (filters == null) {
+          throw new Error("Filters state is unknown");
+        }
+
         commitAllMutation({
           variables: {
             category: key.toString(),
@@ -113,6 +121,7 @@ export default function TransactionSetCategoryButton({
             if (result.updateCategoriesForAllTransactions.message) {
               setError(result.updateCategoriesForAllTransactions.message);
             } else {
+              publish(PubSubChannels.Transactions);
               onCompleted();
             }
           },
@@ -130,6 +139,7 @@ export default function TransactionSetCategoryButton({
             if (result.updateCategoriesForTransactions.message) {
               setError(result.updateCategoriesForTransactions.message);
             } else {
+              publish(PubSubChannels.Transactions);
               onCompleted();
             }
           },
@@ -141,6 +151,7 @@ export default function TransactionSetCategoryButton({
 
   return (
     <Autocomplete
+      autoFocus
       label="Update category"
       items={categories}
       selectedKey={selectedKey}

@@ -1,5 +1,6 @@
-import { Tooltip } from "@nextui-org/react";
+import { useContext } from "react";
 import { graphql, useFragment } from "react-relay";
+import { CategoriesModeContext } from "../TransactionsCategories";
 import TransactionCategoryChip from "./TransactionCategoryChip";
 import { TransactionCategoryContent$key } from "./__generated__/TransactionCategoryContent.graphql";
 import TransactionCategoryButtons from "./buttons/TransactionCategoryButtons";
@@ -11,10 +12,10 @@ export default function TransactionCategoryContent({
   category: TransactionCategoryContent$key;
   withAddButton?: boolean;
 }) {
+  const editMode = useContext(CategoriesModeContext);
   const category = useFragment(
     graphql`
       fragment TransactionCategoryContent on Category {
-        id
         ...TransactionCategoryButtons
         ...TransactionCategoryChip
       }
@@ -22,22 +23,14 @@ export default function TransactionCategoryContent({
     category$key,
   );
   return (
-    <Tooltip
-      content={
-        <div className="p-4">
-          <TransactionCategoryButtons
-            category={category}
-            withAddButton={withAddButton}
-          />
-        </div>
-      }
-      showArrow
-      placement="bottom"
-      offset={-15}
-    >
-      <div className="group flex flex-row items-center gap-x-4 p-4 hover:bg-gray-100">
-        <TransactionCategoryChip category={category} onlyLeaf />
-      </div>
-    </Tooltip>
+    <div className="group flex flex-row items-center justify-between gap-x-4 p-4 hover:bg-gray-100">
+      <TransactionCategoryChip category={category} onlyLeaf />
+      {editMode && (
+        <TransactionCategoryButtons
+          category={category}
+          withAddButton={withAddButton}
+        />
+      )}
+    </div>
   );
 }
