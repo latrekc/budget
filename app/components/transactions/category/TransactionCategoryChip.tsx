@@ -1,10 +1,10 @@
 import AmountValue, { Size } from "@/components/AmountValue";
 import { useButton } from "@nextui-org/react";
 import chroma from "chroma-js";
-import { useRef, useState } from "react";
-import { TiDelete } from "react-icons/ti";
+import { useRef } from "react";
 import { graphql, useFragment } from "react-relay";
 
+import { TiDelete } from "react-icons/ti";
 import { Currency } from "../cell/__generated__/TransactionAmountCell__transactio.graphql";
 import { TransactionCategoryChip$key } from "./__generated__/TransactionCategoryChip.graphql";
 
@@ -115,15 +115,17 @@ function Chip({
 
   return (
     <div
-      className="box-border flex grow-0 flex-row rounded-lg bg-default p-0 shadow-small"
+      className={`box-border flex h-7 grow-0 flex-row items-center justify-between rounded-full bg-default p-0 px-1 ${
+        children != null || button != null ? "pr-0" : "pr-1"
+      }`}
       style={{
         backgroundColor: color!,
         color: luminance > 0.3 ? "black" : "white",
       }}
     >
-      <span className="whitespace-nowrap px-2 text-sm">{name}</span>
+      <span className="whitespace-nowrap px-2 text-small">{name}</span>
       {amount != null && currency != null ? (
-        <div className="rounded-lg bg-white px-2">
+        <div className="rounded-full bg-white px-2">
           <AmountValue amount={amount} currency={currency} size={Size.Small} />
         </div>
       ) : null}
@@ -147,19 +149,15 @@ function DeleteButton({
     ref,
   });
 
-  const [isHover, setIsHover] = useState(false);
-
   return (
     <button
-      onMouseEnter={() => setIsHover(true)}
-      onMouseLeave={() => setIsHover(false)}
       ref={ref}
       {...getButtonProps()}
-      className="p-0 px-1"
+      className="p-0 pr-2 opacity-70 transition-opacity hover:opacity-100"
       disabled={isDisabled}
       title="Remove category"
     >
-      <TiDelete color={isHover ? "#ccc" : "white"} size="1.2em" />
+      <TiDelete color="white" size="1.4em" />
     </button>
   );
 }

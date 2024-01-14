@@ -18,9 +18,3 @@ export {
   handleRequest as OPTIONS,
   handleRequest as POST,
 };
-
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
