@@ -1,5 +1,6 @@
 import { Chip } from "@nextui-org/react";
 import { Dispatch, useCallback } from "react";
+
 import {
   FiltersState,
   ReducerAction,
@@ -7,15 +8,15 @@ import {
 } from "../TransactionsFiltersReducer";
 
 export default function TransactionMonthFilter({
-  filters,
   dispatch,
+  filters,
 }: {
-  filters: FiltersState;
   dispatch: Dispatch<ReducerAction>;
+  filters: FiltersState;
 }) {
   const onRemove = useCallback(
-    () => dispatch({ type: ReducerActionType.setMonth, payload: null }),
-    [],
+    () => dispatch({ payload: null, type: ReducerActionType.setMonth }),
+    [dispatch],
   );
 
   return (

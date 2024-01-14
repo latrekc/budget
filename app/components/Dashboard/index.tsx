@@ -1,8 +1,9 @@
 import { Select, SelectItem } from "@nextui-org/react";
 import { useCallback, useState } from "react";
 import { graphql, useLazyLoadQuery } from "react-relay";
-import DashboardByTimePeriods, { Period } from "./DashboardByTimePeriods";
+
 import { DashboardQuery } from "./__generated__/DashboardQuery.graphql";
+import DashboardByTimePeriods, { Period } from "./DashboardByTimePeriods";
 
 export default function Dashboard() {
   const periods = [
@@ -47,13 +48,13 @@ export default function Dashboard() {
   return (
     <div className="p-6">
       <Select
+        className="max-w-xs"
         label="Stat by"
-        variant="bordered"
+        onSelectionChange={onSelectionChange}
         placeholder="Select a period"
         selectedKeys={selectedKeys}
-        className="max-w-xs"
         size="lg"
-        onSelectionChange={onSelectionChange}
+        variant="bordered"
       >
         {periods.map((period) => (
           <SelectItem key={period.value} value={period.value}>
@@ -62,7 +63,7 @@ export default function Dashboard() {
         ))}
       </Select>
 
-      <DashboardByTimePeriods statistic={data} period={period} />
+      <DashboardByTimePeriods period={period} statistic={data} />
     </div>
   );
 }

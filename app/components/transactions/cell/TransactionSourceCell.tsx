@@ -1,5 +1,6 @@
 import SourceImage from "@/components/SourceImage";
 import { graphql, useFragment } from "react-relay";
+
 import { TransactionSourceCell$key } from "./__generated__/TransactionSourceCell.graphql";
 
 export default function TransactionSourceCell({
@@ -10,7 +11,7 @@ export default function TransactionSourceCell({
   const { source } = useFragment(
     graphql`
       fragment TransactionSourceCell on Transaction {
-        source
+        source @required(action: THROW)
       }
     `,
     transaction$key,

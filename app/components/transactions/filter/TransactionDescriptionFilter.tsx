@@ -1,6 +1,7 @@
 import { Input } from "@nextui-org/react";
 import { Dispatch, useCallback, useEffect, useState } from "react";
 import { useDebounce } from "usehooks-ts";
+
 import {
   FiltersState,
   ReducerAction,
@@ -8,11 +9,11 @@ import {
 } from "../TransactionsFiltersReducer";
 
 export default function TransactionDescriptionFilter({
-  filters,
   dispatch,
+  filters,
 }: {
-  filters: FiltersState;
   dispatch: Dispatch<ReducerAction>;
+  filters: FiltersState;
 }) {
   const [searchValue, setSearchValue] = useState<string>(filters.search ?? "");
   const debouncedSearch = useDebounce<string>(searchValue, 500);
@@ -21,19 +22,19 @@ export default function TransactionDescriptionFilter({
 
   useEffect(() => {
     dispatch({
-      type: ReducerActionType.setSearch,
       payload:
         debouncedSearch.trim().length > 0 ? debouncedSearch.trim() : null,
+      type: ReducerActionType.setSearch,
     });
-  }, [debouncedSearch]);
+  }, [debouncedSearch, dispatch]);
 
   return (
     <Input
-      label="Search by description"
       className="w-auto"
       isClearable
-      value={searchValue}
+      label="Search by description"
       onValueChange={onSearch}
+      value={searchValue}
     />
   );
 }

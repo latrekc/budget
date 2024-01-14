@@ -3,24 +3,25 @@
 import { Accordion, AccordionItem, Radio, RadioGroup } from "@nextui-org/react";
 import { Dispatch, useCallback, useMemo, useState } from "react";
 import { graphql, useFragment } from "react-relay";
+
 import AmountValue, { Size } from "../AmountValue";
+import { TransactionsStatistic$key } from "./__generated__/TransactionsStatistic.graphql";
 import {
   FiltersState,
   ReducerAction,
   ReducerActionType,
 } from "./TransactionsFiltersReducer";
-import { TransactionsStatistic$key } from "./__generated__/TransactionsStatistic.graphql";
 
 type Year = {
   income: number;
-  outcome: number;
   months: {
     id: string;
-    year: number;
-    month: number;
     income: number;
+    month: number;
     outcome: number;
+    year: number;
   }[];
+  outcome: number;
 };
 type Result = Map<number, Year>;
 
@@ -40,23 +41,23 @@ export const monthNames = new Map([
 ]);
 
 export default function TransactionsStatistic({
-  filters,
   dispatch,
+  filters,
   statistic: statistic$key,
 }: {
-  filters: FiltersState;
   dispatch: Dispatch<ReducerAction>;
+  filters: FiltersState;
   statistic: TransactionsStatistic$key;
 }) {
   const data = useFragment(
     graphql`
       fragment TransactionsStatistic on Query {
         transactions_statistic_per_months {
-          id
-          year
-          month
-          income
-          outcome
+          id @required(action: THROW)
+          year @required(action: THROW)
+          month @required(action: THROW)
+          income @required(action: THROW)
+          outcome @required(action: THROW)
         }
       }
     `,
@@ -72,8 +73,8 @@ export default function TransactionsStatistic({
 
             if (year == undefined) {
               year = {
-                months: [],
                 income: 0,
+                months: [],
                 outcome: 0,
               };
               accumulator.set(currentValue.year, year);
@@ -98,17 +99,20 @@ export default function TransactionsStatistic({
     return keys;
   }, []);
 
-  const onMonthChange = useCallback((value: string) => {
-    dispatch({
-      type: ReducerActionType.setMonth,
-      payload: value,
-    });
-  }, []);
+  const onMonthChange = useCallback(
+    (value: string) => {
+      dispatch({
+        payload: value,
+        type: ReducerActionType.setMonth,
+      });
+    },
+    [dispatch],
+  );
 
   const value = useMemo(() => filters.month ?? undefined, [filters.month]);
 
   return (
-    <RadioGroup value={value} onValueChange={onMonthChange}>
+    <RadioGroup onValueChange={onMonthChange} value={value}>
       <Accordion
         onSelectionChange={onSelectionChange}
         selectedKeys={selectedKeys}
@@ -120,8 +124,8 @@ export default function TransactionsStatistic({
 
           return (
             <AccordionItem
-              key={yearNumber.toString()}
               aria-label={yearNumber.toString()}
+              key={yearNumber.toString()}
               subtitle={<Balance income={year.income} outcome={year.outcome} />}
               title={
                 <>
@@ -135,11 +139,11 @@ export default function TransactionsStatistic({
                 </>
               }
             >
-              {year.months.map(({ month, id, income, outcome }) => (
+              {year.months.map(({ id, income, month, outcome }) => (
                 <Radio
+                  className="m-0 min-w-[100%] flex-none cursor-pointer gap-4 rounded-lg border-2 border-white p-4 hover:bg-content2 data-[selected=true]:border-primary"
                   key={id}
                   value={id}
-                  className="m-0 min-w-[100%] flex-none cursor-pointer gap-4 rounded-lg border-2 border-white p-4 hover:bg-content2 data-[selected=true]:border-primary"
                 >
                   <div className="text-xl">
                     {monthNames.get(month)}{" "}
@@ -167,10 +171,10 @@ function Balance({ income, outcome }: { income: number; outcome: number }) {
       <AmountValue amount={income} currency="GBP" round size={Size.Small} />
       {" - "}
       <AmountValue
+        abs
         amount={outcome}
         currency="GBP"
         round
-        abs
         size={Size.Small}
       />
     </>

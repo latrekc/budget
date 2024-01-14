@@ -2,13 +2,13 @@
   "name": "budget",
   "version": "0.0.1",
   "scripts": {
-    "relay": "relay-compiler",
-    "schema": "npx ts-node ./app/scripts/schema.ts && npx prettier . --write",
+    "relay": "relay-compiler && npm run lint",
+    "schema": "npx ts-node ./app/scripts/schema.ts && npx prettier app/graphql/schema.graphql --write",
     "import": "npx ts-node ./app/scripts/import.ts",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "tsc --noemit && eslint ."
   },
   "dependencies": {
     "@hublaw/ofx-parser": "^1.1.0",
@@ -41,6 +41,7 @@
     "usehooks-ts": "^2.9.1"
   },
   "devDependencies": {
+    "@next/eslint-plugin-next": "^14.0.4",
     "@tsconfig/node18": "^18.2.2",
     "@types/chroma-js": "^2.4.3",
     "@types/node": "^18.19.3",
@@ -48,14 +49,21 @@
     "@types/react": "^18.2.45",
     "@types/react-relay": "^16.0.5",
     "@typescript-eslint/eslint-plugin": "^6.15.0",
-    "@typescript-eslint/parser": "^6.15.0",
+    "@typescript-eslint/eslint-plugin-tslint": "^6.18.1",
+    "@typescript-eslint/parser": "^6.18.1",
     "autoprefixer": "^10.4.16",
     "babel": "^6.23.0",
     "babel-plugin-relay": "^16.1.0",
     "eslint": "^8.56.0",
+    "eslint-config-next": "^14.0.4",
     "eslint-config-prettier": "^9.1.0",
+    "eslint-import-resolver-typescript": "^3.6.1",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-json": "^3.1.0",
+    "eslint-plugin-perfectionist": "^2.5.0",
     "eslint-plugin-prettier": "^5.1.2",
     "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-relay": "^1.8.3",
     "graphql": "^16.8.1",
     "postcss": "^8.4.32",

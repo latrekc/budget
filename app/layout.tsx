@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+
 import "./globals.css";
 import { Providers } from "./providers";
 
@@ -12,7 +13,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="h-full bg-white">
+    <html className="h-full bg-white" lang="en">
       <body className="h-full">
         <div className="min-h-full">
           <Providers>{children}</Providers>

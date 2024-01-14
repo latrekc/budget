@@ -1,25 +1,26 @@
 import { Dispatch } from "react";
 import { graphql, useFragment } from "react-relay";
-import { FiltersState, ReducerAction } from "./TransactionsFiltersReducer";
-import { TransactionsSelection } from "./TransactionsTable";
-import TransactionsTotal from "./TransactionsTotal";
+
 import { TransactionsFilters$key } from "./__generated__/TransactionsFilters.graphql";
 import TransactionCategoriesFilter from "./filter/TransactionCategoriesFilter";
 import TransactionComplitedFilter from "./filter/TransactionComplitedFilter";
 import TransactionDescriptionFilter from "./filter/TransactionDescriptionFilter";
 import TransactionMonthFilter from "./filter/TransactionMonthFilter";
 import TransactionSourceFilter from "./filter/TransactionSourceFilter";
+import { FiltersState, ReducerAction } from "./TransactionsFiltersReducer";
+import { TransactionsSelection } from "./TransactionsTable";
+import TransactionsTotal from "./TransactionsTotal";
 
 export default function TransactionsFilters({
-  filters,
-  dispatch,
   data: data$key,
+  dispatch,
+  filters,
   selectedTransactions,
   setSelectedTransactions,
 }: {
-  filters: FiltersState;
-  dispatch: Dispatch<ReducerAction>;
   data: TransactionsFilters$key;
+  dispatch: Dispatch<ReducerAction>;
+  filters: FiltersState;
   selectedTransactions: TransactionsSelection;
   setSelectedTransactions: (selected: TransactionsSelection) => void;
 }) {
@@ -27,6 +28,7 @@ export default function TransactionsFilters({
     graphql`
       fragment TransactionsFilters on Query {
         ...TransactionsTotal
+        ...TransactionCategoriesFilter
       }
     `,
     data$key,
@@ -42,15 +44,17 @@ export default function TransactionsFilters({
         <TransactionComplitedFilter dispatch={dispatch} filters={filters} />
         <TransactionSourceFilter dispatch={dispatch} filters={filters} />
         <TransactionMonthFilter dispatch={dispatch} filters={filters} />
+        <TransactionCategoriesFilter
+          data={data}
+          dispatch={dispatch}
+          filters={filters}
+          selectedTransactions={selectedTransactions}
+          setSelectedTransactions={setSelectedTransactions}
+        />
         <TransactionsTotal
           data={data}
           filters={filters}
           selectedTransactions={selectedTransactions}
-        />
-        <TransactionCategoriesFilter
-          filters={filters}
-          selectedTransactions={selectedTransactions}
-          setSelectedTransactions={setSelectedTransactions}
         />
       </div>
     </div>

@@ -3,8 +3,9 @@ import { usePubSub } from "@/lib/usePubSub";
 import { Autocomplete, AutocompleteItem } from "@nextui-org/react";
 import { useCallback, useState } from "react";
 import { graphql, useLazyLoadQuery, useMutation } from "react-relay";
-import { FiltersState } from "../TransactionsFiltersReducer";
+
 import TransactionCategoryChip from "../category/TransactionCategoryChip";
+import { FiltersState } from "../TransactionsFiltersReducer";
 import { TransactionSetCategoryButtonAllMutation } from "./__generated__/TransactionSetCategoryButtonAllMutation.graphql";
 import { TransactionSetCategoryButtonMutation } from "./__generated__/TransactionSetCategoryButtonMutation.graphql";
 import { TransactionSetCategoryButtonQuery } from "./__generated__/TransactionSetCategoryButtonQuery.graphql";
@@ -16,11 +17,11 @@ export default function TransactionSetCategoryButton({
 }: {
   filters?: FiltersState;
   onCompleted: () => void;
-  transactions: "all" | { transaction: string; amount: number }[];
+  transactions: "all" | { amount: number; transaction: string }[];
 }) {
   const { publish } = usePubSub();
-  const [error, setError] = useState<string | null>(null);
-  const [selectedKey, setSelectedKey] = useState<string | null>(null);
+  const [error, setError] = useState<null | string>(null);
+  const [selectedKey, setSelectedKey] = useState<null | string>(null);
 
   const [commitMutation, isMutationInFlight] =
     useMutation<TransactionSetCategoryButtonMutation>(graphql`
@@ -69,12 +70,12 @@ export default function TransactionSetCategoryButton({
       graphql`
         query TransactionSetCategoryButtonQuery {
           categories {
-            id
-            name
+            id @required(action: THROW)
+            name @required(action: THROW)
             parentCategory {
-              name
+              name @required(action: THROW)
               parentCategory {
-                name
+                name @required(action: THROW)
               }
             }
             ...TransactionCategoryChip
@@ -87,22 +88,25 @@ export default function TransactionSetCategoryButton({
 
   const [categories, setCategories] = useState(allCategories);
 
-  const onInputChange = useCallback((searchTerm: string) => {
-    setCategories(
-      searchTerm.length > 0
-        ? allCategories.filter(
-            ({ name, parentCategory }) =>
-              name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-              parentCategory?.name
-                .toLowerCase()
-                .includes(searchTerm.toLowerCase()) ||
-              parentCategory?.parentCategory?.name
-                .toLowerCase()
-                .includes(searchTerm.toLowerCase()),
-          )
-        : allCategories,
-    );
-  }, []);
+  const onInputChange = useCallback(
+    (searchTerm: string) => {
+      setCategories(
+        searchTerm.length > 0
+          ? allCategories?.filter(
+              ({ name, parentCategory }) =>
+                name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                parentCategory?.name
+                  .toLowerCase()
+                  .includes(searchTerm.toLowerCase()) ||
+                parentCategory?.parentCategory?.name
+                  .toLowerCase()
+                  .includes(searchTerm.toLowerCase()),
+            )
+          : allCategories,
+      );
+    },
+    [allCategories],
+  );
 
   const onSelect = useCallback(
     (key: React.Key) => {
@@ -112,62 +116,69 @@ export default function TransactionSetCategoryButton({
         }
 
         commitAllMutation({
-          variables: {
-            category: key.toString(),
-            filters,
-          },
           onCompleted(result) {
             setSelectedKey(null);
-            if (result.updateCategoriesForAllTransactions.message) {
+            if (result?.updateCategoriesForAllTransactions?.message) {
               setError(result.updateCategoriesForAllTransactions.message);
             } else {
               publish(PubSubChannels.Transactions);
               onCompleted();
             }
           },
+          variables: {
+            category: key.toString(),
+            filters,
+          },
         });
       } else {
         commitMutation({
-          variables: {
-            transactions: transactions.map((transaction) => ({
-              ...transaction,
-              category: key.toString(),
-            })),
-          },
           onCompleted(result) {
             setSelectedKey(null);
-            if (result.updateCategoriesForTransactions.message) {
+            if (result?.updateCategoriesForTransactions?.message) {
               setError(result.updateCategoriesForTransactions.message);
             } else {
               publish(PubSubChannels.Transactions);
               onCompleted();
             }
           },
+          variables: {
+            transactions: transactions.map((transaction) => ({
+              ...transaction,
+              category: key.toString(),
+            })),
+          },
         });
       }
     },
-    [transactions],
+    [
+      commitAllMutation,
+      commitMutation,
+      filters,
+      onCompleted,
+      publish,
+      transactions,
+    ],
   );
 
   return (
     <Autocomplete
       autoFocus
-      label="Update category"
-      items={categories}
-      selectedKey={selectedKey}
-      onInputChange={onInputChange}
       className="max-w-xs"
+      errorMessage={error}
+      isDisabled={
+        isMutationInFlight || isMutationAllInFlight || transactions.length == 0
+      }
+      isInvalid={error != null}
+      items={categories ?? []}
+      label="Update category"
+      onInputChange={onInputChange}
+      onSelectionChange={onSelect}
       popoverProps={{
         classNames: {
           content: "w-[450px]",
         },
       }}
-      onSelectionChange={onSelect}
-      isDisabled={
-        isMutationInFlight || isMutationAllInFlight || transactions.length == 0
-      }
-      isInvalid={error != null}
-      errorMessage={error}
+      selectedKey={selectedKey}
     >
       {(category) => (
         <AutocompleteItem key={category.id} value={category.id}>

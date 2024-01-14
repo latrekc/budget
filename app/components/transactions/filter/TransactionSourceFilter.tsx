@@ -1,35 +1,35 @@
+import { Chip } from "@nextui-org/react";
+import { Dispatch, useCallback } from "react";
+
 import {
   FiltersState,
   ReducerAction,
   ReducerActionType,
 } from "../TransactionsFiltersReducer";
 
-import { Chip } from "@nextui-org/react";
-import { Dispatch, useCallback } from "react";
-
 export default function TransactionComplitedFilter({
-  filters,
   dispatch,
+  filters,
 }: {
-  filters: FiltersState;
   dispatch: Dispatch<ReducerAction>;
+  filters: FiltersState;
 }) {
   const onRemove = useCallback(
     (toRemove: string) => {
       const newValue = filters.sources!.filter((item) => item !== toRemove);
 
       dispatch({
-        type: ReducerActionType.setSources,
         payload: newValue.length ? newValue : null,
+        type: ReducerActionType.setSources,
       });
     },
-    [filters.sources],
+    [dispatch, filters.sources],
   );
 
   return (
     <div className="inline-flex items-center justify-start gap-x-3">
       {filters.sources?.map((source) => (
-        <Chip key={source} variant="flat" onClose={() => onRemove(source)}>
+        <Chip key={source} onClose={() => onRemove(source)} variant="flat">
           {source}
         </Chip>
       ))}

@@ -1,9 +1,10 @@
 import { ButtonGroup } from "@nextui-org/react";
 import { graphql, useFragment } from "react-relay";
+
+import { TransactionCategoryButtons$key } from "./__generated__/TransactionCategoryButtons.graphql";
 import TransactionCategoryAddButton from "./TransactionCategoryAddButton";
 import TransactionCategoryDeleteButton from "./TransactionCategoryDeleteButton";
 import TransactionCategoryEditButton from "./TransactionCategoryEditButton";
-import { TransactionCategoryButtons$key } from "./__generated__/TransactionCategoryButtons.graphql";
 
 export default function TransactionCategoryButtons({
   category: category$key,
@@ -15,7 +16,7 @@ export default function TransactionCategoryButtons({
   const category = useFragment(
     graphql`
       fragment TransactionCategoryButtons on Category {
-        id
+        id @required(action: THROW)
         ...TransactionCategoryDeleteButton
         ...TransactionCategoryEditButton
       }

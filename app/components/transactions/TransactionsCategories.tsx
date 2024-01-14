@@ -1,18 +1,35 @@
 import { PubSubChannels } from "@/lib/types";
 import { usePubSub } from "@/lib/usePubSub";
-import { Switch } from "@nextui-org/react";
-import { createContext, useEffect, useState } from "react";
+import { CheckboxGroup, Switch } from "@nextui-org/react";
+import {
+  createContext,
+  Dispatch,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { graphql, useRefetchableFragment } from "react-relay";
+
 import { TransactionsCategories$key } from "./__generated__/TransactionsCategories.graphql";
-import TransactionCategory from "./category/TransactionCategory";
 import TransactionAddButton from "./category/buttons/TransactionCategoryAddButton";
+import TransactionCategory from "./category/TransactionCategory";
+import {
+  FiltersState,
+  ReducerAction,
+  ReducerActionType,
+} from "./TransactionsFiltersReducer";
 
 export const CategoriesModeContext = createContext<boolean>(false);
 
 export default function TransactionsCategories({
   categories: categories$key,
+  dispatch,
+  filters,
 }: {
   categories: TransactionsCategories$key;
+  dispatch: Dispatch<ReducerAction>;
+  filters: FiltersState;
 }) {
   const [editMode, setEditMode] = useState(false);
 
@@ -21,9 +38,9 @@ export default function TransactionsCategories({
       fragment TransactionsCategories on Query
       @refetchable(queryName: "TransactionsCategoriesRefetchQuery") {
         categories {
-          id
+          id @required(action: THROW)
           parentCategory {
-            __typename
+            __typename @required(action: THROW)
           }
           ...TransactionCategory
         }
@@ -39,7 +56,25 @@ export default function TransactionsCategories({
       console.log("Refetch categories");
       refetch({}, { fetchPolicy: "network-only" });
     });
-  }, []);
+  }, [refetch, subscribe]);
+
+  const setSelected = useCallback(
+    (value: string[]) => {
+      dispatch({
+        payload:
+          value.length > 0 && value.length < (categories ?? []).length
+            ? value
+            : null,
+        type: ReducerActionType.setCategories,
+      });
+    },
+    [categories, dispatch],
+  );
+
+  const value = useMemo(
+    () => (filters.categories != null ? [...filters.categories] : []),
+    [filters.categories],
+  );
 
   return (
     <CategoriesModeContext.Provider value={editMode}>
@@ -50,13 +85,13 @@ export default function TransactionsCategories({
           </Switch>
         </div>
 
-        <div>
+        <CheckboxGroup onValueChange={setSelected} value={value}>
           {categories
             ?.filter((category) => category.parentCategory == null)
             .map((category) => (
-              <TransactionCategory key={category.id} category={category} />
+              <TransactionCategory category={category} key={category.id} />
             ))}
-        </div>
+        </CheckboxGroup>
 
         {editMode && (
           <div className="p-4">

@@ -7,6 +7,7 @@ import {
 import { useState } from "react";
 import { TiPlus } from "react-icons/ti";
 import { graphql, useFragment } from "react-relay";
+
 import TransactionSetCategoryButton from "../../buttons/TransactionSetCategoryButton";
 import { TransactionCellAddCategoryButton$key } from "./__generated__/TransactionCellAddCategoryButton.graphql";
 
@@ -17,11 +18,11 @@ export default function TransactionCellAddCategoryButton({
 }) {
   const [isOpen, setIsOpen] = useState(false);
 
-  const { id, amount } = useFragment(
+  const { amount, id } = useFragment(
     graphql`
       fragment TransactionCellAddCategoryButton on Transaction {
-        id
-        amount
+        id @required(action: THROW)
+        amount @required(action: THROW)
       }
     `,
     transaction$key,
@@ -29,18 +30,18 @@ export default function TransactionCellAddCategoryButton({
 
   return (
     <Popover
-      showArrow
       backdrop="opaque"
       isOpen={isOpen}
       onClose={() => setIsOpen(false)}
+      showArrow
     >
       <PopoverTrigger onClick={() => setIsOpen(true)}>
         <Button
-          size="sm"
-          variant="flat"
-          isIconOnly
-          title="Set category"
           className="p-0"
+          isIconOnly
+          size="sm"
+          title="Set category"
+          variant="flat"
         >
           <TiPlus size="1em" />
         </Button>
@@ -50,8 +51,8 @@ export default function TransactionCellAddCategoryButton({
         {() => (
           <div className="w-full p-4">
             <TransactionSetCategoryButton
-              transactions={[{ transaction: id, amount }]}
               onCompleted={() => setIsOpen(false)}
+              transactions={[{ amount, transaction: id }]}
             />
           </div>
         )}

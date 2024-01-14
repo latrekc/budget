@@ -20,16 +20,16 @@ function getTextSize(size: Size) {
 }
 
 export default function AmountValue({
+  abs,
   amount,
   currency,
   round,
-  abs,
   size = Size.Normal,
 }: {
+  abs?: boolean;
   amount: number;
   currency: Currency;
   round?: boolean;
-  abs?: boolean;
   size?: Size;
 }) {
   let displayAmount = amount;
@@ -49,9 +49,9 @@ export default function AmountValue({
       } text-mono ${getTextSize(size)}`}
     >
       {new Intl.NumberFormat("en-GB", {
-        style: "currency",
         currency: currency,
         maximumFractionDigits: round ? 0 : 2,
+        style: "currency",
       }).format(displayAmount)}
     </span>
   );

@@ -4,8 +4,8 @@
 import * as React from "react";
 
 interface PubSubProviderProps {
-  context?: PubSubContext;
   children: React.ReactNode;
+  context?: PubSubContext;
 }
 
 export type Handler = (message: unknown) => void;

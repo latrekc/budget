@@ -10,6 +10,7 @@ import {
 import { FormEvent, useCallback, useMemo, useState } from "react";
 import { LuTextCursorInput } from "react-icons/lu";
 import { graphql, useFragment, useMutation } from "react-relay";
+
 import { TransactionCategoryEditButton$key } from "./__generated__/TransactionCategoryEditButton.graphql";
 import { TransactionCategoryEditButtonMutation } from "./__generated__/TransactionCategoryEditButtonMutation.graphql";
 
@@ -23,10 +24,10 @@ export default function TransactionCategoryEditButton({
   const category = useFragment(
     graphql`
       fragment TransactionCategoryEditButton on Category {
-        id
-        name
+        id @required(action: THROW)
+        name @required(action: THROW)
         parentCategory {
-          id
+          id @required(action: THROW)
         }
       }
     `,
@@ -55,7 +56,7 @@ export default function TransactionCategoryEditButton({
     return value.length > 0 && value.trim() != category.name
       ? "bordered"
       : "flat";
-  }, [value]);
+  }, [category.name, value]);
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -65,7 +66,7 @@ export default function TransactionCategoryEditButton({
       setValue(category.name);
       setError(null);
     },
-    [value],
+    [category.name],
   );
 
   const onEdit = useCallback(
@@ -74,16 +75,8 @@ export default function TransactionCategoryEditButton({
 
       if (value.trim().length > 0 && value.trim() != category.name) {
         commitEditMutation({
-          variables: {
-            id: category.id,
-            name: value,
-            parent: category?.parentCategory?.id,
-          },
-          onError(serverError) {
-            setError(serverError);
-          },
           onCompleted(result) {
-            if (result.updateCategory.error) {
+            if (result?.updateCategory?.error) {
               setError(new Error(result.updateCategory.error));
             } else {
               setValue(value);
@@ -92,21 +85,36 @@ export default function TransactionCategoryEditButton({
               publish(PubSubChannels.Categories);
             }
           },
+          onError(serverError) {
+            setError(serverError);
+          },
+          variables: {
+            id: category.id,
+            name: value,
+            parent: category?.parentCategory?.id,
+          },
         });
       }
     },
-    [value],
+    [
+      category.id,
+      category.name,
+      category?.parentCategory?.id,
+      commitEditMutation,
+      publish,
+      value,
+    ],
   );
 
   return (
     <Popover
-      showArrow
-      onOpenChange={onOpenChange}
-      isOpen={isOpen}
       backdrop="opaque"
+      isOpen={isOpen}
+      onOpenChange={onOpenChange}
+      showArrow
     >
       <PopoverTrigger>
-        <Button size="sm" variant="flat" title="Edit category" isIconOnly>
+        <Button isIconOnly size="sm" title="Edit category" variant="flat">
           <LuTextCursorInput size="2em" />
         </Button>
       </PopoverTrigger>
@@ -115,21 +123,21 @@ export default function TransactionCategoryEditButton({
           <div className="w-full p-4">
             <form onSubmit={onEdit}>
               <Input
+                autoFocus
+                className="p-4"
+                errorMessage={error?.message}
+                isDisabled={isEditMutationInFlight}
+                isInvalid={error != null}
                 label={
                   category.parentCategory != null
                     ? "Edit subcategory"
                     : "Edit category"
                 }
-                autoFocus
                 labelPlacement="inside"
-                className="p-4"
-                isDisabled={isEditMutationInFlight}
-                isInvalid={error != null}
-                errorMessage={error?.message}
+                onValueChange={setValue}
                 size="sm"
                 value={value}
                 variant={variant}
-                onValueChange={setValue}
               />
             </form>
           </div>

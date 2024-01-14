@@ -1,26 +1,26 @@
 export enum Source {
-  Monzo = "Monzo",
-  Revolut = "Revolut",
   HSBC = "HSBC",
-  Sberbank = "Sberbank",
+  Monzo = "Monzo",
   Raiffeisen = "Raiffeisen",
+  Revolut = "Revolut",
+  Sberbank = "Sberbank",
   Tinkoff = "Tinkoff",
 }
 
 export enum Currency {
-  GBP = "GBP",
   EUR = "EUR",
-  USD = "USD",
+  GBP = "GBP",
   RUB = "RUB",
+  USD = "USD",
 }
 
 export type Transaction = {
-  id: string;
-  source: Source;
-  date: Date;
-  description: string;
   amount: number;
   currency: Currency;
+  date: Date;
+  description: string;
+  id: string;
+  source: Source;
 };
 
 export function enumFromStringValue<T>(

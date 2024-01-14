@@ -11,6 +11,7 @@ import {
 import { useCallback } from "react";
 import { TiDelete } from "react-icons/ti";
 import { graphql, useFragment, useMutation } from "react-relay";
+
 import { TransactionCategoryDeleteButtonMutation } from "../__generated__/TransactionCategoryDeleteButtonMutation.graphql";
 import { TransactionCategoryDeleteButton$key } from "./__generated__/TransactionCategoryDeleteButton.graphql";
 
@@ -24,10 +25,10 @@ export default function TransactionCategoryDeleteButton({
   const category = useFragment(
     graphql`
       fragment TransactionCategoryDeleteButton on Category {
-        id
-        name
+        id @required(action: THROW)
+        name @required(action: THROW)
         parentCategory {
-          name
+          name @required(action: THROW)
         }
       }
     `,
@@ -51,9 +52,6 @@ export default function TransactionCategoryDeleteButton({
       return;
     }
     commitDeleteMutation({
-      variables: {
-        id: category.id,
-      },
       onCompleted(result) {
         if (result.deleteCategory.error) {
           alert(result.deleteCategory.error);
@@ -61,18 +59,21 @@ export default function TransactionCategoryDeleteButton({
           publish(PubSubChannels.Categories);
         }
       },
+      variables: {
+        id: category.id,
+      },
     });
-  }, []);
+  }, [category, commitDeleteMutation, publish]);
 
   return (
-    <Popover showArrow backdrop="opaque">
+    <Popover backdrop="opaque" showArrow>
       <PopoverTrigger>
         <Button
           color="danger"
-          size="sm"
-          variant="solid"
-          title="Remove category"
           isIconOnly
+          size="sm"
+          title="Remove category"
+          variant="solid"
         >
           <TiDelete color="white" size="2em" />
         </Button>
@@ -94,9 +95,9 @@ export default function TransactionCategoryDeleteButton({
 
             <ButtonGroup>
               <Button
+                color="danger"
                 isDisabled={isDeleteMutationInFlight}
                 onClick={onDelete}
-                color="danger"
               >
                 Yes, remove
               </Button>
