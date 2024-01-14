@@ -1,4 +1,4 @@
-import { Accordion, AccordionItem } from "@nextui-org/react";
+import { Accordion, AccordionItem, Badge } from "@nextui-org/react";
 import { useState } from "react";
 import { graphql, useLazyLoadQuery } from "react-relay";
 
@@ -57,7 +57,15 @@ export default function Transactions() {
 
       <div className="basis-1/4 p-6">
         <Accordion defaultSelectedKeys={["categories"]} variant="shadow">
-          <AccordionItem key="categories" title="Categories">
+          <AccordionItem
+            key="categories"
+            title={
+              <AccordionItemTitle
+                list={filtersState.categories}
+                name="Categories"
+              />
+            }
+          >
             <TransactionsCategories
               categories={data}
               dispatch={dispatch}
@@ -65,18 +73,50 @@ export default function Transactions() {
             />
           </AccordionItem>
 
-          <AccordionItem key="months" title="Months">
+          <AccordionItem
+            key="months"
+            title={
+              <AccordionItemTitle list={filtersState.months} name="Months" />
+            }
+          >
             <TransactionsStatistic
               dispatch={dispatch}
               filters={filtersState}
               statistic={data}
             />
           </AccordionItem>
-          <AccordionItem key="sources" title="Sources">
+          <AccordionItem
+            key="sources"
+            title={
+              <AccordionItemTitle list={filtersState.sources} name="Sources" />
+            }
+          >
             <TransactionsSources dispatch={dispatch} filters={filtersState} />
           </AccordionItem>
         </Accordion>
       </div>
     </div>
+  );
+}
+
+function AccordionItemTitle({
+  list,
+  name,
+}: {
+  list: null | readonly string[];
+  name: string;
+}) {
+  return (
+    <Badge
+      color="primary"
+      content={list?.length}
+      placement="top-right"
+      shape="rectangle"
+      showOutline={false}
+      size="sm"
+      variant="solid"
+    >
+      <div className="pr-2">{name}</div>
+    </Badge>
   );
 }

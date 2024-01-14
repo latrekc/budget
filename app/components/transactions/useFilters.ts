@@ -34,8 +34,11 @@ export default function useFilters() {
         .filter((str) => str.length > 0);
     }
 
-    if (params.has("month")) {
-      state.month = params.get("month")!;
+    if (params.has("months")) {
+      state.months = params
+        .get("months")!
+        .split(",")
+        .filter((str) => str.length > 0);
     }
 
     if (params.has("search")) {
@@ -71,10 +74,10 @@ export default function useFilters() {
       params.delete("categories");
     }
 
-    if (filtersState.month != null) {
-      params.set("month", filtersState.month);
+    if (filtersState.months != null) {
+      params.set("months", filtersState.months.join(","));
     } else {
-      params.delete("month");
+      params.delete("months");
     }
 
     if (filtersState.search != null) {

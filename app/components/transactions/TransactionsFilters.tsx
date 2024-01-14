@@ -5,8 +5,6 @@ import { TransactionsFilters$key } from "./__generated__/TransactionsFilters.gra
 import TransactionCategoriesFilter from "./filter/TransactionCategoriesFilter";
 import TransactionComplitedFilter from "./filter/TransactionComplitedFilter";
 import TransactionDescriptionFilter from "./filter/TransactionDescriptionFilter";
-import TransactionMonthFilter from "./filter/TransactionMonthFilter";
-import TransactionSourceFilter from "./filter/TransactionSourceFilter";
 import { FiltersState, ReducerAction } from "./TransactionsFiltersReducer";
 import { TransactionsSelection } from "./TransactionsTable";
 import TransactionsTotal from "./TransactionsTotal";
@@ -28,7 +26,6 @@ export default function TransactionsFilters({
     graphql`
       fragment TransactionsFilters on Query {
         ...TransactionsTotal
-        ...TransactionCategoriesFilter
       }
     `,
     data$key,
@@ -42,10 +39,7 @@ export default function TransactionsFilters({
 
       <div className="m-6 flex flex-row flex-wrap gap-x-3">
         <TransactionComplitedFilter dispatch={dispatch} filters={filters} />
-        <TransactionSourceFilter dispatch={dispatch} filters={filters} />
-        <TransactionMonthFilter dispatch={dispatch} filters={filters} />
         <TransactionCategoriesFilter
-          data={data}
           dispatch={dispatch}
           filters={filters}
           selectedTransactions={selectedTransactions}
