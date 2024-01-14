@@ -1,6 +1,12 @@
 "use client";
 
-import { Accordion, AccordionItem, Radio, RadioGroup } from "@nextui-org/react";
+import {
+  Accordion,
+  AccordionItem,
+  Checkbox,
+  CheckboxGroup,
+  Chip,
+} from "@nextui-org/react";
 import { Dispatch, useCallback, useMemo, useState } from "react";
 import { graphql, useFragment } from "react-relay";
 
@@ -64,29 +70,32 @@ export default function TransactionsStatistic({
     statistic$key,
   );
 
-  const years: Result =
-    data == null || data.transactions_statistic_per_months == null
-      ? new Map()
-      : data.transactions_statistic_per_months.reduce(
-          (accumulator: Result, currentValue) => {
-            let year = accumulator.get(currentValue.year);
+  const months = useMemo(
+    () => data.transactions_statistic_per_months ?? [],
+    [data.transactions_statistic_per_months],
+  );
 
-            if (year == undefined) {
-              year = {
-                income: 0,
-                months: [],
-                outcome: 0,
-              };
-              accumulator.set(currentValue.year, year);
-            }
+  const years: Result = useMemo(
+    () =>
+      months.reduce((accumulator: Result, currentValue) => {
+        let year = accumulator.get(currentValue.year);
 
-            year.months.push(currentValue);
-            year.income += currentValue.income;
-            year.outcome += currentValue.outcome;
-            return accumulator;
-          },
-          new Map(),
-        );
+        if (year == undefined) {
+          year = {
+            income: 0,
+            months: [],
+            outcome: 0,
+          };
+          accumulator.set(currentValue.year, year);
+        }
+
+        year.months.push(currentValue);
+        year.income += currentValue.income;
+        year.outcome += currentValue.outcome;
+        return accumulator;
+      }, new Map()),
+    [months],
+  );
 
   const [selectedKeys, setSelectedKeys] = useState<string[]>([
     [...years.keys()][0]?.toString(),
@@ -99,69 +108,99 @@ export default function TransactionsStatistic({
     return keys;
   }, []);
 
-  const onMonthChange = useCallback(
-    (value: string) => {
+  const setSelected = useCallback(
+    (value: string[]) => {
       dispatch({
-        payload: value,
-        type: ReducerActionType.setMonth,
+        payload:
+          value.length > 0 && value.length < months.length ? value : null,
+        type: ReducerActionType.setMonths,
       });
     },
-    [dispatch],
+    [dispatch, months.length],
   );
 
-  const value = useMemo(() => filters.month ?? undefined, [filters.month]);
+  const value = useMemo(
+    () => (filters.months != null ? [...filters.months] : []),
+    [filters.months],
+  );
+
+  const onRemove = useCallback(
+    (toRemove: string) => {
+      const newValue = filters.months!.filter((item) => item !== toRemove);
+
+      dispatch({
+        payload: newValue.length ? newValue : null,
+        type: ReducerActionType.setMonths,
+      });
+    },
+    [dispatch, filters.months],
+  );
 
   return (
-    <RadioGroup onValueChange={onMonthChange} value={value}>
-      <Accordion
-        onSelectionChange={onSelectionChange}
-        selectedKeys={selectedKeys}
-        selectionBehavior="replace"
-        selectionMode="single"
-      >
-        {[...years.keys()].map((yearNumber) => {
-          const year = years.get(yearNumber)!;
+    <div className="max-h-[720px] min-h-[720px] overflow-scroll">
+      {filters.months && (
+        <div className="inline-flex flex-wrap items-center justify-start gap-2">
+          {filters.months?.map((month) => (
+            <Chip key={month} onClose={() => onRemove(month)} variant="flat">
+              {month}
+            </Chip>
+          ))}
+        </div>
+      )}
 
-          return (
-            <AccordionItem
-              aria-label={yearNumber.toString()}
-              key={yearNumber.toString()}
-              subtitle={<Balance income={year.income} outcome={year.outcome} />}
-              title={
-                <>
-                  <span className="text-2xl">{yearNumber}</span>{" "}
-                  <AmountValue
-                    amount={(year.income * 100 + year.outcome * 100) / 100}
-                    currency="GBP"
-                    round
-                    size={Size.Big}
-                  />
-                </>
-              }
-            >
-              {year.months.map(({ id, income, month, outcome }) => (
-                <Radio
-                  className="m-0 min-w-[100%] flex-none cursor-pointer gap-4 rounded-lg border-2 border-white p-4 hover:bg-content2 data-[selected=true]:border-primary"
-                  key={id}
-                  value={id}
-                >
-                  <div className="text-xl">
-                    {monthNames.get(month)}{" "}
+      <CheckboxGroup onValueChange={setSelected} value={value}>
+        <Accordion
+          onSelectionChange={onSelectionChange}
+          selectedKeys={selectedKeys}
+          selectionBehavior="replace"
+          selectionMode="single"
+        >
+          {[...years.keys()].map((yearNumber) => {
+            const year = years.get(yearNumber)!;
+
+            return (
+              <AccordionItem
+                aria-label={yearNumber.toString()}
+                key={yearNumber.toString()}
+                subtitle={
+                  <Balance income={year.income} outcome={year.outcome} />
+                }
+                title={
+                  <>
+                    <span className="text-2xl">{yearNumber}</span>{" "}
                     <AmountValue
-                      amount={(income * 100 + outcome * 100) / 100}
+                      amount={(year.income * 100 + year.outcome * 100) / 100}
                       currency="GBP"
                       round
                       size={Size.Big}
                     />
-                  </div>
-                  <Balance income={income} outcome={outcome} />
-                </Radio>
-              ))}
-            </AccordionItem>
-          );
-        })}
-      </Accordion>
-    </RadioGroup>
+                  </>
+                }
+              >
+                {year.months.map(({ id, income, month, outcome }) => (
+                  <Checkbox
+                    className="m-0 mt-1 min-w-[100%] flex-none cursor-pointer gap-4 rounded-lg border-2 border-white p-4 hover:bg-content2 data-[selected=true]:border-primary"
+                    key={id}
+                    value={id}
+                  >
+                    <div className="text-xl">
+                      {monthNames.get(month)}{" "}
+                      <AmountValue
+                        amount={(income * 100 + outcome * 100) / 100}
+                        currency="GBP"
+                        round
+                        size={Size.Big}
+                      />
+                    </div>
+                    <Balance income={income} outcome={outcome} />
+                  </Checkbox>
+                ))}
+              </AccordionItem>
+            );
+          })}
+        </Accordion>
+      </CheckboxGroup>
+    </div>
   );
 }
 

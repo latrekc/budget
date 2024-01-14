@@ -46,7 +46,7 @@ builder.prismaObject("TransactionsOnCategories", {
 
 type TransactionFilter = {
   categories?: null | string[];
-  month?: null | string;
+  months?: null | string[];
   onlyUncomplited?: boolean | null;
   search?: null | string;
   sources?: null | string[];
@@ -59,7 +59,7 @@ const filterTransactionsInput = builder
       categories: t.stringList({
         required: false,
       }),
-      month: t.string({
+      months: t.stringList({
         required: false,
       }),
       onlyUncomplited: t.boolean({
@@ -91,14 +91,19 @@ async function filtersToWhere(filters: TransactionFilter | null | undefined) {
       };
     }
 
-    if (filters.month != null) {
-      const month = parseDate(filters.month, "YYYY-MM");
-      const nextMonth = new Date(month);
-      nextMonth.setMonth(month.getMonth() + 1);
-      where.date = {
-        gte: month,
-        lt: nextMonth,
-      };
+    if ((filters.months ?? []).length > 0) {
+      where.OR = (filters.months ?? []).map((monthId) => {
+        const month = parseDate(monthId, "YYYY-MM");
+        const nextMonth = new Date(month);
+        nextMonth.setMonth(month.getMonth() + 1);
+
+        return {
+          date: {
+            gte: month,
+            lt: nextMonth,
+          },
+        };
+      });
     }
 
     if ((filters.search ?? "").trim().length > 0) {

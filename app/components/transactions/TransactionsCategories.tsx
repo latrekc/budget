@@ -2,8 +2,8 @@ import { PubSubChannels } from "@/lib/types";
 import { usePubSub } from "@/lib/usePubSub";
 import { CheckboxGroup, Input, Switch } from "@nextui-org/react";
 import {
-  createContext,
   Dispatch,
+  createContext,
   useCallback,
   useEffect,
   useMemo,
@@ -12,16 +12,17 @@ import {
 import { graphql, useRefetchableFragment } from "react-relay";
 
 import {
-  TransactionsCategories$data,
-  TransactionsCategories$key,
-} from "./__generated__/TransactionsCategories.graphql";
-import TransactionAddButton from "./category/buttons/TransactionCategoryAddButton";
-import TransactionCategory from "./category/TransactionCategory";
-import {
   FiltersState,
   ReducerAction,
   ReducerActionType,
 } from "./TransactionsFiltersReducer";
+import {
+  TransactionsCategories$data,
+  TransactionsCategories$key,
+} from "./__generated__/TransactionsCategories.graphql";
+import TransactionCategory from "./category/TransactionCategory";
+import TransactionCategoryChip from "./category/TransactionCategoryChip";
+import TransactionAddButton from "./category/buttons/TransactionCategoryAddButton";
 
 export const CategoriesContext = createContext<{
   editMode: boolean;
@@ -85,6 +86,7 @@ export default function TransactionsCategories({
             }
           }
           ...TransactionCategory
+          ...TransactionCategoryChip
         }
       }
     `,
@@ -125,9 +127,41 @@ export default function TransactionsCategories({
     [allCategories, filterName],
   );
 
+  const onRemove = useCallback(
+    (toRemove: string) => {
+      const newValue = filters.categories!.filter((item) => item !== toRemove);
+
+      dispatch({
+        payload: newValue.length ? newValue : null,
+        type: ReducerActionType.setCategories,
+      });
+    },
+    [dispatch, filters.categories],
+  );
+
   return (
     <CategoriesContext.Provider value={{ editMode, filterName }}>
       <div className="max-h-[720px] min-h-[720px] overflow-scroll">
+        {filters.categories && (
+          <div className="inline-flex flex-wrap items-center justify-start gap-2">
+            {filters.categories.map((categoryId) => {
+              const category = allCategories?.find(
+                ({ id }) => id === categoryId,
+              );
+              if (!category) {
+                return null;
+              }
+              return (
+                <TransactionCategoryChip
+                  category={category}
+                  key={categoryId}
+                  onDelete={() => onRemove(categoryId)}
+                />
+              );
+            })}
+          </div>
+        )}
+
         <div className="flex flex-row gap-4 p-4">
           <Switch isSelected={editMode} onValueChange={setEditMode} size="sm">
             Edit

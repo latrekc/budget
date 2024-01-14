@@ -158,7 +158,7 @@ type TransactionsOnCategories {
 
 input filterTransactionsInput {
   categories: [String!]
-  month: String
+  month: [String!]
   onlyUncomplited: Boolean = false
   search: String
   sources: [String!]
