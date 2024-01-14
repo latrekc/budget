@@ -10,6 +10,7 @@ import {
 import { FormEvent, useCallback, useMemo, useState } from "react";
 import { TiPlus } from "react-icons/ti";
 import { graphql, useMutation } from "react-relay";
+
 import { TransactionCategoryAddButtonMutation } from "./__generated__/TransactionCategoryAddButtonMutation.graphql";
 
 export default function TransactionCategoryAddButton({
@@ -57,15 +58,8 @@ export default function TransactionCategoryAddButton({
       e.preventDefault();
       if (value.trim().length > 0) {
         commitMutation({
-          variables: {
-            name: value.trim(),
-            parent,
-          },
-          onError(serverError) {
-            setError(serverError);
-          },
           onCompleted(result) {
-            if (result.createCategory.error) {
+            if (result?.createCategory?.error) {
               setError(new Error(result.createCategory.error));
             } else {
               setValue("");
@@ -74,39 +68,43 @@ export default function TransactionCategoryAddButton({
               publish(PubSubChannels.Categories);
             }
           },
+          onError(serverError) {
+            setError(serverError);
+          },
+          variables: {
+            name: value.trim(),
+            parent,
+          },
         });
       }
     },
-    [value],
+    [commitMutation, parent, publish, value],
   );
 
   const [isOpen, setIsOpen] = useState(false);
 
-  const onOpenChange = useCallback(
-    (open: boolean) => {
-      setIsOpen(open);
-      setValue("");
-      setError(null);
-    },
-    [value],
-  );
+  const onOpenChange = useCallback((open: boolean) => {
+    setIsOpen(open);
+    setValue("");
+    setError(null);
+  }, []);
 
   const label = parent != null ? "Add subcategory" : "Add category";
 
   return (
     <Popover
-      showArrow
-      onOpenChange={onOpenChange}
-      isOpen={isOpen}
       backdrop="opaque"
+      isOpen={isOpen}
+      onOpenChange={onOpenChange}
+      showArrow
     >
       <PopoverTrigger>
         <Button
-          size="sm"
-          variant="flat"
-          title={label}
-          startContent={withLabel ? <TiPlus size="2em" /> : null}
           isIconOnly={!withLabel}
+          size="sm"
+          startContent={withLabel ? <TiPlus size="2em" /> : null}
+          title={label}
+          variant="flat"
         >
           {withLabel ? label : <TiPlus size="2em" />}
         </Button>
@@ -116,19 +114,19 @@ export default function TransactionCategoryAddButton({
           <div className="w-full p-4">
             <form onSubmit={onSubmit}>
               <Input
-                label={label}
-                labelPlacement="inside"
+                autoFocus
                 className="p-4"
+                errorMessage={error?.message}
                 isClearable
-                onClear={onClear}
                 isDisabled={isMutationInFlight}
                 isInvalid={error != null}
-                errorMessage={error?.message}
+                label={label}
+                labelPlacement="inside"
+                onClear={onClear}
+                onValueChange={setValue}
                 size="sm"
                 value={value}
                 variant={variant}
-                onValueChange={setValue}
-                autoFocus
               />
             </form>
           </div>

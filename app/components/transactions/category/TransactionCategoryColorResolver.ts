@@ -1,6 +1,7 @@
 import chroma from "chroma-js";
 import { graphql } from "relay-runtime";
 import { readFragment } from "relay-runtime/lib/store/ResolverFragments";
+
 import { environment } from "../../../lib/relay";
 import { TransactionCategoryColorResolver$key } from "./__generated__/TransactionCategoryColorResolver.graphql";
 
@@ -27,9 +28,9 @@ export function color(
   const category = readFragment(
     graphql`
       fragment TransactionCategoryColorResolver on Category {
-        id
+        id @required(action: THROW)
         parentCategory {
-          id
+          id @required(action: THROW)
         }
       }
     `,
@@ -43,7 +44,7 @@ export function color(
     }
   ).__refs.map((categoryId) => source.get(categoryId) as CategoryRecord);
 
-  const filterByParent = (parentId: string | null | undefined) => {
+  const filterByParent = (parentId: null | string | undefined) => {
     return allCategories.filter((data) =>
       parentId == null
         ? data?.parentCategory == null

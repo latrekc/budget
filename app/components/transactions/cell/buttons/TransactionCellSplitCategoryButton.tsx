@@ -7,6 +7,7 @@ import {
 import { useMemo } from "react";
 import { LuSplit } from "react-icons/lu";
 import { graphql, useFragment } from "react-relay";
+
 import TransactionCategoryChip from "../../category/TransactionCategoryChip";
 import { TransactionCellSplitCategoryButton$key } from "./__generated__/TransactionCellSplitCategoryButton.graphql";
 
@@ -15,17 +16,17 @@ export default function TransactionCellSplitCategoryButton({
 }: {
   transaction: TransactionCellSplitCategoryButton$key;
 }) {
-  const { categories, amount } = useFragment(
+  const { amount, categories } = useFragment(
     graphql`
       fragment TransactionCellSplitCategoryButton on Transaction {
-        id
-        amount
-        categories {
-          category {
+        id @required(action: THROW)
+        amount @required(action: THROW)
+        categories @required(action: THROW) {
+          category @required(action: THROW) {
             ...TransactionCategoryChip
-            id
+            id @required(action: THROW)
           }
-          amount
+          amount @required(action: THROW)
         }
       }
     `,
@@ -44,14 +45,14 @@ export default function TransactionCellSplitCategoryButton({
   }, [amount, categories]);
 
   return (
-    <Popover showArrow backdrop="opaque">
+    <Popover backdrop="opaque" showArrow>
       <PopoverTrigger>
         <Button
-          size="sm"
-          variant="flat"
-          isIconOnly
-          title="Split category"
           className="p-0"
+          isIconOnly
+          size="sm"
+          title="Split category"
+          variant="flat"
         >
           <LuSplit size="1em" />
         </Button>
@@ -61,18 +62,18 @@ export default function TransactionCellSplitCategoryButton({
         {() => (
           <div className="w-full p-4">
             <div>
-              {categories.map(({ category, amount }) => (
+              {categories.map(({ amount, category }) => (
                 <div
-                  key={category.id}
                   className="flex w-full flex-row flex-wrap justify-between gap-x-2 py-2"
+                  key={category.id}
                 >
                   <TransactionCategoryChip category={category} />
 
                   <input
-                    type="number"
-                    inputMode="decimal"
-                    value={amount}
                     className="w-20 rounded border-0 bg-gray-200 text-right text-base"
+                    inputMode="decimal"
+                    type="number"
+                    value={amount}
                   />
                 </div>
               ))}
@@ -80,10 +81,10 @@ export default function TransactionCellSplitCategoryButton({
                 <div className="flex w-full flex-row flex-wrap justify-between gap-x-2 py-2">
                   <div>xxx</div>
                   <input
-                    type="number"
-                    inputMode="decimal"
-                    value={rest}
                     className="w-20 rounded border-0 bg-gray-200 text-right text-base"
+                    inputMode="decimal"
+                    type="number"
+                    value={rest}
                   />
                 </div>
               ) : null}

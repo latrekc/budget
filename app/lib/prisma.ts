@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Prisma, PrismaClient } from "@prisma/client";
 
 const prismaClientPropertyName = `__prevent-name-collision__prisma`;
@@ -30,14 +31,14 @@ const prisma = getPrismaClient().$extends({
   },
 });
 
-export function parseId(id: string | number | null | undefined) {
+export function parseId(id: null | number | string | undefined) {
   if (id != null) {
     return Number(id);
   }
   return null;
 }
 
-export function parseIdString(id: string | number | null | undefined) {
+export function parseIdString(id: null | number | string | undefined) {
   if (id != null) {
     return String(id);
   }

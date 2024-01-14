@@ -1,8 +1,9 @@
 export type FiltersState = {
+  categories: ReadonlyArray<string> | null;
+  month: null | string;
   onlyUncomplited: boolean;
+  search: null | string;
   sources: ReadonlyArray<string> | null;
-  month: string | null;
-  search: string | null;
 };
 
 export enum ReducerActionType {
@@ -10,21 +11,27 @@ export enum ReducerActionType {
   setSources,
   setMonth,
   setSearch,
+  setCategories,
 }
 
 export type ReducerAction =
   | {
+      payload: FiltersState["categories"];
+      type: ReducerActionType.setCategories;
+    }
+  | {
       type: ReducerActionType.toggleOnlyUncomplited;
     }
-  | { type: ReducerActionType.setSources; payload: FiltersState["sources"] }
-  | { type: ReducerActionType.setMonth; payload: FiltersState["month"] }
-  | { type: ReducerActionType.setSearch; payload: FiltersState["search"] };
+  | { payload: FiltersState["month"]; type: ReducerActionType.setMonth }
+  | { payload: FiltersState["search"]; type: ReducerActionType.setSearch }
+  | { payload: FiltersState["sources"]; type: ReducerActionType.setSources };
 
 export const initialState: FiltersState = {
-  onlyUncomplited: false,
-  sources: null,
+  categories: null,
   month: null,
+  onlyUncomplited: false,
   search: null,
+  sources: null,
 };
 
 export default function TransactionsFiltersReducer(
@@ -54,6 +61,12 @@ export default function TransactionsFiltersReducer(
       return {
         ...state,
         search: action.payload,
+      };
+
+    case ReducerActionType.setCategories:
+      return {
+        ...state,
+        categories: action.payload,
       };
   }
 }

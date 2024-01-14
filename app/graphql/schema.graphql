@@ -1,8 +1,8 @@
 type Category {
-  id: ID!
-  name: String!
+  id: ID
+  name: String
   parentCategory: Category
-  subCategories: [Category!]!
+  subCategories: [Category!]
 }
 
 enum Currency {
@@ -18,27 +18,27 @@ A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `dat
 scalar Date
 
 type Error {
-  message: String!
+  message: String
 }
 
 type Mutation {
-  createCategory(name: String!, parent: ID): MutationCreateCategoryResult!
+  createCategory(name: String!, parent: ID): MutationCreateCategoryResult
   deleteCategoriesForTransactions(
     transactions: [updateCategoriesForTransactionsInput!]!
-  ): MutationDeleteCategoriesForTransactionsResult!
-  deleteCategory(id: ID!): MutationDeleteCategoryResult!
+  ): MutationDeleteCategoriesForTransactionsResult
+  deleteCategory(id: ID!): MutationDeleteCategoryResult
   updateCategoriesForAllTransactions(
     category: String!
     filters: filterTransactionsInput!
-  ): MutationUpdateCategoriesForAllTransactionsResult!
+  ): MutationUpdateCategoriesForAllTransactionsResult
   updateCategoriesForTransactions(
     transactions: [updateCategoriesForTransactionsInput!]!
-  ): MutationUpdateCategoriesForTransactionsResult!
+  ): MutationUpdateCategoriesForTransactionsResult
   updateCategory(
     id: ID!
     name: String!
     parent: ID
-  ): MutationUpdateCategoryResult!
+  ): MutationUpdateCategoryResult
 }
 
 union MutationCreateCategoryResult = Error | MutationCreateCategorySuccess
@@ -91,18 +91,18 @@ type PageInfo {
 }
 
 type Query {
-  categories: [Category!]!
-  ok: Boolean!
+  categories: [Category!]
+  ok: Boolean
   transactions(
     after: ID
     before: ID
     filters: filterTransactionsInput
     first: Int
     last: Int
-  ): QueryTransactionsConnection!
-  transactions_statistic_per_months: [StatisticPerMonths!]!
-  transactions_statistic_per_years: [StatisticPerYears!]!
-  transactions_total(filters: filterTransactionsInput): Int!
+  ): QueryTransactionsConnection
+  transactions_statistic_per_months: [StatisticPerMonths!]
+  transactions_statistic_per_years: [StatisticPerYears!]
+  transactions_total(filters: filterTransactionsInput): Int
 }
 
 type QueryTransactionsConnection {
@@ -125,38 +125,39 @@ enum Source {
 }
 
 type StatisticPerMonths {
-  id: ID!
-  income: Float!
-  month: Int!
-  outcome: Float!
-  year: Int!
+  id: ID
+  income: Float
+  month: Int
+  outcome: Float
+  year: Int
 }
 
 type StatisticPerYears {
-  id: ID!
-  income: Float!
-  outcome: Float!
-  year: Int!
+  id: ID
+  income: Float
+  outcome: Float
+  year: Int
 }
 
 type Transaction {
-  amount: Float!
-  categories: [TransactionsOnCategories!]!
-  completed: Boolean!
-  currency: Currency!
-  date: Date!
-  description: String!
-  id: ID!
-  source: Source!
+  amount: Float
+  categories: [TransactionsOnCategories!]
+  completed: Boolean
+  currency: Currency
+  date: Date
+  description: String
+  id: ID
+  source: Source
 }
 
 type TransactionsOnCategories {
-  amount: Float!
-  category: Category!
-  transaction: Transaction!
+  amount: Float
+  category: Category
+  transaction: Transaction
 }
 
 input filterTransactionsInput {
+  categories: [String!]
   month: String
   onlyUncomplited: Boolean = false
   search: String

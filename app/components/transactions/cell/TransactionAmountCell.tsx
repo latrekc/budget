@@ -1,5 +1,6 @@
 import AmountValue, { Size } from "@/components/AmountValue";
 import { graphql, useFragment } from "react-relay";
+
 import { TransactionAmountCell$key } from "./__generated__/TransactionAmountCell.graphql";
 
 export default function TransactionAmountCell({
@@ -10,8 +11,8 @@ export default function TransactionAmountCell({
   const { amount, currency } = useFragment(
     graphql`
       fragment TransactionAmountCell on Transaction {
-        currency
-        amount
+        currency @required(action: THROW)
+        amount @required(action: THROW)
       }
     `,
     transaction$key,

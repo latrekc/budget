@@ -1,23 +1,23 @@
-import { graphql, useLazyLoadQuery } from "react-relay";
-import TransactionsCategories from "./TransactionsCategories";
-import TransactionsFilters from "./TransactionsFilters";
-
 import { Accordion, AccordionItem } from "@nextui-org/react";
 import { useState } from "react";
+import { graphql, useLazyLoadQuery } from "react-relay";
+
+import { TransactionsQuery } from "./__generated__/TransactionsQuery.graphql";
+import TransactionsCategories from "./TransactionsCategories";
+import TransactionsFilters from "./TransactionsFilters";
 import TransactionsSources from "./TransactionsSources";
 import TransactionsStatistic from "./TransactionsStatistic";
 import TransactionsTable, {
   PER_PAGE,
   TransactionsSelection,
 } from "./TransactionsTable";
-import { TransactionsQuery } from "./__generated__/TransactionsQuery.graphql";
 import useFilters from "./useFilters";
 
 export default function Transactions() {
   const [selectedTransactions, setSelectedTransactions] =
     useState<TransactionsSelection>(new Set([]));
 
-  const { filtersState, dispatch } = useFilters();
+  const { dispatch, filtersState } = useFilters();
 
   const data = useLazyLoadQuery<TransactionsQuery>(
     graphql`
@@ -32,7 +32,7 @@ export default function Transactions() {
         ...TransactionsFilters
       }
     `,
-    { first: PER_PAGE, filters: filtersState },
+    { filters: filtersState, first: PER_PAGE },
     { fetchPolicy: "store-and-network" },
   );
 
@@ -40,36 +40,40 @@ export default function Transactions() {
     <div className="flex flex-row">
       <div className="basis-3/4 py-3">
         <TransactionsFilters
-          filters={filtersState}
-          dispatch={dispatch}
           data={data}
+          dispatch={dispatch}
+          filters={filtersState}
           selectedTransactions={selectedTransactions}
           setSelectedTransactions={setSelectedTransactions}
         />
 
         <TransactionsTable
           filters={filtersState}
-          transactions={data}
           selectedTransactions={selectedTransactions}
           setSelectedTransactions={setSelectedTransactions}
+          transactions={data}
         />
       </div>
 
       <div className="basis-1/4 p-6">
-        <Accordion variant="shadow">
+        <Accordion defaultSelectedKeys={["categories"]} variant="shadow">
           <AccordionItem key="categories" title="Categories">
-            <TransactionsCategories categories={data} />
+            <TransactionsCategories
+              categories={data}
+              dispatch={dispatch}
+              filters={filtersState}
+            />
           </AccordionItem>
 
           <AccordionItem key="months" title="Months">
             <TransactionsStatistic
-              statistic={data}
-              filters={filtersState}
               dispatch={dispatch}
+              filters={filtersState}
+              statistic={data}
             />
           </AccordionItem>
           <AccordionItem key="sources" title="Sources">
-            <TransactionsSources filters={filtersState} dispatch={dispatch} />
+            <TransactionsSources dispatch={dispatch} filters={filtersState} />
           </AccordionItem>
         </Accordion>
       </div>

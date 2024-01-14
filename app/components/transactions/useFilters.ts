@@ -1,5 +1,6 @@
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useReducer } from "react";
+
 import TransactionsFiltersReducer, {
   initialState,
 } from "./TransactionsFiltersReducer";
@@ -26,6 +27,12 @@ export default function useFilters() {
         .split(",")
         .filter((str) => str.length > 0);
     }
+    if (params.has("categories")) {
+      state.categories = params
+        .get("categories")!
+        .split(",")
+        .filter((str) => str.length > 0);
+    }
 
     if (params.has("month")) {
       state.month = params.get("month")!;
@@ -36,7 +43,7 @@ export default function useFilters() {
     }
 
     return state;
-  }, []);
+  }, [searchParams]);
 
   const [filtersState, dispatch] = useReducer(
     TransactionsFiltersReducer,
@@ -58,6 +65,12 @@ export default function useFilters() {
       params.delete("sources");
     }
 
+    if (filtersState.categories != null && filtersState.categories.length > 0) {
+      params.set("categories", filtersState.categories.join(","));
+    } else {
+      params.delete("categories");
+    }
+
     if (filtersState.month != null) {
       params.set("month", filtersState.month);
     } else {
@@ -71,7 +84,7 @@ export default function useFilters() {
     }
 
     router.replace(`${pathname}?${params}`);
-  }, [filtersState]);
+  }, [filtersState, pathname, router, searchParams]);
 
-  return { filtersState, dispatch };
+  return { dispatch, filtersState };
 }

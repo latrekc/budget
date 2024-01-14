@@ -1,34 +1,40 @@
 import AmountValue, { Size } from "@/components/AmountValue";
+import { useButton } from "@nextui-org/react";
 import chroma from "chroma-js";
+import { useRef, useState } from "react";
+import { TiDelete } from "react-icons/ti";
 import { graphql, useFragment } from "react-relay";
+
 import { Currency } from "../cell/__generated__/TransactionAmountCell__transactio.graphql";
 import { TransactionCategoryChip$key } from "./__generated__/TransactionCategoryChip.graphql";
 
 export default function TransactionCategoryChip({
-  category: category$key,
-  onlyLeaf = false,
   amount,
+  category: category$key,
   currency,
-  button,
+  isDisabledDelete = false,
+  onDelete,
+  onlyLeaf = false,
 }: {
+  amount?: null | number;
   category: TransactionCategoryChip$key;
-  onlyLeaf?: boolean;
-  amount?: number | null;
   currency?: Currency;
-  button?: React.ReactNode;
+  isDisabledDelete?: boolean;
+  onDelete?: () => void;
+  onlyLeaf?: boolean;
 }) {
   const category = useFragment(
     graphql`
       fragment TransactionCategoryChip on Category {
-        name
+        name @required(action: THROW)
         color
 
         parentCategory {
-          name
+          name @required(action: THROW)
           color
 
           parentCategory {
-            name
+            name @required(action: THROW)
             color
           }
         }
@@ -37,47 +43,52 @@ export default function TransactionCategoryChip({
     category$key,
   );
 
+  const button =
+    onDelete != null ? (
+      <DeleteButton isDisabled={isDisabledDelete} onDelete={onDelete} />
+    ) : null;
+
   if (category.parentCategory == null || onlyLeaf) {
     return (
       <Chip
-        name={category.name}
-        color={category.color}
         amount={amount}
-        currency={currency}
         button={button}
+        color={category.color}
+        currency={currency}
+        name={category.name}
       />
     );
   } else if (category.parentCategory.parentCategory == null) {
     return (
       <Chip
-        name={category.parentCategory.name}
         color={category.parentCategory.color}
+        name={category.parentCategory.name}
       >
         <Chip
-          name={category.name}
-          color={category.color}
           amount={amount}
-          currency={currency}
           button={button}
+          color={category.color}
+          currency={currency}
+          name={category.name}
         />
       </Chip>
     );
   } else {
     return (
       <Chip
-        name={category.parentCategory.parentCategory.name}
         color={category.parentCategory.parentCategory.color}
+        name={category.parentCategory.parentCategory.name}
       >
         <Chip
-          name={category.parentCategory.name}
           color={category.parentCategory.color}
+          name={category.parentCategory.name}
         >
           <Chip
-            name={category.name}
-            color={category.color}
             amount={amount}
-            currency={currency}
             button={button}
+            color={category.color}
+            currency={currency}
+            name={category.name}
           />
         </Chip>
       </Chip>
@@ -86,19 +97,19 @@ export default function TransactionCategoryChip({
 }
 
 function Chip({
-  name,
-  color,
-  children,
   amount,
-  currency,
   button,
+  children,
+  color,
+  currency,
+  name,
 }: {
-  name: string | null;
-  color?: string | null;
-  children?: React.ReactNode;
-  amount?: number | null;
-  currency?: Currency;
+  amount?: null | number;
   button?: React.ReactNode;
+  children?: React.ReactNode;
+  color?: null | string;
+  currency?: Currency;
+  name: null | string;
 }) {
   const luminance = chroma(color!).luminance();
 
@@ -119,5 +130,36 @@ function Chip({
       {button}
       {children}
     </div>
+  );
+}
+
+function DeleteButton({
+  isDisabled = false,
+  onDelete,
+}: {
+  isDisabled?: boolean;
+  onDelete: () => void;
+}) {
+  const ref = useRef(null);
+
+  const { getButtonProps } = useButton({
+    onClick: onDelete,
+    ref,
+  });
+
+  const [isHover, setIsHover] = useState(false);
+
+  return (
+    <button
+      onMouseEnter={() => setIsHover(true)}
+      onMouseLeave={() => setIsHover(false)}
+      ref={ref}
+      {...getButtonProps()}
+      className="p-0 px-1"
+      disabled={isDisabled}
+      title="Remove category"
+    >
+      <TiDelete color={isHover ? "#ccc" : "white"} size="1.2em" />
+    </button>
   );
 }

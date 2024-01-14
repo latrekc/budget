@@ -1,4 +1,5 @@
 import { graphql, useFragment } from "react-relay";
+
 import { TransactionCategoriesButtonCell$key } from "./__generated__/TransactionCategoriesButtonCell.graphql";
 import TransactionCellAddCategoryButton from "./buttons/TransactionCellAddCategoryButton";
 import TransactionCellSplitCategoryButton from "./buttons/TransactionCellSplitCategoryButton";
@@ -13,7 +14,7 @@ export default function TransactionCategoriesButtonCell({
       fragment TransactionCategoriesButtonCell on Transaction {
         ...TransactionCellSplitCategoryButton
         ...TransactionCellAddCategoryButton
-        categories {
+        categories @required(action: THROW) {
           __typename
         }
       }

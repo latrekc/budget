@@ -2,17 +2,18 @@ import { PubSubChannels } from "@/lib/types";
 import { usePubSub } from "@/lib/usePubSub";
 import { useEffect } from "react";
 import { graphql, useRefetchableFragment } from "react-relay";
+
+import { TransactionsTotal$key } from "./__generated__/TransactionsTotal.graphql";
 import { FiltersState } from "./TransactionsFiltersReducer";
 import { TransactionsSelection } from "./TransactionsTable";
-import { TransactionsTotal$key } from "./__generated__/TransactionsTotal.graphql";
 
 export default function TransactionsTotal({
-  filters,
   data: data$key,
+  filters,
   selectedTransactions,
 }: {
-  filters: FiltersState;
   data: TransactionsTotal$key;
+  filters: FiltersState;
   selectedTransactions: TransactionsSelection;
 }) {
   const [{ transactions_total }, refetch] = useRefetchableFragment(
@@ -31,7 +32,7 @@ export default function TransactionsTotal({
     return subscribe(PubSubChannels.Transactions, () => {
       refetch({ filters }, { fetchPolicy: "network-only" });
     });
-  }, [filters]);
+  }, [filters, refetch, subscribe]);
 
   return (
     <div className="inline-flex items-center justify-start text-xs">

@@ -1,4 +1,5 @@
 import { graphql, useFragment } from "react-relay";
+
 import { TransactionDescriptionCell$key } from "./__generated__/TransactionDescriptionCell.graphql";
 
 export default function TransactionDescriptionCell({

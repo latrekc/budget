@@ -3,6 +3,7 @@
 import { NextUIProvider } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
 import { RelayEnvironmentProvider } from "react-relay";
+
 import { environment } from "./lib/relay";
 import { PubSubProvider } from "./lib/usePubSub";
 

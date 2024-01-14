@@ -1,6 +1,7 @@
 import { graphql, useFragment } from "react-relay";
-import TransactionCategoryContent from "./TransactionCategoryContent";
+
 import { TransactionSubSubCategory$key } from "./__generated__/TransactionSubSubCategory.graphql";
+import TransactionCategoryContent from "./TransactionCategoryContent";
 
 export default function TransactionSubSubCategory({
   subCategory: subCategory$key,

@@ -15,6 +15,7 @@ import {
 import { useInfiniteScroll } from "@nextui-org/use-infinite-scroll";
 import { useCallback, useEffect, useMemo } from "react";
 import { graphql, useFragment, usePaginationFragment } from "react-relay";
+
 import { FiltersState } from "./TransactionsFiltersReducer";
 import { TransactionsTable$key } from "./__generated__/TransactionsTable.graphql";
 import { TransactionsTable__RenderCell$key } from "./__generated__/TransactionsTable__RenderCell.graphql";
@@ -27,10 +28,13 @@ import TransactionSourceCell from "./cell/TransactionSourceCell";
 
 enum Colunms {
   "Source" = "Source",
+  // eslint-disable-next-line perfectionist/sort-enums
   "Date" = "Date",
   "Description" = "Description",
+  // eslint-disable-next-line perfectionist/sort-enums
   "Categories" = "Categories",
   "CategoriesButton" = "",
+  // eslint-disable-next-line perfectionist/sort-enums
   "Amount" = "Amount",
 }
 
@@ -39,8 +43,8 @@ export const PER_PAGE = 20;
 export type TransactionsSelection =
   | "all"
   | Set<{
-      transaction: string;
       amount: number;
+      transaction: string;
     }>;
 
 export default function TransactionsTable({
@@ -50,15 +54,15 @@ export default function TransactionsTable({
   transactions: transactions$key,
 }: {
   filters: FiltersState;
-  transactions: TransactionsTable$key;
   selectedTransactions: TransactionsSelection;
   setSelectedTransactions: (selected: TransactionsSelection) => void;
+  transactions: TransactionsTable$key;
 }) {
   const {
     data: { transactions },
-    loadNext,
-    isLoadingNext,
     hasNext,
+    isLoadingNext,
+    loadNext,
     refetch,
   } = usePaginationFragment(
     graphql`
@@ -90,7 +94,7 @@ export default function TransactionsTable({
     return subscribe(PubSubChannels.Transactions, () => {
       refetch({ filters }, { fetchPolicy: "network-only" });
     });
-  }, [filters]);
+  }, [filters, refetch, subscribe]);
 
   const selectedIds = useMemo<"all" | Set<string>>(() => {
     if (selectedTransactions === "all") {
@@ -110,7 +114,7 @@ export default function TransactionsTable({
 
   const transactionAmounts: Map<string, number> = useMemo(
     () =>
-      transactions?.edges.reduce((amounts, edge) => {
+      (transactions?.edges || []).reduce((amounts, edge) => {
         amounts.set(edge?.node.id, edge?.node.amount);
 
         return amounts;
@@ -128,14 +132,14 @@ export default function TransactionsTable({
         setSelectedTransactions(
           new Set(
             [...selected.values()].map((select) => ({
-              transaction: select.toString(),
               amount: transactionAmounts.get(select.toString()) ?? 0,
+              transaction: select.toString(),
             })),
           ),
         );
       }
     },
-    [selectedTransactions],
+    [setSelectedTransactions, transactionAmounts],
   );
 
   const loadMore = useCallback(() => {
@@ -181,29 +185,29 @@ export default function TransactionsTable({
   return (
     <Table
       aria-label="Example empty table"
-      radius="none"
-      shadow="none"
-      isHeaderSticky
       baseRef={scrollerRef}
-      selectionMode="multiple"
-      selectedKeys={selectedIds}
-      onSelectionChange={onSelectionChange}
       bottomContent={
         hasNext ? (
           <div className="flex w-full justify-center">
-            <Spinner ref={loaderRef} color="default" />
+            <Spinner color="default" ref={loaderRef} />
           </div>
         ) : null
       }
       classNames={{
         base: "max-h-[720px] overflow-scroll",
       }}
+      isHeaderSticky
+      onSelectionChange={onSelectionChange}
+      radius="none"
+      selectedKeys={selectedIds}
+      selectionMode="multiple"
+      shadow="none"
     >
       <TableHeader columns={columns}>
         {(column) => (
           <TableColumn
-            key={column.key}
             className={cellAlign(column.key as Colunms)}
+            key={column.key}
           >
             {column.label}
           </TableColumn>
@@ -211,18 +215,18 @@ export default function TransactionsTable({
       </TableHeader>
 
       <TableBody
-        items={transactions?.edges}
         isLoading={isLoadingNext}
+        items={transactions?.edges}
         loadingContent={<Spinner color="default" />}
       >
         {(item) => (
           <TableRow
-            key={item?.node.id}
             className={`${
               item?.node.completed
                 ? "bg-white hover:bg-stone-100"
                 : "bg-lime-50 hover:bg-lime-100"
             } `}
+            key={item?.node.id}
           >
             {(columnKey) => (
               <TableCell className={cellAlign(columnKey as Colunms)}>

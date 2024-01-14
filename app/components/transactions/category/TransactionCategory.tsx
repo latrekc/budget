@@ -1,7 +1,8 @@
 import { graphql, useFragment } from "react-relay";
+
+import { TransactionCategory$key } from "./__generated__/TransactionCategory.graphql";
 import TransactionCategoryContent from "./TransactionCategoryContent";
 import TransactionSubCategory from "./TransactionSubCategory";
-import { TransactionCategory$key } from "./__generated__/TransactionCategory.graphql";
 
 export default function TransactionCategory({
   category: category$key,
@@ -13,7 +14,7 @@ export default function TransactionCategory({
       fragment TransactionCategory on Category {
         ...TransactionCategoryContent
         subCategories {
-          id
+          id @required(action: THROW)
           ...TransactionSubCategory
         }
       }
@@ -25,9 +26,9 @@ export default function TransactionCategory({
     <div>
       <TransactionCategoryContent category={category} />
 
-      {category.subCategories.length > 0 ? (
+      {(category?.subCategories ?? []).length > 0 ? (
         <div className="pl-4">
-          {category.subCategories.map((subCategory) => (
+          {category?.subCategories?.map((subCategory) => (
             <TransactionSubCategory
               key={subCategory.id}
               subCategory={subCategory}

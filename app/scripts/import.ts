@@ -6,8 +6,8 @@ import { parse as parseDate } from "date-format-parse";
 import * as fs from "fs";
 import hash from "object-hash";
 import * as path from "path";
-import prisma from "../lib/prisma";
 
+import prisma from "../lib/prisma";
 import {
   Currency,
   Source,
@@ -60,10 +60,10 @@ async function upsertTransactions(type: Source, records: Transaction[]) {
 
   const inserts = records.map((record) =>
     prisma.transaction.upsert({
-      where: { id: record.id },
-      update: {},
       create: { ...record },
       select: { id: true },
+      update: {},
+      where: { id: record.id },
     }),
   );
 
@@ -77,17 +77,17 @@ async function upsertTransactions(type: Source, records: Transaction[]) {
   );
 }
 
-function parseTransactionsFile(
+function parseTransactionsFile<T>(
   csvFilePath: string,
-  on_record: (record: any) => Transaction,
+  on_record: (record: T) => Transaction,
 ): Transaction[] {
   const fileContent = fs.readFileSync(csvFilePath, { encoding: "utf-8" });
 
   return parse(fileContent, {
-    delimiter: ",",
     columns: true,
-    trim: true,
+    delimiter: ",",
     on_record,
+    trim: true,
   });
 }
 
@@ -96,9 +96,17 @@ program
   .description("Import Monzo transactions")
   .argument("<path>", "path to Monzo export file", parsePathToCSVFile)
   .action(async (csvFilePath: string) => {
-    const records = parseTransactionsFile(csvFilePath, (record) => ({
-      id: record["Transaction ID"],
-      source: Source.Monzo,
+    const records = parseTransactionsFile<{
+      Amount: string;
+      Currency: string;
+      Date: string;
+      Description: string;
+      Name?: string;
+      Time: string;
+      "Transaction ID": string;
+    }>(csvFilePath, (record) => ({
+      amount: parseFloat(record.Amount),
+      currency: enumFromStringValue(Currency, record.Currency),
       date: parseDate(
         [record.Date, record.Time].join(" "),
         "DD/MM/YYYY HH:mm:ss",
@@ -107,8 +115,8 @@ program
         .join(" ")
         .trim()
         .replace(/\s{2,}/g, " "),
-      amount: parseFloat(record.Amount),
-      currency: enumFromStringValue(Currency, record.Currency),
+      id: record["Transaction ID"],
+      source: Source.Monzo,
     }));
 
     await upsertTransactions(Source.Monzo, records);
@@ -119,13 +127,18 @@ program
   .description("Import Revolut transactions")
   .argument("<path>", "path to Revolut export file", parsePathToCSVFile)
   .action(async (csvFilePath: string) => {
-    const records = parseTransactionsFile(csvFilePath, (record) => ({
-      id: hash(record),
-      source: Source.Revolut,
-      date: parseDate(record["Started Date"], "YYYY-MM-DD HH:mm:ss"),
-      description: record.Description,
+    const records = parseTransactionsFile<{
+      Amount: string;
+      Currency: string;
+      Description: string;
+      "Started Date": string;
+    }>(csvFilePath, (record) => ({
       amount: parseFloat(record.Amount),
       currency: enumFromStringValue(Currency, record.Currency),
+      date: parseDate(record["Started Date"], "YYYY-MM-DD HH:mm:ss"),
+      description: record.Description,
+      id: hash(record),
+      source: Source.Revolut,
     }));
 
     await upsertTransactions(Source.Revolut, records);
@@ -144,11 +157,11 @@ program
     const ofxParser = new OfxParser();
 
     const accountCurrencies = new Map([
-      ["40119990876714", Currency.EUR],
-      ["40119990719539", Currency.USD],
       ["40010432086735", Currency.GBP],
-      ["40126540108227", Currency.GBP],
       ["40100018059063", Currency.GBP],
+      ["40119990719539", Currency.USD],
+      ["40119990876714", Currency.EUR],
+      ["40126540108227", Currency.GBP],
     ]);
 
     fs.readdirSync(directoryPath)
@@ -170,12 +183,12 @@ program
 
         ofx.transactions?.forEach((transaction) => {
           records.push({
-            id: transaction.fitId ?? "",
-            source: Source.HSBC,
-            date: transaction.datePosted ?? new Date(),
-            description: [transaction.name, transaction.memo].join(" "),
             amount: transaction.amount ?? 0,
             currency,
+            date: transaction.datePosted ?? new Date(),
+            description: [transaction.name, transaction.memo].join(" "),
+            id: transaction.fitId ?? "",
+            source: Source.HSBC,
           });
         });
       });

@@ -22,12 +22,12 @@ RelayFeatureFlags.ENABLE_RELAY_RESOLVERS = true;
  */
 function fetchFunction(params: RequestParameters, variables: Variables) {
   const response = fetch("/graphql", {
-    method: "POST",
-    headers: [["Content-Type", "application/json"]],
     body: JSON.stringify({
       query: params.text,
       variables,
     }),
+    headers: [["Content-Type", "application/json"]],
+    method: "POST",
   });
 
   return Observable.from(response.then((data) => data.json()));
@@ -39,7 +39,7 @@ function fetchFunction(params: RequestParameters, variables: Variables) {
 function createEnvironment() {
   const network = Network.create(fetchFunction);
   const store = new Store(new RecordSource());
-  return new Environment({ store, network });
+  return new Environment({ network, store });
 }
 
 export const environment = createEnvironment();

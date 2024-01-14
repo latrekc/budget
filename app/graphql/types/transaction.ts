@@ -1,5 +1,6 @@
 import { Prisma } from "@prisma/client";
 import { parse as parseDate } from "date-format-parse";
+
 import prisma, { parseId, parseIdString } from "../../lib/prisma";
 import { Currency, Source, enumFromStringValue } from "../../lib/types";
 import { builder } from "../builder";
@@ -14,57 +15,60 @@ builder.enumType(Source, {
 
 builder.prismaObject("Transaction", {
   fields: (t) => ({
-    id: t.exposeID("id"),
-    description: t.exposeString("description"),
     amount: t.exposeFloat("amount"),
-    date: t.field({
-      type: "Date",
-      resolve: (transaction) => transaction.date,
-    }),
-    currency: t.field({
-      type: Currency,
-      resolve: (transaction) =>
-        enumFromStringValue(Currency, transaction.currency),
-    }),
-    source: t.field({
-      type: Source,
-      resolve: (transaction) => enumFromStringValue(Source, transaction.source),
-    }),
     categories: t.relation("categories"),
     completed: t.exposeBoolean("completed"),
+    currency: t.field({
+      resolve: (transaction) =>
+        enumFromStringValue(Currency, transaction.currency),
+      type: Currency,
+    }),
+    date: t.field({
+      resolve: (transaction) => transaction.date,
+      type: "Date",
+    }),
+    description: t.exposeString("description"),
+    id: t.exposeID("id"),
+    source: t.field({
+      resolve: (transaction) => enumFromStringValue(Source, transaction.source),
+      type: Source,
+    }),
   }),
 });
 
 builder.prismaObject("TransactionsOnCategories", {
   fields: (t) => ({
-    transaction: t.relation("transaction"),
-    category: t.relation("category"),
     amount: t.exposeFloat("amount"),
+    category: t.relation("category"),
+    transaction: t.relation("transaction"),
   }),
 });
 
 type TransactionFilter = {
+  month?: null | string;
   onlyUncomplited?: boolean | null;
-  sources?: string[] | null;
-  month?: string | null;
-  search?: string | null;
+  search?: null | string;
+  sources?: null | string[];
 };
 
 const filterTransactionsInput = builder
   .inputRef<TransactionFilter>("filterTransactionsInput")
   .implement({
     fields: (t) => ({
-      onlyUncomplited: t.boolean({
-        required: false,
-        defaultValue: false,
-      }),
-      sources: t.stringList({
+      categories: t.stringList({
         required: false,
       }),
       month: t.string({
         required: false,
       }),
+      onlyUncomplited: t.boolean({
+        defaultValue: false,
+        required: false,
+      }),
       search: t.string({
+        required: false,
+      }),
+      sources: t.stringList({
         required: false,
       }),
     }),
@@ -108,14 +112,13 @@ function filtersToWhere(filters: TransactionFilter | null | undefined) {
 
 builder.queryField("transactions", (t) =>
   t.prismaConnection({
-    type: "Transaction",
-    cursor: "id",
     args: {
       filters: t.arg({
-        type: filterTransactionsInput,
         required: false,
+        type: filterTransactionsInput,
       }),
     },
+    cursor: "id",
     resolve: async (query, _, args) => {
       return await prisma.transaction.findMany({
         ...query,
@@ -123,6 +126,7 @@ builder.queryField("transactions", (t) =>
         where: filtersToWhere(args.filters),
       });
     },
+    type: "Transaction",
   }),
 );
 
@@ -130,8 +134,8 @@ builder.queryField("transactions_total", (t) =>
   t.int({
     args: {
       filters: t.arg({
-        type: filterTransactionsInput,
         required: false,
+        type: filterTransactionsInput,
       }),
     },
     resolve: async (_, args) => {
@@ -145,27 +149,26 @@ builder.queryField("transactions_total", (t) =>
 
 const updateCategoriesForTransactionsInput = builder
   .inputRef<{
-    transaction: string | number;
-    category: string | number;
     amount: number;
+    category: number | string;
+    transaction: number | string;
   }>("updateCategoriesForTransactionsInput")
   .implement({
     fields: (t) => ({
+      amount: t.float({ required: true }),
+      category: t.id({ required: true }),
       transaction: t.id({
         required: true,
       }),
-      category: t.id({ required: true }),
-      amount: t.float({ required: true }),
     }),
   });
 
 builder.mutationFields((t) => ({
   deleteCategoriesForTransactions: t.prismaField({
-    type: ["Transaction"],
     args: {
       transactions: t.arg({
-        type: [updateCategoriesForTransactionsInput],
         required: true,
+        type: [updateCategoriesForTransactionsInput],
       }),
     },
     errors: {
@@ -176,12 +179,12 @@ builder.mutationFields((t) => ({
         ({ transaction }) => parseIdString(transaction)!,
       );
 
-      const deletes = args.transactions.map(({ transaction, category }) =>
+      const deletes = args.transactions.map(({ category, transaction }) =>
         prisma.transactionsOnCategories.delete({
           where: {
             transactionId_categoryId: {
-              transactionId: parseIdString(transaction)!,
               categoryId: parseId(category)!,
+              transactionId: parseIdString(transaction)!,
             },
           },
         }),
@@ -190,13 +193,13 @@ builder.mutationFields((t) => ({
       await prisma.$transaction([...deletes]);
 
       await prisma.transaction.updateMany({
+        data: {
+          completed: false,
+        },
         where: {
           id: {
             in: transactionIds,
           },
-        },
-        data: {
-          completed: false,
         },
       });
 
@@ -209,17 +212,17 @@ builder.mutationFields((t) => ({
         },
       });
     },
+    type: ["Transaction"],
   }),
 
   updateCategoriesForAllTransactions: t.prismaField({
-    type: ["Transaction"],
     args: {
       category: t.arg.string({
         required: true,
       }),
       filters: t.arg({
-        type: filterTransactionsInput,
         required: true,
+        type: filterTransactionsInput,
       }),
     },
     errors: {
@@ -241,24 +244,24 @@ builder.mutationFields((t) => ({
       });
 
       await prisma.transaction.updateMany({
+        data: {
+          completed: true,
+        },
         where: {
           id: {
             in: transactionIds,
           },
         },
-        data: {
-          completed: true,
-        },
       });
 
       const categoryId = parseId(args.category)!;
 
-      const inserts = transactions.map(({ id: transactionId, amount }) =>
+      const inserts = transactions.map(({ amount, id: transactionId }) =>
         prisma.transactionsOnCategories.create({
           data: {
+            amount,
             categoryId,
             transactionId,
-            amount,
           },
         }),
       );
@@ -267,14 +270,14 @@ builder.mutationFields((t) => ({
 
       return [];
     },
+    type: ["Transaction"],
   }),
 
   updateCategoriesForTransactions: t.prismaField({
-    type: ["Transaction"],
     args: {
       transactions: t.arg({
-        type: [updateCategoriesForTransactionsInput],
         required: true,
+        type: [updateCategoriesForTransactionsInput],
       }),
     },
     errors: {
@@ -301,7 +304,7 @@ builder.mutationFields((t) => ({
       });
 
       const transactionAmounts = args.transactions.reduce(
-        (amounts, { transaction, amount }) => {
+        (amounts, { amount, transaction }) => {
           amounts.set(
             transaction,
             ((amounts.get(transaction) ?? 0) * 100 + Math.abs(amount) * 100) /
@@ -310,27 +313,27 @@ builder.mutationFields((t) => ({
 
           return amounts;
         },
-        new Map<string | number, number>(),
+        new Map<number | string, number>(),
       );
 
-      const updates = transactions.map(({ id, amount }) =>
+      const updates = transactions.map(({ amount, id }) =>
         prisma.transaction.update({
-          where: {
-            id: id,
-          },
           data: {
             completed: Math.abs(amount) <= transactionAmounts.get(id)!,
+          },
+          where: {
+            id: id,
           },
         }),
       );
 
       const inserts = args.transactions.map(
-        ({ transaction, category, amount }) =>
+        ({ amount, category, transaction }) =>
           prisma.transactionsOnCategories.create({
             data: {
+              amount,
               categoryId: parseId(category)!,
               transactionId: parseIdString(transaction)!,
-              amount,
             },
           }),
       );
@@ -346,5 +349,6 @@ builder.mutationFields((t) => ({
         },
       });
     },
+    type: ["Transaction"],
   }),
 }));

@@ -1,22 +1,22 @@
+import { Switch } from "@nextui-org/react";
+import { Dispatch, useCallback } from "react";
+
 import {
   FiltersState,
   ReducerAction,
   ReducerActionType,
 } from "../TransactionsFiltersReducer";
 
-import { Switch } from "@nextui-org/react";
-import { Dispatch, useCallback } from "react";
-
 export default function TransactionComplitedFilter({
-  filters,
   dispatch,
+  filters,
 }: {
-  filters: FiltersState;
   dispatch: Dispatch<ReducerAction>;
+  filters: FiltersState;
 }) {
   const onOnlyUncomplitedToggle = useCallback(
     () => dispatch({ type: ReducerActionType.toggleOnlyUncomplited }),
-    [],
+    [dispatch],
   );
 
   return (
