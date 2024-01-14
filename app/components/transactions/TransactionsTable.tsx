@@ -182,9 +182,11 @@ export default function TransactionsTable({
     }
   }, []);
 
+  const items = useMemo(() => transactions?.edges ?? [], [transactions?.edges]);
+
   return (
     <Table
-      aria-label="Example empty table"
+      aria-label="Transaction"
       baseRef={scrollerRef}
       bottomContent={
         hasNext ? (
@@ -215,8 +217,9 @@ export default function TransactionsTable({
       </TableHeader>
 
       <TableBody
+        emptyContent="No records"
         isLoading={isLoadingNext}
-        items={transactions?.edges}
+        items={items}
         loadingContent={<Spinner color="default" />}
       >
         {(item) => (

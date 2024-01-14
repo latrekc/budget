@@ -37,10 +37,16 @@ export default function TransactionsSources({
   );
 
   return (
-    <CheckboxGroup onValueChange={setSelected} value={value}>
+    <CheckboxGroup
+      classNames={{
+        wrapper: "gap-1",
+      }}
+      onValueChange={setSelected}
+      value={value}
+    >
       {sources.map(([id, label]) => (
         <Checkbox
-          className="m-0 min-w-[100%] flex-none cursor-pointer gap-4 rounded-lg border-2 border-white p-4 hover:bg-content2 data-[selected=true]:border-primary"
+          className="m-0 min-w-[100%] flex-none cursor-pointer gap-2 rounded-lg border-2 border-white p-4 hover:bg-content2 data-[selected=true]:border-primary"
           key={id}
           value={id}
         >

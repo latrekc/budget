@@ -45,6 +45,7 @@ builder.prismaObject("TransactionsOnCategories", {
 });
 
 type TransactionFilter = {
+  categories?: null | string[];
   month?: null | string;
   onlyUncomplited?: boolean | null;
   search?: null | string;
@@ -74,7 +75,7 @@ const filterTransactionsInput = builder
     }),
   });
 
-function filtersToWhere(filters: TransactionFilter | null | undefined) {
+async function filtersToWhere(filters: TransactionFilter | null | undefined) {
   let where: Prisma.TransactionWhereInput | undefined = undefined;
 
   if (filters != null) {
@@ -84,9 +85,9 @@ function filtersToWhere(filters: TransactionFilter | null | undefined) {
       where.completed = false;
     }
 
-    if (filters.sources != null && filters.sources.length > 0) {
+    if ((filters.sources ?? []).length > 0) {
       where.source = {
-        in: filters.sources,
+        in: filters.sources ?? [],
       };
     }
 
@@ -100,9 +101,50 @@ function filtersToWhere(filters: TransactionFilter | null | undefined) {
       };
     }
 
-    if (filters.search != null && filters.search.trim().length > 0) {
+    if ((filters.search ?? "").trim().length > 0) {
       where.description = {
-        contains: filters.search.trim(),
+        contains: filters.search?.trim(),
+      };
+    }
+
+    if ((filters.categories ?? []).length > 0) {
+      const categoriesFromFilter: number[] = (filters.categories ?? []).map(
+        (id) => parseId(id)!,
+      );
+
+      const categoriesWithSubCategories = await prisma.category.findMany({
+        select: {
+          id: true,
+        },
+        where: {
+          OR: [
+            {
+              id: {
+                in: categoriesFromFilter,
+              },
+            },
+            {
+              parentCategoryId: {
+                in: categoriesFromFilter,
+              },
+            },
+            {
+              parentCategory: {
+                parentCategoryId: {
+                  in: categoriesFromFilter,
+                },
+              },
+            },
+          ],
+        },
+      });
+
+      where.categories = {
+        some: {
+          categoryId: {
+            in: categoriesWithSubCategories.map(({ id }) => id),
+          },
+        },
       };
     }
   }
@@ -123,7 +165,7 @@ builder.queryField("transactions", (t) =>
       return await prisma.transaction.findMany({
         ...query,
         orderBy: [{ date: "desc" }],
-        where: filtersToWhere(args.filters),
+        where: await filtersToWhere(args.filters),
       });
     },
     type: "Transaction",
@@ -141,7 +183,7 @@ builder.queryField("transactions_total", (t) =>
     resolve: async (_, args) => {
       return await prisma.transaction.count({
         orderBy: [{ date: "desc" }],
-        where: filtersToWhere(args.filters),
+        where: await filtersToWhere(args.filters),
       });
     },
   }),
@@ -232,7 +274,7 @@ builder.mutationFields((t) => ({
       const transactions = await prisma.transaction.findMany({
         ...query,
         orderBy: [{ date: "desc" }],
-        where: filtersToWhere(args.filters),
+        where: await filtersToWhere(args.filters),
       });
 
       const transactionIds = transactions.map(({ id }) => id);
