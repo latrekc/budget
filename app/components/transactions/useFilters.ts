@@ -17,6 +17,10 @@ export default function useFilters() {
       ...initialState,
     };
 
+    if (params.has("onlyIncome")) {
+      state.onlyIncome = true;
+    }
+
     if (params.has("onlyUncomplited")) {
       state.onlyUncomplited = true;
     }
@@ -55,6 +59,12 @@ export default function useFilters() {
 
   useEffect(() => {
     const params = new URLSearchParams(searchParams);
+
+    if (filtersState.onlyIncome) {
+      params.set("onlyIncome", "true");
+    } else {
+      params.delete("onlyIncome");
+    }
 
     if (filtersState.onlyUncomplited) {
       params.set("onlyUncomplited", "true");

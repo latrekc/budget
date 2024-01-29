@@ -47,6 +47,7 @@ builder.prismaObject("TransactionsOnCategories", {
 type TransactionFilter = {
   categories?: null | string[];
   months?: null | string[];
+  onlyIncome?: boolean | null;
   onlyUncomplited?: boolean | null;
   search?: null | string;
   sources?: null | string[];
@@ -60,6 +61,10 @@ const filterTransactionsInput = builder
         required: false,
       }),
       months: t.stringList({
+        required: false,
+      }),
+      onlyIncome: t.boolean({
+        defaultValue: false,
         required: false,
       }),
       onlyUncomplited: t.boolean({
@@ -83,6 +88,12 @@ async function filtersToWhere(filters: TransactionFilter | null | undefined) {
 
     if (filters.onlyUncomplited) {
       where.completed = false;
+    }
+
+    if (filters.onlyIncome) {
+      where.amount = {
+        gt: 0,
+      };
     }
 
     if ((filters.sources ?? []).length > 0) {
