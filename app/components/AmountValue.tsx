@@ -46,7 +46,7 @@ export default function AmountValue({
     <span
       className={`${
         amount > 0 ? "text-green-900" : "text-red-900"
-      } text-mono ${getTextSize(size)}`}
+      } text-mono whitespace-nowrap ${getTextSize(size)}`}
     >
       {new Intl.NumberFormat("en-GB", {
         currency: currency,
