@@ -157,6 +157,7 @@ type TransactionsOnCategories {
 }
 
 input filterTransactionsInput {
+  amount: String
   categories: [String!]
   months: [String!]
   onlyIncome: Boolean = false

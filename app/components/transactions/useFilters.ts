@@ -48,6 +48,9 @@ export default function useFilters() {
     if (params.has("search")) {
       state.search = decodeURIComponent(params.get("search")!);
     }
+    if (params.has("amount")) {
+      state.amount = decodeURIComponent(params.get("amount")!);
+    }
 
     return state;
   }, [searchParams]);
@@ -94,6 +97,11 @@ export default function useFilters() {
       params.set("search", encodeURIComponent(filtersState.search));
     } else {
       params.delete("search");
+    }
+    if (filtersState.amount != null) {
+      params.set("amount", encodeURIComponent(filtersState.amount));
+    } else {
+      params.delete("amount");
     }
 
     router.replace(`${pathname}?${params}`);

@@ -1,4 +1,5 @@
 export type FiltersState = {
+  amount: null | string;
   categories: ReadonlyArray<string> | null;
   months: ReadonlyArray<string> | null;
   onlyIncome: boolean;
@@ -10,6 +11,7 @@ export type FiltersState = {
 export enum ReducerActionType {
   toggleOnlyIncome,
   toggleOnlyUncomplited,
+  setAmount,
   setSources,
   setMonths,
   setSearch,
@@ -27,11 +29,13 @@ export type ReducerAction =
   | {
       type: ReducerActionType.toggleOnlyUncomplited;
     }
+  | { payload: FiltersState["amount"]; type: ReducerActionType.setAmount }
   | { payload: FiltersState["months"]; type: ReducerActionType.setMonths }
   | { payload: FiltersState["search"]; type: ReducerActionType.setSearch }
   | { payload: FiltersState["sources"]; type: ReducerActionType.setSources };
 
 export const initialState: FiltersState = {
+  amount: null,
   categories: null,
   months: null,
   onlyIncome: false,
@@ -54,6 +58,12 @@ export default function TransactionsFiltersReducer(
       return {
         ...state,
         onlyUncomplited: !state.onlyUncomplited,
+      };
+
+    case ReducerActionType.setAmount:
+      return {
+        ...state,
+        amount: action.payload,
       };
 
     case ReducerActionType.setSources:
