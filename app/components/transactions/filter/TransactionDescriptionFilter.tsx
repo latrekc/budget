@@ -30,7 +30,7 @@ export default function TransactionDescriptionFilter({
 
   return (
     <Input
-      className="w-auto"
+      className="mr-6 w-auto grow"
       isClearable
       label="Search by description"
       onValueChange={onSearch}

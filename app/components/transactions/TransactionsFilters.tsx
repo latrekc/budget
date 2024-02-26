@@ -5,6 +5,7 @@ import { FiltersState, ReducerAction } from "./TransactionsFiltersReducer";
 import { TransactionsSelection } from "./TransactionsTable";
 import TransactionsTotal from "./TransactionsTotal";
 import { TransactionsFilters$key } from "./__generated__/TransactionsFilters.graphql";
+import TransactionAmountFilter from "./filter/TransactionAmountFilter";
 import TransactionCategoriesFilter from "./filter/TransactionCategoriesFilter";
 import TransactionComplitedFilter from "./filter/TransactionComplitedFilter";
 import TransactionDescriptionFilter from "./filter/TransactionDescriptionFilter";
@@ -34,8 +35,9 @@ export default function TransactionsFilters({
 
   return (
     <div>
-      <div className="m-6">
+      <div className="row-auto m-6 flex">
         <TransactionDescriptionFilter dispatch={dispatch} filters={filters} />
+        <TransactionAmountFilter dispatch={dispatch} filters={filters} />
       </div>
 
       <div className="m-6 flex flex-row flex-wrap gap-x-3">

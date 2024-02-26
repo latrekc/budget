@@ -45,6 +45,7 @@ builder.prismaObject("TransactionsOnCategories", {
 });
 
 type TransactionFilter = {
+  amount?: null | string;
   categories?: null | string[];
   months?: null | string[];
   onlyIncome?: boolean | null;
@@ -57,6 +58,9 @@ const filterTransactionsInput = builder
   .inputRef<TransactionFilter>("filterTransactionsInput")
   .implement({
     fields: (t) => ({
+      amount: t.string({
+        required: false,
+      }),
       categories: t.stringList({
         required: false,
       }),
@@ -99,6 +103,13 @@ async function filtersToWhere(filters: TransactionFilter | null | undefined) {
     if ((filters.sources ?? []).length > 0) {
       where.source = {
         in: filters.sources ?? [],
+      };
+    }
+
+    if ((filters.amount ?? "").trim().length > 0) {
+      const amount = parseFloat((filters.amount ?? "").trim());
+      where.amount = {
+        in: [Math.abs(amount), -Math.abs(amount)],
       };
     }
 
