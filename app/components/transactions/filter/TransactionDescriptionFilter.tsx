@@ -32,6 +32,7 @@ export default function TransactionDescriptionFilter({
       className="mr-6 w-auto grow"
       isClearable
       label="Search by description"
+      labelPlacement="outside"
       onValueChange={onSearch}
       value={searchValue}
     />

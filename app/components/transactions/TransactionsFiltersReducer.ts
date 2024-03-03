@@ -1,5 +1,8 @@
+import { AmountRelation } from "@/lib/types";
+
 export type FiltersState = {
   amount: null | string;
+  amountRelation: AmountRelation | null;
   categories: ReadonlyArray<string> | null;
   months: ReadonlyArray<string> | null;
   onlyIncome: boolean;
@@ -16,9 +19,14 @@ export enum ReducerActionType {
   setMonths,
   setSearch,
   setCategories,
+  setAmountRelation,
 }
 
 export type ReducerAction =
+  | {
+      payload: FiltersState["amountRelation"];
+      type: ReducerActionType.setAmountRelation;
+    }
   | {
       payload: FiltersState["categories"];
       type: ReducerActionType.setCategories;
@@ -36,6 +44,7 @@ export type ReducerAction =
 
 export const initialState: FiltersState = {
   amount: null,
+  amountRelation: null,
   categories: null,
   months: null,
   onlyIncome: false,
@@ -64,6 +73,11 @@ export default function TransactionsFiltersReducer(
       return {
         ...state,
         amount: action.payload,
+      };
+    case ReducerActionType.setAmountRelation:
+      return {
+        ...state,
+        amountRelation: action.payload,
       };
 
     case ReducerActionType.setSources:
