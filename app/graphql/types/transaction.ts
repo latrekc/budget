@@ -2,7 +2,12 @@ import { Prisma } from "@prisma/client";
 import { parse as parseDate } from "date-format-parse";
 
 import prisma, { parseId, parseIdString } from "../../lib/prisma";
-import { Currency, Source, enumFromStringValue } from "../../lib/types";
+import {
+  AmountRelation,
+  Currency,
+  Source,
+  enumFromStringValue,
+} from "../../lib/types";
 import { builder } from "../builder";
 
 builder.enumType(Currency, {
@@ -46,6 +51,7 @@ builder.prismaObject("TransactionsOnCategories", {
 
 type TransactionFilter = {
   amount?: null | string;
+  amountRelation?: AmountRelation | null;
   categories?: null | string[];
   months?: null | string[];
   onlyIncome?: boolean | null;
@@ -54,12 +60,19 @@ type TransactionFilter = {
   sources?: null | string[];
 };
 
+builder.enumType(AmountRelation, {
+  name: "AmountRelation",
+});
 const filterTransactionsInput = builder
   .inputRef<TransactionFilter>("filterTransactionsInput")
   .implement({
     fields: (t) => ({
       amount: t.string({
         required: false,
+      }),
+      amountRelation: t.field({
+        required: false,
+        type: AmountRelation,
       }),
       categories: t.stringList({
         required: false,
@@ -108,9 +121,46 @@ async function filtersToWhere(filters: TransactionFilter | null | undefined) {
 
     if ((filters.amount ?? "").trim().length > 0) {
       const amount = parseFloat((filters.amount ?? "").trim());
-      where.amount = {
-        in: [Math.abs(amount), -Math.abs(amount)],
-      };
+      switch (filters.amountRelation) {
+        case AmountRelation.GREATER:
+          where.OR = [
+            {
+              amount: {
+                gt: Math.abs(amount),
+              },
+            },
+            {
+              amount: {
+                lt: -Math.abs(amount),
+              },
+            },
+          ];
+          break;
+
+        case AmountRelation.LESS:
+          where.OR = [
+            {
+              amount: {
+                gte: 0,
+                lt: Math.abs(amount),
+              },
+            },
+            {
+              amount: {
+                gt: -Math.abs(amount),
+                lte: 0,
+              },
+            },
+          ];
+          break;
+
+        case AmountRelation.EQUAL:
+        default:
+          where.amount = {
+            in: [Math.abs(amount), -Math.abs(amount)],
+          };
+          break;
+      }
     }
 
     if ((filters.months ?? []).length > 0) {

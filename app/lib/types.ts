@@ -23,6 +23,12 @@ export type Transaction = {
   source: Source;
 };
 
+export enum AmountRelation {
+  EQUAL = "EQUAL",
+  GREATER = "GREATER",
+  LESS = "LESS",
+}
+
 export function enumFromStringValue<T>(
   enm: { [s: string]: T },
   value: string,

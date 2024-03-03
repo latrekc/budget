@@ -1,6 +1,7 @@
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useReducer } from "react";
 
+import { AmountRelation, enumFromStringValue } from "@/lib/types";
 import TransactionsFiltersReducer, {
   initialState,
 } from "./TransactionsFiltersReducer";
@@ -50,6 +51,12 @@ export default function useFilters() {
     }
     if (params.has("amount")) {
       state.amount = decodeURIComponent(params.get("amount")!);
+    }
+    if (params.has("amountRelation")) {
+      state.amountRelation = enumFromStringValue<AmountRelation>(
+        AmountRelation,
+        decodeURIComponent(params.get("amountRelation")!),
+      );
     }
 
     return state;
@@ -102,6 +109,14 @@ export default function useFilters() {
       params.set("amount", encodeURIComponent(filtersState.amount));
     } else {
       params.delete("amount");
+    }
+    if (filtersState.amountRelation != null) {
+      params.set(
+        "amountRelation",
+        encodeURIComponent(filtersState.amountRelation),
+      );
+    } else {
+      params.delete("amountRelation");
     }
 
     router.replace(`${pathname}?${params}`);
