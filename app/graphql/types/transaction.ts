@@ -128,9 +128,9 @@ async function filtersToWhere(filters: TransactionFilter | null | undefined) {
       });
     }
 
-    if ((filters.search ?? "").trim().length > 0) {
+    if ((filters.search ?? "").length > 0) {
       where.description = {
-        contains: filters.search?.trim(),
+        contains: filters.search ?? "",
       };
     }
 

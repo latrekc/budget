@@ -22,8 +22,7 @@ export default function TransactionDescriptionFilter({
 
   useEffect(() => {
     dispatch({
-      payload:
-        debouncedSearch.trim().length > 0 ? debouncedSearch.trim() : null,
+      payload: debouncedSearch.length > 0 ? debouncedSearch : null,
       type: ReducerActionType.setSearch,
     });
   }, [debouncedSearch, dispatch]);
