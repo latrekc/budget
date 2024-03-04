@@ -172,6 +172,7 @@ input filterTransactionsInput {
   amount: String
   amountRelation: AmountRelation
   categories: [String!]
+  ignoreCategories: [String!]
   months: [String!]
   onlyIncome: Boolean = false
   onlyUncomplited: Boolean = false

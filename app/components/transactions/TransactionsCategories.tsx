@@ -1,6 +1,6 @@
 import { PubSubChannels } from "@/lib/types";
 import { usePubSub } from "@/lib/usePubSub";
-import { CheckboxGroup, Input, Switch } from "@nextui-org/react";
+import { CheckboxGroup, Input, Radio, RadioGroup } from "@nextui-org/react";
 import {
   Dispatch,
   createContext,
@@ -15,6 +15,7 @@ import {
   FiltersState,
   ReducerAction,
   ReducerActionType,
+  initialState,
 } from "./TransactionsFiltersReducer";
 import {
   TransactionsCategories$data,
@@ -24,12 +25,20 @@ import TransactionCategory from "./category/TransactionCategory";
 import TransactionCategoryChip from "./category/TransactionCategoryChip";
 import TransactionAddButton from "./category/buttons/TransactionCategoryAddButton";
 
+export enum CategoryMode {
+  "EDIT" = "EDIT",
+  "IGNORE" = "IGNORE",
+  "SELECT" = "SELECT",
+}
+
 export const CategoriesContext = createContext<{
-  editMode: boolean;
+  categoryMode: CategoryMode;
   filterName: string;
+  filters: FiltersState;
 }>({
-  editMode: false,
+  categoryMode: CategoryMode.SELECT,
   filterName: "",
+  filters: initialState,
 });
 
 type Categories = TransactionsCategories$data["categories"];
@@ -64,7 +73,14 @@ export default function TransactionsCategories({
   dispatch: Dispatch<ReducerAction>;
   filters: FiltersState;
 }) {
-  const [editMode, setEditMode] = useState(false);
+  const [categoryMode, setCategoryMode] = useState<CategoryMode>(
+    CategoryMode.SELECT,
+  );
+
+  const onSetCategoryMode = useCallback(
+    (value: string) => setCategoryMode(value as CategoryMode),
+    [],
+  );
 
   const [{ categories: allCategories }, refetch] = useRefetchableFragment(
     graphql`
@@ -111,15 +127,25 @@ export default function TransactionsCategories({
           value.length > 0 && value.length < (allCategories ?? []).length
             ? value
             : null,
-        type: ReducerActionType.setCategories,
+        type:
+          categoryMode === CategoryMode.SELECT
+            ? ReducerActionType.setCategories
+            : ReducerActionType.setIgnoreCategories,
       });
     },
-    [allCategories, dispatch],
+    [allCategories, categoryMode, dispatch],
   );
 
   const value = useMemo(
-    () => (filters.categories != null ? [...filters.categories] : []),
-    [filters.categories],
+    () =>
+      categoryMode === CategoryMode.SELECT
+        ? filters.categories != null
+          ? [...filters.categories]
+          : []
+        : filters.ignoreCategories != null
+          ? [...filters.ignoreCategories]
+          : [],
+    [categoryMode, filters.categories, filters.ignoreCategories],
   );
 
   const categories = useMemo(
@@ -128,23 +154,36 @@ export default function TransactionsCategories({
   );
 
   const onRemove = useCallback(
-    (toRemove: string) => {
-      const newValue = filters.categories!.filter((item) => item !== toRemove);
+    (toRemove: string, mode: CategoryMode) => {
+      if (mode === CategoryMode.SELECT) {
+        const newValue = filters.categories!.filter(
+          (item) => item !== toRemove,
+        );
 
-      dispatch({
-        payload: newValue.length ? newValue : null,
-        type: ReducerActionType.setCategories,
-      });
+        dispatch({
+          payload: newValue.length ? newValue : null,
+          type: ReducerActionType.setCategories,
+        });
+      } else {
+        const newValue = filters.ignoreCategories!.filter(
+          (item) => item !== toRemove,
+        );
+
+        dispatch({
+          payload: newValue.length ? newValue : null,
+          type: ReducerActionType.setIgnoreCategories,
+        });
+      }
     },
-    [dispatch, filters.categories],
+    [dispatch, filters.categories, filters.ignoreCategories],
   );
 
   return (
-    <CategoriesContext.Provider value={{ editMode, filterName }}>
+    <CategoriesContext.Provider value={{ categoryMode, filterName, filters }}>
       <div className="max-h-[720px] min-h-[720px] overflow-scroll">
-        {filters.categories && (
-          <div className="inline-flex flex-wrap items-center justify-start gap-2">
-            {filters.categories.map((categoryId) => {
+        {(filters.categories || filters.ignoreCategories) && (
+          <div className="inline-flex flex-wrap items-center justify-start gap-2 py-2">
+            {filters.categories?.map((categoryId) => {
               const category = allCategories?.find(
                 ({ id }) => id === categoryId,
               );
@@ -155,24 +194,46 @@ export default function TransactionsCategories({
                 <TransactionCategoryChip
                   category={category}
                   key={categoryId}
-                  onDelete={() => onRemove(categoryId)}
+                  onDelete={() => onRemove(categoryId, CategoryMode.SELECT)}
+                />
+              );
+            })}
+
+            {filters.ignoreCategories?.map((categoryId) => {
+              const category = allCategories?.find(
+                ({ id }) => id === categoryId,
+              );
+              if (!category) {
+                return null;
+              }
+              return (
+                <TransactionCategoryChip
+                  category={category}
+                  ignore={true}
+                  key={categoryId}
+                  onDelete={() => onRemove(categoryId, CategoryMode.IGNORE)}
                 />
               );
             })}
           </div>
         )}
 
-        <div className="flex flex-row gap-4 p-4">
-          <Switch isSelected={editMode} onValueChange={setEditMode} size="sm">
-            Edit
-          </Switch>
+        <Input
+          label="Filter by name"
+          onValueChange={setFilterName}
+          value={filterName}
+        />
 
-          <Input
-            label="Filter by name"
-            onValueChange={setFilterName}
-            value={filterName}
-          />
-        </div>
+        <RadioGroup
+          className="py-6"
+          onValueChange={onSetCategoryMode}
+          orientation="horizontal"
+          value={categoryMode}
+        >
+          <Radio value={CategoryMode.EDIT}>Edit</Radio>
+          <Radio value={CategoryMode.SELECT}>Select</Radio>
+          <Radio value={CategoryMode.IGNORE}>Ignore</Radio>
+        </RadioGroup>
 
         <CheckboxGroup onValueChange={setSelected} value={value}>
           {categories
@@ -182,7 +243,7 @@ export default function TransactionsCategories({
             ))}
         </CheckboxGroup>
 
-        {editMode && (
+        {categoryMode === CategoryMode.EDIT && (
           <div className="p-4">
             <TransactionAddButton withLabel />
           </div>

@@ -2,7 +2,7 @@ import { Checkbox } from "@nextui-org/react";
 import { useCallback, useContext, useMemo } from "react";
 import { graphql, useFragment } from "react-relay";
 
-import { CategoriesContext } from "../TransactionsCategories";
+import { CategoriesContext, CategoryMode } from "../TransactionsCategories";
 import { TransactionCategoryContent$key } from "./__generated__/TransactionCategoryContent.graphql";
 import TransactionCategoryButtons from "./buttons/TransactionCategoryButtons";
 import TransactionCategoryChip from "./TransactionCategoryChip";
@@ -14,7 +14,7 @@ export default function TransactionCategoryContent({
   category: TransactionCategoryContent$key;
   withAddButton?: boolean;
 }) {
-  const { editMode, filterName } = useContext(CategoriesContext);
+  const { categoryMode, filterName, filters } = useContext(CategoriesContext);
 
   const category = useFragment(
     graphql`
@@ -55,7 +55,16 @@ export default function TransactionCategoryContent({
     ],
   );
 
-  return editMode ? (
+  const isWrongMode = useMemo(
+    () =>
+      (categoryMode === CategoryMode.SELECT &&
+        filters.ignoreCategories?.includes(category.id)) ||
+      (categoryMode === CategoryMode.IGNORE &&
+        filters.categories?.includes(category.id)),
+    [category.id, categoryMode, filters.categories, filters.ignoreCategories],
+  );
+
+  return categoryMode === CategoryMode.EDIT ? (
     <div
       className={`group flex flex-row items-center justify-between gap-x-4 p-4 ${
         isMatchFilter ? "hover:bg-gray-100" : "opacity-50"
@@ -72,8 +81,12 @@ export default function TransactionCategoryContent({
     </div>
   ) : (
     <Checkbox
-      className="m-0 mt-1 min-w-[100%] flex-none cursor-pointer gap-4 rounded-lg border-2 border-white p-4 hover:bg-content2 data-[selected=true]:border-primary"
-      isDisabled={!isMatchFilter}
+      className={`m-0 mt-1 min-w-[100%] flex-none cursor-pointer gap-4 rounded-lg border-2 border-white p-4 hover:bg-content2 ${
+        categoryMode === CategoryMode.SELECT
+          ? "data-[selected=true]:border-primary"
+          : "data-[selected=true]:border-danger"
+      }`}
+      isDisabled={!isMatchFilter || isWrongMode}
       key={category.id}
       value={category.id}
     >
