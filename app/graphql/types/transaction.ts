@@ -53,6 +53,7 @@ type TransactionFilter = {
   amount?: null | string;
   amountRelation?: AmountRelation | null;
   categories?: null | string[];
+  ignoreCategories?: null | string[];
   months?: null | string[];
   onlyIncome?: boolean | null;
   onlyUncomplited?: boolean | null;
@@ -75,6 +76,9 @@ const filterTransactionsInput = builder
         type: AmountRelation,
       }),
       categories: t.stringList({
+        required: false,
+      }),
+      ignoreCategories: t.stringList({
         required: false,
       }),
       months: t.stringList({
@@ -224,6 +228,31 @@ async function filtersToWhere(filters: TransactionFilter | null | undefined) {
         },
       };
     }
+
+    if ((filters.ignoreCategories ?? []).length > 0) {
+      const ignoreCategoriesFromFilter: number[] = (
+        filters.ignoreCategories ?? []
+      ).map((id) => parseId(id)!);
+
+      if (where.categories?.some !== undefined) {
+        where.categories = {
+          ...where.categories.some,
+          none: {
+            categoryId: {
+              in: ignoreCategoriesFromFilter,
+            },
+          },
+        };
+      } else {
+        where.categories = {
+          none: {
+            categoryId: {
+              in: ignoreCategoriesFromFilter,
+            },
+          },
+        };
+      }
+    }
   }
 
   return where;
@@ -241,7 +270,7 @@ builder.queryField("transactions", (t) =>
     resolve: async (query, _, args) => {
       return await prisma.transaction.findMany({
         ...query,
-        orderBy: [{ date: "desc" }],
+        orderBy: [{ date: "desc" }, { amount: "asc" }],
         where: await filtersToWhere(args.filters),
       });
     },

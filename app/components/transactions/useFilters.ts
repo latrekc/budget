@@ -38,6 +38,12 @@ export default function useFilters() {
         .split(",")
         .filter((str) => str.length > 0);
     }
+    if (params.has("ignoreCategories")) {
+      state.ignoreCategories = params
+        .get("ignoreCategories")!
+        .split(",")
+        .filter((str) => str.length > 0);
+    }
 
     if (params.has("months")) {
       state.months = params
@@ -92,6 +98,14 @@ export default function useFilters() {
       params.set("categories", filtersState.categories.join(","));
     } else {
       params.delete("categories");
+    }
+    if (
+      filtersState.ignoreCategories != null &&
+      filtersState.ignoreCategories.length > 0
+    ) {
+      params.set("ignoreCategories", filtersState.ignoreCategories.join(","));
+    } else {
+      params.delete("ignoreCategories");
     }
 
     if (filtersState.months != null) {

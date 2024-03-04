@@ -61,7 +61,10 @@ export default function Transactions() {
             key="categories"
             title={
               <AccordionItemTitle
-                list={filtersState.categories}
+                list={[
+                  ...(filtersState.categories ?? []),
+                  ...(filtersState.ignoreCategories ?? []),
+                ]}
                 name="Categories"
               />
             }
