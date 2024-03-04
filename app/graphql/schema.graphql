@@ -108,7 +108,7 @@ type Query {
   ): QueryTransactionsConnection
   transactions_statistic_per_months: [StatisticPerMonths!]
   transactions_statistic_per_years: [StatisticPerYears!]
-  transactions_total(filters: filterTransactionsInput): Int
+  transactions_total(filters: filterTransactionsInput): TransactionTotal
 }
 
 type QueryTransactionsConnection {
@@ -154,6 +154,12 @@ type Transaction {
   description: String
   id: ID
   source: Source
+}
+
+type TransactionTotal {
+  count: Int!
+  income: Float
+  outcome: Float
 }
 
 type TransactionsOnCategories {
