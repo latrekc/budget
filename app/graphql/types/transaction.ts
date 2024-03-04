@@ -249,8 +249,22 @@ builder.queryField("transactions", (t) =>
   }),
 );
 
+const TransactionTotal = builder.simpleObject("TransactionTotal", {
+  fields: (t) => ({
+    count: t.int({
+      nullable: false,
+    }),
+    income: t.float({
+      nullable: true,
+    }),
+    outcome: t.float({
+      nullable: true,
+    }),
+  }),
+});
+
 builder.queryField("transactions_total", (t) =>
-  t.int({
+  t.field({
     args: {
       filters: t.arg({
         required: false,
@@ -258,11 +272,41 @@ builder.queryField("transactions_total", (t) =>
       }),
     },
     resolve: async (_, args) => {
-      return await prisma.transaction.count({
-        orderBy: [{ date: "desc" }],
-        where: await filtersToWhere(args.filters),
+      const filters = await filtersToWhere(args.filters);
+      const count = await prisma.transaction.count({
+        where: filters,
       });
+
+      const income = await prisma.transaction.aggregate({
+        _sum: {
+          amount: true,
+        },
+        where: {
+          ...filters,
+          amount: {
+            gt: 0,
+          },
+        },
+      });
+      const outcome = await prisma.transaction.aggregate({
+        _sum: {
+          amount: true,
+        },
+        where: {
+          ...filters,
+          amount: {
+            lt: 0,
+          },
+        },
+      });
+
+      return {
+        count,
+        income: income._sum.amount,
+        outcome: outcome._sum.amount,
+      };
     },
+    type: TransactionTotal,
   }),
 );
 

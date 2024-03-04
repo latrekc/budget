@@ -1,11 +1,12 @@
-import { PubSubChannels } from "@/lib/types";
+import { Currency, PubSubChannels } from "@/lib/types";
 import { usePubSub } from "@/lib/usePubSub";
 import { useEffect } from "react";
 import { graphql, useRefetchableFragment } from "react-relay";
 
-import { TransactionsTotal$key } from "./__generated__/TransactionsTotal.graphql";
+import AmountValue, { Size } from "../AmountValue";
 import { FiltersState } from "./TransactionsFiltersReducer";
 import { TransactionsSelection } from "./TransactionsTable";
+import { TransactionsTotal$key } from "./__generated__/TransactionsTotal.graphql";
 
 export default function TransactionsTotal({
   data: data$key,
@@ -20,7 +21,11 @@ export default function TransactionsTotal({
     graphql`
       fragment TransactionsTotal on Query
       @refetchable(queryName: "TransactionsTotalQuery") {
-        transactions_total(filters: $filters)
+        transactions_total(filters: $filters) {
+          count
+          income
+          outcome
+        }
       }
     `,
     data$key,
@@ -38,7 +43,29 @@ export default function TransactionsTotal({
     <div className="inline-flex items-center justify-start text-xs">
       <div>
         <Content selectedTransactions={selectedTransactions} />{" "}
-        <b>{transactions_total}</b> transactions
+        <b>{transactions_total?.count}</b> transactions
+        {(transactions_total?.income ?? 0) > 0 ||
+        (transactions_total?.outcome ?? 0) < 0
+          ? " for "
+          : null}
+        {(transactions_total?.income ?? 0) > 0 && (
+          <AmountValue
+            amount={transactions_total?.income ?? 0}
+            currency={Currency.GBP}
+            size={Size.Small}
+          />
+        )}
+        {(transactions_total?.income ?? 0) > 0 &&
+        (transactions_total?.outcome ?? 0) < 0
+          ? " and "
+          : null}
+        {(transactions_total?.outcome ?? 0) < 0 && (
+          <AmountValue
+            amount={transactions_total?.outcome ?? 0}
+            currency={Currency.GBP}
+            size={Size.Small}
+          />
+        )}
       </div>
     </div>
   );

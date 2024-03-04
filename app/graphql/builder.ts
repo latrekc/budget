@@ -6,6 +6,7 @@ import ErrorsPlugin from "@pothos/plugin-errors";
 import PrismaPlugin from "@pothos/plugin-prisma";
 import PrismaUtils from "@pothos/plugin-prisma-utils";
 import RelayPlugin from "@pothos/plugin-relay";
+import SimpleObjectsPlugin from "@pothos/plugin-simple-objects";
 import { DateTimeResolver } from "graphql-scalars";
 
 import prisma from "../lib/prisma";
@@ -24,7 +25,13 @@ export const builder = new SchemaBuilder<{
   errorOptions: {
     defaultTypes: [],
   },
-  plugins: [PrismaPlugin, PrismaUtils, RelayPlugin, ErrorsPlugin],
+  plugins: [
+    PrismaPlugin,
+    PrismaUtils,
+    RelayPlugin,
+    ErrorsPlugin,
+    SimpleObjectsPlugin,
+  ],
   prisma: {
     client: prisma,
   },
