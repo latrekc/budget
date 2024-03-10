@@ -182,10 +182,26 @@ async function filtersToWhere(filters: TransactionFilter | null | undefined) {
       });
     }
 
-    if ((filters.search ?? "").length > 0) {
-      where.description = {
-        contains: filters.search ?? "",
-      };
+    let search = filters.search ?? "";
+    if (search.length > 0) {
+      if (search.startsWith("!")) {
+        search = search.slice(1);
+        where.NOT = {
+          description: {
+            contains: search,
+          },
+        };
+      } else if (search.includes("|")) {
+        where.OR = search.split("|").map((keyword) => ({
+          description: {
+            contains: keyword,
+          },
+        }));
+      } else {
+        where.description = {
+          contains: search,
+        };
+      }
     }
 
     if ((filters.categories ?? []).length > 0) {
@@ -236,12 +252,12 @@ async function filtersToWhere(filters: TransactionFilter | null | undefined) {
 
       if (where.categories?.some !== undefined) {
         where.categories = {
-          ...where.categories.some,
           none: {
             categoryId: {
               in: ignoreCategoriesFromFilter,
             },
           },
+          some: where.categories.some,
         };
       } else {
         where.categories = {
