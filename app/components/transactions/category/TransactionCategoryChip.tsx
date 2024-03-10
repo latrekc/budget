@@ -131,7 +131,11 @@ function Chip({
         color: luminance > 0.3 ? "black" : "white",
       }}
     >
-      {ignore && <BiHide />}
+      {ignore && (
+        <span className="ml-2">
+          <BiHide />
+        </span>
+      )}
       <span className="whitespace-nowrap px-2 text-small">{name}</span>
       {amount != null && currency != null ? (
         <div className="rounded-full bg-white px-2">

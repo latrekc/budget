@@ -6,7 +6,9 @@ enum AmountRelation {
 
 type Category {
   id: ID
+  income: Float!
   name: String
+  outcome: Float!
   parentCategory: Category
   subCategories: [Category!]
 }

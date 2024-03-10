@@ -2,10 +2,12 @@ import { Checkbox } from "@nextui-org/react";
 import { useCallback, useContext, useMemo } from "react";
 import { graphql, useFragment } from "react-relay";
 
+import AmountValue from "@/components/AmountValue";
+import { Currency } from "@/lib/types";
 import { CategoriesContext, CategoryMode } from "../TransactionsCategories";
+import TransactionCategoryChip from "./TransactionCategoryChip";
 import { TransactionCategoryContent$key } from "./__generated__/TransactionCategoryContent.graphql";
 import TransactionCategoryButtons from "./buttons/TransactionCategoryButtons";
-import TransactionCategoryChip from "./TransactionCategoryChip";
 
 export default function TransactionCategoryContent({
   category: category$key,
@@ -21,6 +23,8 @@ export default function TransactionCategoryContent({
       fragment TransactionCategoryContent on Category {
         id @required(action: THROW)
         name @required(action: THROW)
+        income
+        outcome
         parentCategory {
           name @required(action: THROW)
           parentCategory {
@@ -90,7 +94,20 @@ export default function TransactionCategoryContent({
       key={category.id}
       value={category.id}
     >
-      <TransactionCategoryChip category={category} onlyLeaf />
+      <div className="flex gap-2">
+        <TransactionCategoryChip category={category} onlyLeaf />
+        {category.income !== 0 && (
+          <AmountValue amount={category.income} currency={Currency.GBP} round />
+        )}
+        {category.income !== 0 && category.outcome !== 0 && " / "}
+        {category.outcome !== 0 && (
+          <AmountValue
+            amount={category.outcome}
+            currency={Currency.GBP}
+            round
+          />
+        )}
+      </div>
     </Checkbox>
   );
 }
