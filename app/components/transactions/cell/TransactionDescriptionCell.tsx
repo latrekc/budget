@@ -16,5 +16,5 @@ export default function TransactionDescriptionCell({
     transaction$key,
   );
 
-  return <span className="text-base">{description}</span>;
+  return <span className="select-all text-base">{description}</span>;
 }

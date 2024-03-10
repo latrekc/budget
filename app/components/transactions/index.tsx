@@ -112,7 +112,7 @@ function AccordionItemTitle({
   return (
     <Badge
       color="primary"
-      content={list?.length}
+      content={(list ?? []).length > 0 ? list?.length : null}
       placement="top-right"
       shape="rectangle"
       showOutline={false}
