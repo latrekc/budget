@@ -4,7 +4,37 @@ import { builder } from "../builder";
 builder.prismaObject("Category", {
   fields: (t) => ({
     id: t.exposeID("id"),
+    income: t.float({
+      nullable: false,
+      resolve: async (root) => {
+        const result = await prisma.transactionsOnCategories.aggregate({
+          _sum: { amount: true },
+          where: {
+            amount: {
+              gt: 0,
+            },
+            categoryId: { equals: root.id },
+          },
+        });
+        return result._sum.amount ?? 0;
+      },
+    }),
     name: t.exposeString("name"),
+    outcome: t.float({
+      nullable: false,
+      resolve: async (root) => {
+        const result = await prisma.transactionsOnCategories.aggregate({
+          _sum: { amount: true },
+          where: {
+            amount: {
+              lt: 0,
+            },
+            categoryId: { equals: root.id },
+          },
+        });
+        return result._sum.amount ?? 0;
+      },
+    }),
     parentCategory: t.relation("parentCategory", {
       nullable: true,
     }),
