@@ -1,14 +1,12 @@
 import { PubSubChannels } from "@/lib/types";
 import { usePubSub } from "@/lib/usePubSub";
-import { Autocomplete, AutocompleteItem } from "@nextui-org/react";
 import { useCallback, useState } from "react";
-import { graphql, useLazyLoadQuery, useMutation } from "react-relay";
+import { graphql, useMutation } from "react-relay";
 
-import TransactionCategoryChip from "../category/TransactionCategoryChip";
 import { FiltersState } from "../TransactionsFiltersReducer";
+import TransactionCategoryAutocomplete from "../category/TransactionCategoryAutocomplete";
 import { TransactionSetCategoryButtonAllMutation } from "./__generated__/TransactionSetCategoryButtonAllMutation.graphql";
 import { TransactionSetCategoryButtonMutation } from "./__generated__/TransactionSetCategoryButtonMutation.graphql";
-import { TransactionSetCategoryButtonQuery } from "./__generated__/TransactionSetCategoryButtonQuery.graphql";
 
 export default function TransactionSetCategoryButton({
   filters,
@@ -21,7 +19,6 @@ export default function TransactionSetCategoryButton({
 }) {
   const { publish } = usePubSub();
   const [error, setError] = useState<null | string>(null);
-  const [selectedKey, setSelectedKey] = useState<null | string>(null);
 
   const [commitMutation, isMutationInFlight] =
     useMutation<TransactionSetCategoryButtonMutation>(graphql`
@@ -65,49 +62,6 @@ export default function TransactionSetCategoryButton({
       }
     `);
 
-  const { categories: allCategories } =
-    useLazyLoadQuery<TransactionSetCategoryButtonQuery>(
-      graphql`
-        query TransactionSetCategoryButtonQuery {
-          categories {
-            id @required(action: THROW)
-            name @required(action: THROW)
-            parentCategory {
-              name @required(action: THROW)
-              parentCategory {
-                name @required(action: THROW)
-              }
-            }
-            ...TransactionCategoryChip
-          }
-        }
-      `,
-      {},
-      { fetchPolicy: "store-and-network" },
-    );
-
-  const [categories, setCategories] = useState(allCategories);
-
-  const onInputChange = useCallback(
-    (searchTerm: string) => {
-      setCategories(
-        searchTerm.length > 0
-          ? allCategories?.filter(
-              ({ name, parentCategory }) =>
-                name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                parentCategory?.name
-                  .toLowerCase()
-                  .includes(searchTerm.toLowerCase()) ||
-                parentCategory?.parentCategory?.name
-                  .toLowerCase()
-                  .includes(searchTerm.toLowerCase()),
-            )
-          : allCategories,
-      );
-    },
-    [allCategories],
-  );
-
   const onSelect = useCallback(
     (key: React.Key) => {
       if (transactions === "all") {
@@ -117,7 +71,6 @@ export default function TransactionSetCategoryButton({
 
         commitAllMutation({
           onCompleted(result) {
-            setSelectedKey(null);
             if (result?.updateCategoriesForAllTransactions?.message) {
               setError(result.updateCategoriesForAllTransactions.message);
             } else {
@@ -133,7 +86,6 @@ export default function TransactionSetCategoryButton({
       } else {
         commitMutation({
           onCompleted(result) {
-            setSelectedKey(null);
             if (result?.updateCategoriesForTransactions?.message) {
               setError(result.updateCategoriesForTransactions.message);
             } else {
@@ -159,34 +111,14 @@ export default function TransactionSetCategoryButton({
       transactions,
     ],
   );
-
   return (
-    <Autocomplete
-      autoFocus
-      className="max-w-xs"
-      errorMessage={error}
+    <TransactionCategoryAutocomplete
+      error={error}
       isDisabled={
         isMutationInFlight || isMutationAllInFlight || transactions.length == 0
       }
-      isInvalid={error != null}
-      items={categories ?? []}
       label="Update category"
-      onInputChange={onInputChange}
-      onSelectionChange={onSelect}
-      popoverProps={{
-        classNames: {
-          content: "w-[450px]",
-        },
-      }}
-      selectedKey={selectedKey}
-    >
-      {(category) => (
-        <AutocompleteItem key={category.id} value={category.id}>
-          <div className="flex shrink flex-row flex-wrap">
-            <TransactionCategoryChip category={category} />
-          </div>
-        </AutocompleteItem>
-      )}
-    </Autocomplete>
+      onSelect={onSelect}
+    />
   );
 }
