@@ -5,6 +5,7 @@ import { TransactionCategoryButtons$key } from "./__generated__/TransactionCateg
 import TransactionCategoryAddButton from "./TransactionCategoryAddButton";
 import TransactionCategoryDeleteButton from "./TransactionCategoryDeleteButton";
 import TransactionCategoryEditButton from "./TransactionCategoryEditButton";
+import TransactionCategoryMoveButton from "./TransactionCategoryMoveButton";
 
 export default function TransactionCategoryButtons({
   category: category$key,
@@ -19,6 +20,7 @@ export default function TransactionCategoryButtons({
         id @required(action: THROW)
         ...TransactionCategoryDeleteButton
         ...TransactionCategoryEditButton
+        ...TransactionCategoryMoveButton
       }
     `,
     category$key,
@@ -30,6 +32,7 @@ export default function TransactionCategoryButtons({
         <TransactionCategoryAddButton parent={category.id} />
       ) : null}
       <TransactionCategoryEditButton category={category} />
+      <TransactionCategoryMoveButton category={category} />
       <TransactionCategoryDeleteButton category={category} />
     </ButtonGroup>
   );

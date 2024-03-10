@@ -8,6 +8,7 @@ import { useMemo } from "react";
 import { LuSplit } from "react-icons/lu";
 import { graphql, useFragment } from "react-relay";
 
+import AmountValue from "@/components/AmountValue";
 import TransactionCategoryChip from "../../category/TransactionCategoryChip";
 import { TransactionCellSplitCategoryButton$key } from "./__generated__/TransactionCellSplitCategoryButton.graphql";
 
@@ -16,11 +17,12 @@ export default function TransactionCellSplitCategoryButton({
 }: {
   transaction: TransactionCellSplitCategoryButton$key;
 }) {
-  const { amount, categories } = useFragment(
+  const { amount, categories, currency } = useFragment(
     graphql`
       fragment TransactionCellSplitCategoryButton on Transaction {
         id @required(action: THROW)
         amount @required(action: THROW)
+        currency @required(action: THROW)
         categories @required(action: THROW) {
           category @required(action: THROW) {
             ...TransactionCategoryChip
@@ -37,7 +39,7 @@ export default function TransactionCellSplitCategoryButton({
     return (
       (Math.abs(amount) * 100 -
         categories.reduce((sum, category) => {
-          return (sum * 100 + category.amount * 100) / 100;
+          return (sum * 100 + Math.abs(category.amount) * 100) / 100;
         }, 0) *
           100) /
       100
@@ -73,19 +75,14 @@ export default function TransactionCellSplitCategoryButton({
                     className="w-20 rounded border-0 bg-gray-200 text-right text-base"
                     inputMode="decimal"
                     type="number"
-                    value={amount}
+                    value={Math.abs(amount)}
                   />
                 </div>
               ))}
               {rest > 0 ? (
                 <div className="flex w-full flex-row flex-wrap justify-between gap-x-2 py-2">
-                  <div>xxx</div>
-                  <input
-                    className="w-20 rounded border-0 bg-gray-200 text-right text-base"
-                    inputMode="decimal"
-                    type="number"
-                    value={rest}
-                  />
+                  <div>Unmarked</div>
+                  <AmountValue abs amount={rest} currency={currency} />
                 </div>
               ) : null}
             </div>
