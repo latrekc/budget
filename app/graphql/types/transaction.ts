@@ -104,6 +104,8 @@ const filterTransactionsInput = builder
 async function filtersToWhere(filters: TransactionFilter | null | undefined) {
   let where: Prisma.TransactionWhereInput | undefined = undefined;
 
+  const OR: Prisma.TransactionWhereInput[][] = [];
+
   if (filters != null) {
     where = {};
 
@@ -124,62 +126,54 @@ async function filtersToWhere(filters: TransactionFilter | null | undefined) {
     }
 
     if ((filters.amount ?? "").trim().length > 0) {
-      const amount = parseFloat((filters.amount ?? "").trim());
+      const amount = Math.abs(parseFloat((filters.amount ?? "").trim()));
       switch (filters.amountRelation) {
         case AmountRelation.GREATER:
-          where.OR = [
+          OR.push([
             {
               amount: {
-                gt: Math.abs(amount),
+                gt: amount,
               },
             },
             {
               amount: {
-                lt: -Math.abs(amount),
+                lt: -amount,
               },
             },
-          ];
+          ]);
           break;
 
         case AmountRelation.LESS:
-          where.OR = [
-            {
-              amount: {
-                gte: 0,
-                lt: Math.abs(amount),
-              },
-            },
-            {
-              amount: {
-                gt: -Math.abs(amount),
-                lte: 0,
-              },
-            },
-          ];
+          where.amount = {
+            gt: -amount,
+            lt: amount,
+          };
           break;
 
         case AmountRelation.EQUAL:
         default:
           where.amount = {
-            in: [Math.abs(amount), -Math.abs(amount)],
+            in: [amount, -amount],
           };
           break;
       }
     }
 
     if ((filters.months ?? []).length > 0) {
-      where.OR = (filters.months ?? []).map((monthId) => {
-        const month = parseDate(monthId, "YYYY-MM");
-        const nextMonth = new Date(month);
-        nextMonth.setMonth(month.getMonth() + 1);
+      OR.push(
+        (filters.months ?? []).map((monthId) => {
+          const month = parseDate(monthId, "YYYY-MM");
+          const nextMonth = new Date(month);
+          nextMonth.setMonth(month.getMonth() + 1);
 
-        return {
-          date: {
-            gte: month,
-            lt: nextMonth,
-          },
-        };
-      });
+          return {
+            date: {
+              gte: month,
+              lt: nextMonth,
+            },
+          };
+        }),
+      );
     }
 
     let search = filters.search ?? "";
@@ -192,11 +186,13 @@ async function filtersToWhere(filters: TransactionFilter | null | undefined) {
           },
         };
       } else if (search.includes("|")) {
-        where.OR = search.split("|").map((keyword) => ({
-          description: {
-            contains: keyword,
-          },
-        }));
+        OR.push(
+          search.split("|").map((keyword) => ({
+            description: {
+              contains: keyword,
+            },
+          })),
+        );
       } else {
         where.description = {
           contains: search,
@@ -269,7 +265,13 @@ async function filtersToWhere(filters: TransactionFilter | null | undefined) {
         };
       }
     }
+
+    if (OR.length > 0) {
+      where.AND = OR.map((item) => ({ OR: item }));
+    }
   }
+
+  console.log("FILTERS", JSON.stringify(where, null, "\t"));
 
   return where;
 }
