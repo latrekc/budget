@@ -81,7 +81,7 @@ export default function TransactionCellSplitCategoryButton({
               ))}
               {rest > 0 ? (
                 <div className="flex w-full flex-row flex-wrap justify-between gap-x-2 py-2">
-                  <div>Unmarked</div>
+                  <div>Uncategorised</div>
                   <AmountValue abs amount={rest} currency={currency} />
                 </div>
               ) : null}
