@@ -324,27 +324,38 @@ builder.queryField("transactions_total", (t) =>
         where: filters,
       });
 
+      const gt = {
+        amount: {
+          gt: 0,
+        },
+      };
+      const lt = {
+        amount: {
+          lt: 0,
+        },
+      };
+
       const income = await prisma.transaction.aggregate({
         _sum: {
           amount: true,
         },
-        where: {
-          ...filters,
-          amount: {
-            gt: 0,
-          },
-        },
+        where:
+          filters != undefined
+            ? {
+                AND: [filters, gt],
+              }
+            : gt,
       });
       const outcome = await prisma.transaction.aggregate({
         _sum: {
           amount: true,
         },
-        where: {
-          ...filters,
-          amount: {
-            lt: 0,
-          },
-        },
+        where:
+          filters != undefined
+            ? {
+                AND: [filters, lt],
+              }
+            : lt,
       });
 
       return {
