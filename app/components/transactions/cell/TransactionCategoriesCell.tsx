@@ -1,8 +1,10 @@
 import { graphql, useFragment } from "react-relay";
 
 import TransactionCategoryChip from "../category/TransactionCategoryChip";
-import { Currency } from "../cell/__generated__/TransactionAmountCell__transactio.graphql";
-import { TransactionCategoriesCell$key } from "./__generated__/TransactionCategoriesCell.graphql";
+import {
+  Currency,
+  TransactionCategoriesCell$key,
+} from "./__generated__/TransactionCategoriesCell.graphql";
 import { TransactionCategoriesCell_Category$key } from "./__generated__/TransactionCategoriesCell_Category.graphql";
 import useTransactionCellDeleteCategoryButton from "./buttons/useTransactionCellDeleteCategoryButton";
 
