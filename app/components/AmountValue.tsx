@@ -1,4 +1,4 @@
-import { Currency } from "./Transactions/cell/__generated__/TransactionAmountCell__transactio.graphql";
+import { Currency } from "./Transactions/cell/__generated__/TransactionAmountCell.graphql";
 
 export enum Size {
   Small,

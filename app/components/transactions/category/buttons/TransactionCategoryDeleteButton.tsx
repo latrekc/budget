@@ -11,9 +11,8 @@ import {
 import { useCallback } from "react";
 import { TiDelete } from "react-icons/ti";
 import { graphql, useFragment, useMutation } from "react-relay";
-
-import { TransactionCategoryDeleteButtonMutation } from "../__generated__/TransactionCategoryDeleteButtonMutation.graphql";
 import { TransactionCategoryDeleteButton$key } from "./__generated__/TransactionCategoryDeleteButton.graphql";
+import { TransactionCategoryDeleteButtonMutation } from "./__generated__/TransactionCategoryDeleteButtonMutation.graphql";
 
 export default function TransactionCategoryDeleteButton({
   category: category$key,
@@ -53,7 +52,7 @@ export default function TransactionCategoryDeleteButton({
     }
     commitDeleteMutation({
       onCompleted(result) {
-        if (result.deleteCategory.error) {
+        if (result?.deleteCategory?.error) {
           alert(result.deleteCategory.error);
         } else {
           publish(PubSubChannels.Categories);

@@ -6,7 +6,7 @@ import { graphql, useFragment } from "react-relay";
 
 import { BiHide } from "react-icons/bi";
 import { TiDelete } from "react-icons/ti";
-import { Currency } from "../cell/__generated__/TransactionAmountCell__transactio.graphql";
+import { Currency } from "../cell/__generated__/TransactionAmountCell.graphql";
 import { TransactionCategoryChip$key } from "./__generated__/TransactionCategoryChip.graphql";
 
 export default function TransactionCategoryChip({
