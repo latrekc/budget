@@ -8,17 +8,19 @@ import {
 } from "./__generated__/TransactionCategoryAutocompleteQuery.graphql";
 
 export default function TransactionCategoryAutocomplete({
-  error,
+  error = null,
   filterCallback,
-  isDisabled,
+  isDisabled = false,
+  isSmall = false,
   label,
   onSelect,
 }: {
-  error: null | string;
+  error?: null | string;
   filterCallback?: (
     categories: TransactionCategoryAutocompleteQuery$data["categories"],
   ) => TransactionCategoryAutocompleteQuery$data["categories"];
-  isDisabled: boolean;
+  isDisabled?: boolean;
+  isSmall?: boolean;
   label: string;
   onSelect: (key: React.Key) => void;
 }) {
@@ -76,6 +78,7 @@ export default function TransactionCategoryAutocomplete({
       autoFocus
       className="max-w-xs"
       errorMessage={error}
+      fullWidth={!isSmall}
       isDisabled={isDisabled}
       isInvalid={error != null}
       items={categories ?? []}
@@ -83,11 +86,13 @@ export default function TransactionCategoryAutocomplete({
       menuTrigger="input"
       onInputChange={onInputChange}
       onSelectionChange={onSelect}
+      placeholder="Select category"
       popoverProps={{
         classNames: {
           content: "w-[450px]",
         },
       }}
+      size={isSmall ? "sm" : "md"}
     >
       {(category) => (
         <AutocompleteItem key={category.id} value={category.id}>

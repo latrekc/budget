@@ -271,8 +271,6 @@ async function filtersToWhere(filters: TransactionFilter | null | undefined) {
     }
   }
 
-  console.log("FILTERS", JSON.stringify(where, null, "\t"));
-
   return where;
 }
 

@@ -75,7 +75,7 @@ export const initialState: FiltersState = {
 export default function TransactionsFiltersReducer(
   state: FiltersState,
   action: FiltersReducerAction,
-) {
+): FiltersState {
   switch (action.type) {
     case FiltersReducerActionType.toggleOnlyIncome:
       return {
