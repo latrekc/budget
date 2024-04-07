@@ -13,9 +13,9 @@ import { graphql, useFragment } from "react-relay";
 import AmountValue, { Size } from "../AmountValue";
 import { TransactionsStatistic$key } from "./__generated__/TransactionsStatistic.graphql";
 import {
+  FiltersReducerAction,
+  FiltersReducerActionType,
   FiltersState,
-  ReducerAction,
-  ReducerActionType,
 } from "./TransactionsFiltersReducer";
 
 type Year = {
@@ -51,7 +51,7 @@ export default function TransactionsStatistic({
   filters,
   statistic: statistic$key,
 }: {
-  dispatch: Dispatch<ReducerAction>;
+  dispatch: Dispatch<FiltersReducerAction>;
   filters: FiltersState;
   statistic: TransactionsStatistic$key;
 }) {
@@ -113,7 +113,7 @@ export default function TransactionsStatistic({
       dispatch({
         payload:
           value.length > 0 && value.length < months.length ? value : null,
-        type: ReducerActionType.setMonths,
+        type: FiltersReducerActionType.setMonths,
       });
     },
     [dispatch, months.length],
@@ -130,7 +130,7 @@ export default function TransactionsStatistic({
 
       dispatch({
         payload: newValue.length ? newValue : null,
-        type: ReducerActionType.setMonths,
+        type: FiltersReducerActionType.setMonths,
       });
     },
     [dispatch, filters.months],

@@ -4,16 +4,16 @@ import { Dispatch, useCallback, useMemo } from "react";
 
 import SourceImage from "../SourceImage";
 import {
+  FiltersReducerAction,
+  FiltersReducerActionType,
   FiltersState,
-  ReducerAction,
-  ReducerActionType,
 } from "./TransactionsFiltersReducer";
 
 export default function TransactionsSources({
   dispatch,
   filters,
 }: {
-  dispatch: Dispatch<ReducerAction>;
+  dispatch: Dispatch<FiltersReducerAction>;
   filters: FiltersState;
 }) {
   const sources = useMemo(() => {
@@ -25,7 +25,7 @@ export default function TransactionsSources({
       dispatch({
         payload:
           value.length > 0 && value.length < sources.length ? value : null,
-        type: ReducerActionType.setSources,
+        type: FiltersReducerActionType.setSources,
       });
     },
     [dispatch, sources.length],
@@ -42,7 +42,7 @@ export default function TransactionsSources({
 
       dispatch({
         payload: newValue.length ? newValue : null,
-        type: ReducerActionType.setSources,
+        type: FiltersReducerActionType.setSources,
       });
     },
     [dispatch, filters.sources],

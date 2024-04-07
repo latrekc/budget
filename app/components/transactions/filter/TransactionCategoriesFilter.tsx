@@ -9,7 +9,10 @@ import {
 import { Dispatch, useCallback, useMemo, useState } from "react";
 
 import TransactionSetCategoryButton from "../buttons/TransactionSetCategoryButton";
-import { FiltersState, ReducerAction } from "../TransactionsFiltersReducer";
+import {
+  FiltersReducerAction,
+  FiltersState,
+} from "../TransactionsFiltersReducer";
 import { TransactionsSelection } from "../TransactionsTable";
 
 export default function TransactionCategoriesFilter({
@@ -17,7 +20,7 @@ export default function TransactionCategoriesFilter({
   selectedTransactions,
   setSelectedTransactions,
 }: {
-  dispatch: Dispatch<ReducerAction>;
+  dispatch: Dispatch<FiltersReducerAction>;
   filters: FiltersState;
   selectedTransactions: TransactionsSelection;
   setSelectedTransactions: (selected: TransactionsSelection) => void;
