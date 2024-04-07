@@ -3,16 +3,16 @@ import { Dispatch, useCallback, useEffect, useState } from "react";
 import { useDebounce } from "usehooks-ts";
 
 import {
+  FiltersReducerAction,
+  FiltersReducerActionType,
   FiltersState,
-  ReducerAction,
-  ReducerActionType,
 } from "../TransactionsFiltersReducer";
 
 export default function TransactionDescriptionFilter({
   dispatch,
   filters,
 }: {
-  dispatch: Dispatch<ReducerAction>;
+  dispatch: Dispatch<FiltersReducerAction>;
   filters: FiltersState;
 }) {
   const [searchValue, setSearchValue] = useState<string>(filters.search ?? "");
@@ -23,7 +23,7 @@ export default function TransactionDescriptionFilter({
   useEffect(() => {
     dispatch({
       payload: debouncedSearch.length > 0 ? debouncedSearch : null,
-      type: ReducerActionType.setSearch,
+      type: FiltersReducerActionType.setSearch,
     });
   }, [debouncedSearch, dispatch]);
 

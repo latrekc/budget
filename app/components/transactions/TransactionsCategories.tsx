@@ -12,9 +12,9 @@ import {
 import { graphql, useRefetchableFragment } from "react-relay";
 
 import {
+  FiltersReducerAction,
+  FiltersReducerActionType,
   FiltersState,
-  ReducerAction,
-  ReducerActionType,
   initialState,
 } from "./TransactionsFiltersReducer";
 import {
@@ -70,7 +70,7 @@ export default function TransactionsCategories({
   filters,
 }: {
   categories: TransactionsCategories$key;
-  dispatch: Dispatch<ReducerAction>;
+  dispatch: Dispatch<FiltersReducerAction>;
   filters: FiltersState;
 }) {
   const [categoryMode, setCategoryMode] = useState<CategoryMode>(
@@ -129,8 +129,8 @@ export default function TransactionsCategories({
             : null,
         type:
           categoryMode === CategoryMode.SELECT
-            ? ReducerActionType.setCategories
-            : ReducerActionType.setIgnoreCategories,
+            ? FiltersReducerActionType.setCategories
+            : FiltersReducerActionType.setIgnoreCategories,
       });
     },
     [allCategories, categoryMode, dispatch],
@@ -162,7 +162,7 @@ export default function TransactionsCategories({
 
         dispatch({
           payload: newValue.length ? newValue : null,
-          type: ReducerActionType.setCategories,
+          type: FiltersReducerActionType.setCategories,
         });
       } else {
         const newValue = filters.ignoreCategories!.filter(
@@ -171,7 +171,7 @@ export default function TransactionsCategories({
 
         dispatch({
           payload: newValue.length ? newValue : null,
-          type: ReducerActionType.setIgnoreCategories,
+          type: FiltersReducerActionType.setIgnoreCategories,
         });
       }
     },

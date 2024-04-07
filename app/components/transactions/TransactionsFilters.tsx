@@ -1,7 +1,10 @@
 import { Dispatch } from "react";
 import { graphql, useFragment } from "react-relay";
 
-import { FiltersState, ReducerAction } from "./TransactionsFiltersReducer";
+import {
+  FiltersReducerAction,
+  FiltersState,
+} from "./TransactionsFiltersReducer";
 import { TransactionsSelection } from "./TransactionsTable";
 import TransactionsTotal from "./TransactionsTotal";
 import { TransactionsFilters$key } from "./__generated__/TransactionsFilters.graphql";
@@ -19,7 +22,7 @@ export default function TransactionsFilters({
   setSelectedTransactions,
 }: {
   data: TransactionsFilters$key;
-  dispatch: Dispatch<ReducerAction>;
+  dispatch: Dispatch<FiltersReducerAction>;
   filters: FiltersState;
   selectedTransactions: TransactionsSelection;
   setSelectedTransactions: (selected: TransactionsSelection) => void;

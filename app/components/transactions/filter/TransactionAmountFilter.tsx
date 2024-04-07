@@ -14,16 +14,16 @@ import { FaEquals, FaGreaterThan, FaLessThan } from "react-icons/fa";
 
 import { AmountRelation, enumFromStringValue } from "@/lib/types";
 import {
+  FiltersReducerAction,
+  FiltersReducerActionType,
   FiltersState,
-  ReducerAction,
-  ReducerActionType,
 } from "../TransactionsFiltersReducer";
 
 export default function TransactionAmountFilter({
   dispatch,
   filters,
 }: {
-  dispatch: Dispatch<ReducerAction>;
+  dispatch: Dispatch<FiltersReducerAction>;
   filters: FiltersState;
 }) {
   const [amountValue, setAmountValue] = useState<string>(filters.amount ?? "");
@@ -35,7 +35,7 @@ export default function TransactionAmountFilter({
     dispatch({
       payload:
         debouncedAmount.trim().length > 0 ? debouncedAmount.trim() : null,
-      type: ReducerActionType.setAmount,
+      type: FiltersReducerActionType.setAmount,
     });
   }, [debouncedAmount, dispatch]);
 
@@ -69,7 +69,7 @@ export default function TransactionAmountFilter({
 
       dispatch({
         payload: value,
-        type: ReducerActionType.setAmountRelation,
+        type: FiltersReducerActionType.setAmountRelation,
       });
     },
     [dispatch],
