@@ -4,7 +4,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@nextui-org/react";
-import { useCallback, useMemo, useReducer } from "react";
+import { useCallback, useMemo, useReducer, useState } from "react";
 import { LuSplit } from "react-icons/lu";
 import { graphql, useFragment, useLazyLoadQuery } from "react-relay";
 
@@ -14,6 +14,7 @@ import SplitCategoryReducer, {
 } from "../../TransactionsSplitCategoryReducer";
 import TransactionCategoryAutocomplete from "../../category/TransactionCategoryAutocomplete";
 import TransactionCategoryChip from "../../category/TransactionCategoryChip";
+import useTransactionSetCategory from "../../useTransactionSetCategory";
 import { TransactionCellSplitCategoryButton$key } from "./__generated__/TransactionCellSplitCategoryButton.graphql";
 import { TransactionCellSplitCategoryButtonQuery } from "./__generated__/TransactionCellSplitCategoryButtonQuery.graphql";
 
@@ -36,7 +37,12 @@ export default function TransactionCellSplitCategoryButton({
       { fetchPolicy: "store-and-network" },
     );
 
-  const { amount, categories, currency } = useFragment(
+  const {
+    amount,
+    categories,
+    currency,
+    id: transaction,
+  } = useFragment(
     graphql`
       fragment TransactionCellSplitCategoryButton on Transaction {
         id @required(action: THROW)
@@ -86,16 +92,33 @@ export default function TransactionCellSplitCategoryButton({
       }),
     [split.rest],
   );
+  const [isOpen, setIsOpen] = useState(false);
+  const transactions = useMemo(
+    () =>
+      split.categories.map(({ amount, id }) => ({
+        amount,
+        category: id,
+        transaction,
+      })),
+    [split.categories, transaction],
+  );
+
+  const { error, isMutationInFlight, onSave } = useTransactionSetCategory({
+    onCompleted: () => setIsOpen(false),
+    transactions,
+  });
 
   return (
     <Popover
       backdrop="opaque"
+      isOpen={isOpen}
       onClose={() =>
         dispatch({
           payload: initialState,
           type: SplitCategoryReducerActionType.resetState,
         })
       }
+      onOpenChange={(open) => setIsOpen(open)}
       showArrow
     >
       <PopoverTrigger>
@@ -156,6 +179,7 @@ export default function TransactionCellSplitCategoryButton({
             {split.rest !== 0 ? (
               <div className="flex w-full flex-row flex-wrap items-center justify-between gap-x-2 py-2">
                 <TransactionCategoryAutocomplete
+                  error={error}
                   isSmall
                   label="Uncategorised"
                   onSelect={onSelect}
@@ -164,7 +188,11 @@ export default function TransactionCellSplitCategoryButton({
               </div>
             ) : null}
             <div className="text-end">
-              <Button color="primary" isDisabled={isNaN(split.rest)}>
+              <Button
+                color="primary"
+                isDisabled={isNaN(split.rest) || isMutationInFlight}
+                onClick={() => onSave("null")}
+              >
                 Save
               </Button>
             </div>
