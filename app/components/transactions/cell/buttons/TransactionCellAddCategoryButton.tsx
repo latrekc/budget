@@ -30,6 +30,7 @@ export default function TransactionCellAddCategoryButton({
 
   return (
     <Popover
+      autoFocus={false}
       backdrop="opaque"
       isOpen={isOpen}
       onClose={() => setIsOpen(false)}
