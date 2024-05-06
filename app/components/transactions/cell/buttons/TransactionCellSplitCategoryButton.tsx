@@ -110,6 +110,7 @@ export default function TransactionCellSplitCategoryButton({
 
   return (
     <Popover
+      autoFocus
       backdrop="opaque"
       isOpen={isOpen}
       onClose={() =>
@@ -159,6 +160,7 @@ export default function TransactionCellSplitCategoryButton({
                     }
                   />
                   <input
+                    autoFocus
                     className="w-20 rounded border-0 bg-gray-200 text-right text-base"
                     inputMode="decimal"
                     onChange={(e) =>
@@ -179,6 +181,7 @@ export default function TransactionCellSplitCategoryButton({
             {split.rest !== 0 ? (
               <div className="flex w-full flex-row flex-wrap items-center justify-between gap-x-2 py-2">
                 <TransactionCategoryAutocomplete
+                  autoFocus={true}
                   error={error}
                   isSmall
                   label="Uncategorised"

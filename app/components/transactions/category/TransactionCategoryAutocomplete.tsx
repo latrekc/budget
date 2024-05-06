@@ -8,6 +8,7 @@ import {
 } from "./__generated__/TransactionCategoryAutocompleteQuery.graphql";
 
 export default function TransactionCategoryAutocomplete({
+  autoFocus = true,
   error = null,
   filterCallback,
   isDisabled = false,
@@ -15,6 +16,7 @@ export default function TransactionCategoryAutocomplete({
   label,
   onSelect,
 }: {
+  autoFocus?: boolean;
   error?: null | string;
   filterCallback?: (
     categories: TransactionCategoryAutocompleteQuery$data["categories"],
@@ -75,7 +77,7 @@ export default function TransactionCategoryAutocomplete({
 
   return (
     <Autocomplete
-      autoFocus
+      autoFocus={autoFocus}
       className="max-w-xs"
       errorMessage={error}
       fullWidth={!isSmall}
