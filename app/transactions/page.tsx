@@ -1,7 +1,11 @@
 "use client";
+import dynamic from "next/dynamic";
 
 import Header, { PageType } from "@/components/Header";
-import Transactions from "@/components/Transactions";
+
+const Transactions = dynamic(() => import("@/components/Transactions"), {
+  ssr: false,
+});
 
 export default function Page() {
   return (
