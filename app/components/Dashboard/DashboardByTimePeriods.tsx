@@ -67,12 +67,19 @@ export default function DashboardByTimePeriods({
           : [
               {
                 end: 100,
+                handleSize: 8,
                 minSpan: 10,
                 show: true,
-                start: 90,
+                start: 0,
                 type: "slider",
               },
             ],
+      grid: {
+        bottpm: 0,
+        left: 0,
+        right: 0,
+        top: 0,
+      },
       legend: {},
       series: [
         {
@@ -117,8 +124,8 @@ export default function DashboardByTimePeriods({
         },
       ],
       tooltip: {
-        position: function (pt: (number | string)[]) {
-          return [pt[0], "10%"];
+        position: function () {
+          return ["90%", "10%"];
         },
         trigger: "axis",
         valueFormatter(amount) {
@@ -145,12 +152,13 @@ export default function DashboardByTimePeriods({
           type: "continuous",
         },
       ],
+      width: "100%",
       xAxis: {
         boundaryGap: false,
         type: "time",
       },
       yAxis: {
-        boundaryGap: [0, "20%"],
+        boundaryGap: false,
         type: "value",
       },
     }),
