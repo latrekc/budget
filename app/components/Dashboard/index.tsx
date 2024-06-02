@@ -9,17 +9,11 @@ export default function Dashboard() {
   const periods = [
     { label: "Years", value: Period.Years },
     { label: "Months", value: Period.Months },
-    { label: "Days", value: Period.Days },
   ];
-  const [period, setPeriod] = useState<Period>(Period.Years);
-
-  const [selectedKeys, setSelectedKeys] = useState<string[]>([
-    Period.Years.toString(),
-  ]);
+  const [period, setPeriod] = useState<Period>(Period.Months);
 
   const onSelectionChange = useCallback((keys: "all" | Set<React.Key>) => {
     if (keys instanceof Set) {
-      setSelectedKeys([...keys.values()].map((k) => k.toString()));
       setPeriod([...keys.values()].map((k) => k.toString())[0] as Period);
     }
 
@@ -52,7 +46,7 @@ export default function Dashboard() {
         label="Stat by"
         onSelectionChange={onSelectionChange}
         placeholder="Select a period"
-        selectedKeys={selectedKeys}
+        selectedKeys={[period.toString()]}
         size="lg"
         variant="bordered"
       >
