@@ -1,6 +1,6 @@
 import { graphql, useFragment } from "react-relay";
 
-import TransactionCategoryChip from "../category/TransactionCategoryChip";
+import CategoryChip from "../../Categories/CategoryChip";
 import {
   Currency,
   TransactionCategoriesCell$key,
@@ -58,7 +58,7 @@ function Category({
     graphql`
       fragment TransactionCategoriesCell_Category on TransactionsOnCategories {
         category @required(action: THROW) {
-          ...TransactionCategoryChip
+          ...CategoryChip
         }
         ...useTransactionCellDeleteCategoryButton
       }
@@ -70,7 +70,7 @@ function Category({
     useTransactionCellDeleteCategoryButton(record);
 
   return (
-    <TransactionCategoryChip
+    <CategoryChip
       amount={amount}
       category={record.category}
       currency={currency}

@@ -9,11 +9,11 @@ import { LuSplit } from "react-icons/lu";
 import { graphql, useFragment, useLazyLoadQuery } from "react-relay";
 
 import AmountValue from "@/components/AmountValue";
+import CategoryAutocomplete from "../../../Categories/CategoryAutocomplete";
+import CategoryChip from "../../../Categories/CategoryChip";
 import SplitCategoryReducer, {
   SplitCategoryReducerActionType,
 } from "../../TransactionsSplitCategoryReducer";
-import TransactionCategoryAutocomplete from "../../category/TransactionCategoryAutocomplete";
-import TransactionCategoryChip from "../../category/TransactionCategoryChip";
 import useTransactionSetCategory from "../../useTransactionSetCategory";
 import { TransactionCellSplitCategoryButton$key } from "./__generated__/TransactionCellSplitCategoryButton.graphql";
 import { TransactionCellSplitCategoryButtonQuery } from "./__generated__/TransactionCellSplitCategoryButtonQuery.graphql";
@@ -29,7 +29,7 @@ export default function TransactionCellSplitCategoryButton({
         query TransactionCellSplitCategoryButtonQuery {
           categories {
             id @required(action: THROW)
-            ...TransactionCategoryChip
+            ...CategoryChip
           }
         }
       `,
@@ -150,7 +150,7 @@ export default function TransactionCellSplitCategoryButton({
                   className="flex w-full flex-row flex-wrap justify-between gap-x-2 py-2"
                   key={category.id}
                 >
-                  <TransactionCategoryChip
+                  <CategoryChip
                     category={category}
                     onDelete={() =>
                       dispatch({
@@ -179,7 +179,7 @@ export default function TransactionCellSplitCategoryButton({
               );
             })}
             <div className="flex w-full flex-row flex-wrap items-center justify-between gap-x-2 py-2">
-              <TransactionCategoryAutocomplete
+              <CategoryAutocomplete
                 autoFocus={true}
                 error={error}
                 isSmall

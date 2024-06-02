@@ -1,15 +1,12 @@
 import { graphql, useFragment } from "react-relay";
 
 import { useContext, useMemo } from "react";
-import { CategoriesContext } from "../TransactionsCategories";
-import TransactionCategoryContent from "./TransactionCategoryContent";
-import TransactionSubCategory from "./TransactionSubCategory";
-import {
-  TransactionCategory$data,
-  TransactionCategory$key,
-} from "./__generated__/TransactionCategory.graphql";
+import { CategoriesContext } from "../Filters/FiltersCategories";
+import CategoryContent from "./CategoryContent";
+import TransactionSubCategory from "./SubCategory";
+import { Category$data, Category$key } from "./__generated__/Category.graphql";
 
-type Categories = TransactionCategory$data["subCategories"];
+type Categories = Category$data["subCategories"];
 
 function filterByName(allCategories: Categories, searchTerm: string) {
   const test = (name: string | undefined) =>
@@ -25,22 +22,22 @@ function filterByName(allCategories: Categories, searchTerm: string) {
     : allCategories;
 }
 
-export default function TransactionCategory({
+export default function Category({
   category: category$key,
 }: {
-  category: TransactionCategory$key;
+  category: Category$key;
 }) {
   const category = useFragment(
     graphql`
-      fragment TransactionCategory on Category {
-        ...TransactionCategoryContent
+      fragment Category on Category {
+        ...CategoryContent
         subCategories {
           id @required(action: THROW)
           name @required(action: THROW)
           subCategories {
             name @required(action: THROW)
           }
-          ...TransactionSubCategory
+          ...SubCategory
           parentCategory {
             name @required(action: THROW)
           }
@@ -59,7 +56,7 @@ export default function TransactionCategory({
 
   return (
     <div>
-      <TransactionCategoryContent category={category} />
+      <CategoryContent category={category} />
 
       {subCategories.length > 0 ? (
         <div className="pl-4">

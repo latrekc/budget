@@ -6,10 +6,10 @@ import { graphql, useFragment } from "react-relay";
 
 import { BiHide } from "react-icons/bi";
 import { TiDelete } from "react-icons/ti";
-import { Currency } from "../cell/__generated__/TransactionAmountCell.graphql";
-import { TransactionCategoryChip$key } from "./__generated__/TransactionCategoryChip.graphql";
+import { Currency } from "../Transactions/cell/__generated__/TransactionAmountCell.graphql";
+import { CategoryChip$key } from "./__generated__/CategoryChip.graphql";
 
-export default function TransactionCategoryChip({
+export default function CategoryChip({
   amount,
   category: category$key,
   currency,
@@ -19,7 +19,7 @@ export default function TransactionCategoryChip({
   onlyLeaf = false,
 }: {
   amount?: null | number;
-  category: TransactionCategoryChip$key;
+  category: CategoryChip$key;
   currency?: Currency;
   ignore?: boolean;
   isDisabledDelete?: boolean;
@@ -28,7 +28,7 @@ export default function TransactionCategoryChip({
 }) {
   const category = useFragment(
     graphql`
-      fragment TransactionCategoryChip on Category {
+      fragment CategoryChip on Category {
         name @required(action: THROW)
         color
 

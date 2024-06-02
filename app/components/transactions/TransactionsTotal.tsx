@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { graphql, useRefetchableFragment } from "react-relay";
 
 import AmountValue, { Size } from "../AmountValue";
-import { FiltersState } from "./TransactionsFiltersReducer";
+import { FiltersState } from "../Filters/FiltersReducer";
 import { TransactionsSelection } from "./TransactionsTable";
 import { TransactionsTotal$key } from "./__generated__/TransactionsTotal.graphql";
 

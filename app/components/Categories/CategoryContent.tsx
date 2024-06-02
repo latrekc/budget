@@ -4,23 +4,23 @@ import { graphql, useFragment } from "react-relay";
 
 import AmountValue from "@/components/AmountValue";
 import { Currency } from "@/lib/types";
-import { CategoriesContext, CategoryMode } from "../TransactionsCategories";
-import TransactionCategoryChip from "./TransactionCategoryChip";
-import { TransactionCategoryContent$key } from "./__generated__/TransactionCategoryContent.graphql";
-import TransactionCategoryButtons from "./buttons/TransactionCategoryButtons";
+import { CategoriesContext, CategoryMode } from "../Filters/FiltersCategories";
+import CategoryChip from "./CategoryChip";
+import { CategoryContent$key } from "./__generated__/CategoryContent.graphql";
+import CategoryButtons from "./buttons/CategoryButtons";
 
-export default function TransactionCategoryContent({
+export default function CategoryContent({
   category: category$key,
   withAddButton = true,
 }: {
-  category: TransactionCategoryContent$key;
+  category: CategoryContent$key;
   withAddButton?: boolean;
 }) {
   const { categoryMode, filterName, filters } = useContext(CategoriesContext);
 
   const category = useFragment(
     graphql`
-      fragment TransactionCategoryContent on Category {
+      fragment CategoryContent on Category {
         id @required(action: THROW)
         name @required(action: THROW)
         income
@@ -31,8 +31,8 @@ export default function TransactionCategoryContent({
             name @required(action: THROW)
           }
         }
-        ...TransactionCategoryButtons
-        ...TransactionCategoryChip
+        ...CategoryButtons
+        ...CategoryChip
       }
     `,
     category$key,
@@ -74,13 +74,10 @@ export default function TransactionCategoryContent({
         isMatchFilter ? "hover:bg-gray-100" : "opacity-50"
       }`}
     >
-      <TransactionCategoryChip category={category} onlyLeaf />
+      <CategoryChip category={category} onlyLeaf />
 
       {isMatchFilter && (
-        <TransactionCategoryButtons
-          category={category}
-          withAddButton={withAddButton}
-        />
+        <CategoryButtons category={category} withAddButton={withAddButton} />
       )}
     </div>
   ) : (
@@ -95,7 +92,7 @@ export default function TransactionCategoryContent({
       value={category.id}
     >
       <div className="flex gap-2">
-        <TransactionCategoryChip category={category} onlyLeaf />
+        <CategoryChip category={category} onlyLeaf />
         {category.income !== 0 && (
           <AmountValue amount={category.income} currency={Currency.GBP} round />
         )}

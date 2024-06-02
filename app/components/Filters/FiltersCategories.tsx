@@ -11,19 +11,19 @@ import {
 } from "react";
 import { graphql, useRefetchableFragment } from "react-relay";
 
+import Category from "../Categories/Category";
+import CategoryChip from "../Categories/CategoryChip";
+import CategoryAddButton from "../Categories/buttons/CategoryAddButton";
 import {
   FiltersReducerAction,
   FiltersReducerActionType,
   FiltersState,
   initialState,
-} from "./TransactionsFiltersReducer";
+} from "./FiltersReducer";
 import {
-  TransactionsCategories$data,
-  TransactionsCategories$key,
-} from "./__generated__/TransactionsCategories.graphql";
-import TransactionCategory from "./category/TransactionCategory";
-import TransactionCategoryChip from "./category/TransactionCategoryChip";
-import TransactionAddButton from "./category/buttons/TransactionCategoryAddButton";
+  FiltersCategories$data,
+  FiltersCategories$key,
+} from "./__generated__/FiltersCategories.graphql";
 
 export enum CategoryMode {
   "EDIT" = "EDIT",
@@ -41,7 +41,7 @@ export const CategoriesContext = createContext<{
   filters: initialState,
 });
 
-type Categories = TransactionsCategories$data["categories"];
+type Categories = FiltersCategories$data["categories"];
 
 function filterByName(allCategories: Categories, searchTerm: string) {
   const test = (name: string | undefined) =>
@@ -64,12 +64,12 @@ function filterByName(allCategories: Categories, searchTerm: string) {
     : allCategories;
 }
 
-export default function TransactionsCategories({
+export default function FiltersCategories({
   categories: categories$key,
   dispatch,
   filters,
 }: {
-  categories: TransactionsCategories$key;
+  categories: FiltersCategories$key;
   dispatch: Dispatch<FiltersReducerAction>;
   filters: FiltersState;
 }) {
@@ -84,8 +84,8 @@ export default function TransactionsCategories({
 
   const [{ categories: allCategories }, refetch] = useRefetchableFragment(
     graphql`
-      fragment TransactionsCategories on Query
-      @refetchable(queryName: "TransactionsCategoriesRefetchQuery") {
+      fragment FiltersCategories on Query
+      @refetchable(queryName: "FiltersCategoriesRefetchQuery") {
         categories {
           id @required(action: THROW)
           name @required(action: THROW)
@@ -101,8 +101,8 @@ export default function TransactionsCategories({
               name @required(action: THROW)
             }
           }
-          ...TransactionCategory
-          ...TransactionCategoryChip
+          ...Category
+          ...CategoryChip
         }
       }
     `,
@@ -191,7 +191,7 @@ export default function TransactionsCategories({
                 return null;
               }
               return (
-                <TransactionCategoryChip
+                <CategoryChip
                   category={category}
                   key={categoryId}
                   onDelete={() => onRemove(categoryId, CategoryMode.SELECT)}
@@ -207,7 +207,7 @@ export default function TransactionsCategories({
                 return null;
               }
               return (
-                <TransactionCategoryChip
+                <CategoryChip
                   category={category}
                   ignore={true}
                   key={categoryId}
@@ -239,13 +239,13 @@ export default function TransactionsCategories({
           {categories
             ?.filter((category) => category.parentCategory == null)
             .map((category) => (
-              <TransactionCategory category={category} key={category.id} />
+              <Category category={category} key={category.id} />
             ))}
         </CheckboxGroup>
 
         {categoryMode === CategoryMode.EDIT && (
           <div className="p-4">
-            <TransactionAddButton withLabel />
+            <CategoryAddButton withLabel />
           </div>
         )}
       </div>

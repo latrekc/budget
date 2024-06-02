@@ -72,7 +72,7 @@ export const initialState: FiltersState = {
   sources: null,
 };
 
-export default function TransactionsFiltersReducer(
+export default function FiltersReducer(
   state: FiltersState,
   action: FiltersReducerAction,
 ): FiltersState {

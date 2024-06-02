@@ -11,19 +11,19 @@ import {
 import { useCallback } from "react";
 import { TiDelete } from "react-icons/ti";
 import { graphql, useFragment, useMutation } from "react-relay";
-import { TransactionCategoryDeleteButton$key } from "./__generated__/TransactionCategoryDeleteButton.graphql";
-import { TransactionCategoryDeleteButtonMutation } from "./__generated__/TransactionCategoryDeleteButtonMutation.graphql";
+import { CategoryDeleteButton$key } from "./__generated__/CategoryDeleteButton.graphql";
+import { CategoryDeleteButtonMutation } from "./__generated__/CategoryDeleteButtonMutation.graphql";
 
-export default function TransactionCategoryDeleteButton({
+export default function CategoryDeleteButton({
   category: category$key,
 }: {
-  category: TransactionCategoryDeleteButton$key;
+  category: CategoryDeleteButton$key;
 }) {
   const { publish } = usePubSub();
 
   const category = useFragment(
     graphql`
-      fragment TransactionCategoryDeleteButton on Category {
+      fragment CategoryDeleteButton on Category {
         id @required(action: THROW)
         name @required(action: THROW)
         parentCategory {
@@ -35,8 +35,8 @@ export default function TransactionCategoryDeleteButton({
   );
 
   const [commitDeleteMutation, isDeleteMutationInFlight] =
-    useMutation<TransactionCategoryDeleteButtonMutation>(graphql`
-      mutation TransactionCategoryDeleteButtonMutation($id: ID!) {
+    useMutation<CategoryDeleteButtonMutation>(graphql`
+      mutation CategoryDeleteButtonMutation($id: ID!) {
         deleteCategory(id: $id) {
           ... on Error {
             error: message

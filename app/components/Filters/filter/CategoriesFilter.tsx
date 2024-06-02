@@ -8,14 +8,11 @@ import {
 } from "@nextui-org/react";
 import { Dispatch, useCallback, useMemo, useState } from "react";
 
-import TransactionSetCategoryButton from "../buttons/TransactionSetCategoryButton";
-import {
-  FiltersReducerAction,
-  FiltersState,
-} from "../TransactionsFiltersReducer";
-import { TransactionsSelection } from "../TransactionsTable";
+import TransactionSetCategoryButton from "../../Transactions/TransactionSetCategoryButton";
+import { TransactionsSelection } from "../../Transactions/TransactionsTable";
+import { FiltersReducerAction, FiltersState } from "../FiltersReducer";
 
-export default function TransactionCategoriesFilter({
+export default function CategoriesFilter({
   filters,
   selectedTransactions,
   setSelectedTransactions,

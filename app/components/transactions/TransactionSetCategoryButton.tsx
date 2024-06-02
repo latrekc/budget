@@ -1,6 +1,6 @@
-import { FiltersState } from "../TransactionsFiltersReducer";
-import TransactionCategoryAutocomplete from "../category/TransactionCategoryAutocomplete";
-import useTransactionSetCategory from "../useTransactionSetCategory";
+import TransactionCategoryAutocomplete from "../Categories/CategoryAutocomplete";
+import { FiltersState } from "../Filters/FiltersReducer";
+import useTransactionSetCategory from "./useTransactionSetCategory";
 
 export default function TransactionSetCategoryButton({
   filters,

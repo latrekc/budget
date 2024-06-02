@@ -6,9 +6,9 @@ import {
   FiltersReducerAction,
   FiltersReducerActionType,
   FiltersState,
-} from "../TransactionsFiltersReducer";
+} from "../FiltersReducer";
 
-export default function TransactionDescriptionFilter({
+export default function DescriptionFilter({
   dispatch,
   filters,
 }: {

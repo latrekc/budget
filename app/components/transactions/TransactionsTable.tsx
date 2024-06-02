@@ -16,7 +16,7 @@ import { useInfiniteScroll } from "@nextui-org/use-infinite-scroll";
 import { useCallback, useEffect, useMemo } from "react";
 import { graphql, useFragment, usePaginationFragment } from "react-relay";
 
-import { FiltersState } from "./TransactionsFiltersReducer";
+import { FiltersState } from "../Filters/FiltersReducer";
 import { TransactionsTable$key } from "./__generated__/TransactionsTable.graphql";
 import { TransactionsTable__RenderCell$key } from "./__generated__/TransactionsTable__RenderCell.graphql";
 import TransactionAmountCell from "./cell/TransactionAmountCell";

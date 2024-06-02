@@ -11,9 +11,9 @@ import { FormEvent, useCallback, useMemo, useState } from "react";
 import { TiPlus } from "react-icons/ti";
 import { graphql, useMutation } from "react-relay";
 
-import { TransactionCategoryAddButtonMutation } from "./__generated__/TransactionCategoryAddButtonMutation.graphql";
+import { CategoryAddButtonMutation } from "./__generated__/CategoryAddButtonMutation.graphql";
 
-export default function TransactionCategoryAddButton({
+export default function CategoryAddButton({
   parent,
   withLabel,
 }: {
@@ -35,15 +35,12 @@ export default function TransactionCategoryAddButton({
   }, [value]);
 
   const [commitMutation, isMutationInFlight] =
-    useMutation<TransactionCategoryAddButtonMutation>(graphql`
-      mutation TransactionCategoryAddButtonMutation(
-        $name: String!
-        $parent: ID
-      ) {
+    useMutation<CategoryAddButtonMutation>(graphql`
+      mutation CategoryAddButtonMutation($name: String!, $parent: ID) {
         createCategory(name: $name, parent: $parent) {
           ... on MutationCreateCategorySuccess {
             data {
-              ...TransactionCategory
+              ...Category
             }
           }
           ... on Error {
