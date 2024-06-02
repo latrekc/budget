@@ -76,25 +76,35 @@ export default function DashboardByTimePeriods({
       legend: {},
       series: [
         {
-          color: "#14532d",
+          areaStyle: {
+            color: "#7bc043",
+          },
+          color: "#7bc043",
           data: records.map(({ id, income }) => [id, Math.round(income)]),
+          lineStyle: {
+            opacity: 0,
+          },
           name: "Income",
           step: "middle",
+          symbol: "none",
           type: "line",
         },
 
         {
-          color: "#7f1d1d",
-          data: records.map(({ id, outcome }) => [
-            id,
-            Math.round(Math.abs(outcome)),
-          ]),
+          areaStyle: {
+            color: "#ee4035",
+          },
+          color: "#ee4035",
+          data: records.map(({ id, outcome }) => [id, Math.round(outcome)]),
+          lineStyle: {
+            opacity: 0,
+          },
           name: "Outcome",
           step: "middle",
+          symbol: "none",
           type: "line",
         },
         {
-          areaStyle: {},
           color: "#000",
           data: records.map(({ id, income, outcome }) => [
             id,
