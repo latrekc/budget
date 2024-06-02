@@ -178,18 +178,18 @@ export default function TransactionCellSplitCategoryButton({
                 </div>
               );
             })}
-            {split.rest !== 0 ? (
-              <div className="flex w-full flex-row flex-wrap items-center justify-between gap-x-2 py-2">
-                <TransactionCategoryAutocomplete
-                  autoFocus={true}
-                  error={error}
-                  isSmall
-                  label="Uncategorised"
-                  onSelect={onSelect}
-                />
+            <div className="flex w-full flex-row flex-wrap items-center justify-between gap-x-2 py-2">
+              <TransactionCategoryAutocomplete
+                autoFocus={true}
+                error={error}
+                isSmall
+                label="Uncategorised"
+                onSelect={onSelect}
+              />
+              {split.rest !== 0 ? (
                 <AmountValue abs amount={split.rest} currency={currency} />
-              </div>
-            ) : null}
+              ) : null}
+            </div>
             <div className="text-end">
               <Button
                 color="primary"
