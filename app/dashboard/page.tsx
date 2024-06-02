@@ -1,7 +1,11 @@
 "use client";
+import dynamic from "next/dynamic";
 
-import Dashboard from "@/components/Dashboard";
 import Header, { PageType } from "@/components/Header";
+
+const Dashboard = dynamic(() => import("@/components/Dashboard"), {
+  ssr: false,
+});
 
 export default function Page() {
   return (
