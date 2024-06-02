@@ -1,13 +1,13 @@
 import { Autocomplete, AutocompleteItem } from "@nextui-org/react";
 import { useCallback, useMemo, useState } from "react";
 import { graphql, useLazyLoadQuery } from "react-relay";
-import TransactionCategoryChip from "./TransactionCategoryChip";
+import CategoryChip from "./CategoryChip";
 import {
-  TransactionCategoryAutocompleteQuery,
-  TransactionCategoryAutocompleteQuery$data,
-} from "./__generated__/TransactionCategoryAutocompleteQuery.graphql";
+  CategoryAutocompleteQuery,
+  CategoryAutocompleteQuery$data,
+} from "./__generated__/CategoryAutocompleteQuery.graphql";
 
-export default function TransactionCategoryAutocomplete({
+export default function CategoryAutocomplete({
   autoFocus = true,
   error = null,
   filterCallback,
@@ -19,17 +19,17 @@ export default function TransactionCategoryAutocomplete({
   autoFocus?: boolean;
   error?: null | string;
   filterCallback?: (
-    categories: TransactionCategoryAutocompleteQuery$data["categories"],
-  ) => TransactionCategoryAutocompleteQuery$data["categories"];
+    categories: CategoryAutocompleteQuery$data["categories"],
+  ) => CategoryAutocompleteQuery$data["categories"];
   isDisabled?: boolean;
   isSmall?: boolean;
   label: string;
   onSelect: (key: React.Key) => void;
 }) {
   const { categories: allCategories } =
-    useLazyLoadQuery<TransactionCategoryAutocompleteQuery>(
+    useLazyLoadQuery<CategoryAutocompleteQuery>(
       graphql`
-        query TransactionCategoryAutocompleteQuery {
+        query CategoryAutocompleteQuery {
           categories {
             id @required(action: THROW)
             name @required(action: THROW)
@@ -39,7 +39,7 @@ export default function TransactionCategoryAutocomplete({
                 name @required(action: THROW)
               }
             }
-            ...TransactionCategoryChip
+            ...CategoryChip
           }
         }
       `,
@@ -99,7 +99,7 @@ export default function TransactionCategoryAutocomplete({
       {(category) => (
         <AutocompleteItem key={category.id} value={category.id}>
           <div className="flex shrink flex-row flex-wrap">
-            <TransactionCategoryChip category={category} />
+            <CategoryChip category={category} />
           </div>
         </AutocompleteItem>
       )}

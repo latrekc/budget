@@ -12,21 +12,21 @@ import { MdMoveDown } from "react-icons/md";
 import { graphql, useFragment, useMutation } from "react-relay";
 
 import { PubSubChannels } from "@/lib/types";
-import TransactionCategoryAutocomplete from "../TransactionCategoryAutocomplete";
-import { TransactionCategoryAutocompleteQuery$data } from "../__generated__/TransactionCategoryAutocompleteQuery.graphql";
-import { TransactionCategoryMoveButton$key } from "./__generated__/TransactionCategoryMoveButton.graphql";
-import { TransactionCategoryMoveButtonMutation } from "./__generated__/TransactionCategoryMoveButtonMutation.graphql";
+import CategoryAutocomplete from "../CategoryAutocomplete";
+import { CategoryAutocompleteQuery$data } from "../__generated__/CategoryAutocompleteQuery.graphql";
+import { CategoryMoveButton$key } from "./__generated__/CategoryMoveButton.graphql";
+import { CategoryMoveButtonMutation } from "./__generated__/CategoryMoveButtonMutation.graphql";
 
-export default function TransactionCategoryMoveButton({
+export default function CategoryMoveButton({
   category: category$key,
 }: {
-  category: TransactionCategoryMoveButton$key;
+  category: CategoryMoveButton$key;
 }) {
   const { publish } = usePubSub();
 
   const { id, name, parentCategory, subCategories } = useFragment(
     graphql`
-      fragment TransactionCategoryMoveButton on Category {
+      fragment CategoryMoveButton on Category {
         id @required(action: THROW)
         name @required(action: THROW)
         parentCategory {
@@ -69,7 +69,7 @@ export default function TransactionCategoryMoveButton({
   }, [id, parentCategory, subCategories]);
 
   const filterCallback = useCallback(
-    (categories: TransactionCategoryAutocompleteQuery$data["categories"]) =>
+    (categories: CategoryAutocompleteQuery$data["categories"]) =>
       categories?.filter(
         (category) =>
           !ignoreIds.includes(category.id) &&
@@ -79,8 +79,8 @@ export default function TransactionCategoryMoveButton({
   );
 
   const [commitMoveMutation, isMoveMutationInFlight] =
-    useMutation<TransactionCategoryMoveButtonMutation>(graphql`
-      mutation TransactionCategoryMoveButtonMutation(
+    useMutation<CategoryMoveButtonMutation>(graphql`
+      mutation CategoryMoveButtonMutation(
         $id: ID!
         $name: String!
         $parent: ID
@@ -170,7 +170,7 @@ export default function TransactionCategoryMoveButton({
 
             <Spacer />
 
-            <TransactionCategoryAutocomplete
+            <CategoryAutocomplete
               error={error}
               filterCallback={filterCallback}
               isDisabled={isMoveMutationInFlight}

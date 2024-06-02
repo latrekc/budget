@@ -17,9 +17,9 @@ import {
   FiltersReducerAction,
   FiltersReducerActionType,
   FiltersState,
-} from "../TransactionsFiltersReducer";
+} from "../FiltersReducer";
 
-export default function TransactionAmountFilter({
+export default function AmountFilter({
   dispatch,
   filters,
 }: {

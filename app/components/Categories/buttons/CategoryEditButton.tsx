@@ -11,19 +11,19 @@ import { FormEvent, useCallback, useMemo, useState } from "react";
 import { LuTextCursorInput } from "react-icons/lu";
 import { graphql, useFragment, useMutation } from "react-relay";
 
-import { TransactionCategoryEditButton$key } from "./__generated__/TransactionCategoryEditButton.graphql";
-import { TransactionCategoryEditButtonMutation } from "./__generated__/TransactionCategoryEditButtonMutation.graphql";
+import { CategoryEditButton$key } from "./__generated__/CategoryEditButton.graphql";
+import { CategoryEditButtonMutation } from "./__generated__/CategoryEditButtonMutation.graphql";
 
-export default function TransactionCategoryEditButton({
+export default function CategoryEditButton({
   category: category$key,
 }: {
-  category: TransactionCategoryEditButton$key;
+  category: CategoryEditButton$key;
 }) {
   const { publish } = usePubSub();
 
   const category = useFragment(
     graphql`
-      fragment TransactionCategoryEditButton on Category {
+      fragment CategoryEditButton on Category {
         id @required(action: THROW)
         name @required(action: THROW)
         parentCategory {
@@ -35,8 +35,8 @@ export default function TransactionCategoryEditButton({
   );
 
   const [commitEditMutation, isEditMutationInFlight] =
-    useMutation<TransactionCategoryEditButtonMutation>(graphql`
-      mutation TransactionCategoryEditButtonMutation(
+    useMutation<CategoryEditButtonMutation>(graphql`
+      mutation CategoryEditButtonMutation(
         $id: ID!
         $name: String!
         $parent: ID

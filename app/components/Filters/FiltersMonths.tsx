@@ -11,12 +11,12 @@ import { Dispatch, useCallback, useMemo, useState } from "react";
 import { graphql, useFragment } from "react-relay";
 
 import AmountValue, { Size } from "../AmountValue";
-import { TransactionsStatistic$key } from "./__generated__/TransactionsStatistic.graphql";
 import {
   FiltersReducerAction,
   FiltersReducerActionType,
   FiltersState,
-} from "./TransactionsFiltersReducer";
+} from "./FiltersReducer";
+import { FiltersMonths$key } from "./__generated__/FiltersMonths.graphql";
 
 type Year = {
   income: number;
@@ -46,18 +46,18 @@ export const monthNames = new Map([
   [12, "Dec"],
 ]);
 
-export default function TransactionsStatistic({
+export default function FiltersMonths({
   dispatch,
   filters,
   statistic: statistic$key,
 }: {
   dispatch: Dispatch<FiltersReducerAction>;
   filters: FiltersState;
-  statistic: TransactionsStatistic$key;
+  statistic: FiltersMonths$key;
 }) {
   const data = useFragment(
     graphql`
-      fragment TransactionsStatistic on Query {
+      fragment FiltersMonths on Query {
         transactions_statistic_per_months {
           id @required(action: THROW)
           year @required(action: THROW)

@@ -2,9 +2,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useReducer } from "react";
 
 import { AmountRelation, enumFromStringValue } from "@/lib/types";
-import TransactionsFiltersReducer, {
-  initialState,
-} from "./TransactionsFiltersReducer";
+import TransactionsFiltersReducer, { initialState } from "./FiltersReducer";
 
 export default function useFilters() {
   const router = useRouter();

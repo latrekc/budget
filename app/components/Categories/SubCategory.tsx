@@ -1,15 +1,15 @@
 import { graphql, useFragment } from "react-relay";
 
 import { useContext, useMemo } from "react";
-import { CategoriesContext } from "../TransactionsCategories";
-import TransactionCategoryContent from "./TransactionCategoryContent";
-import TransactionSubSubCategory from "./TransactionSubSubCategory";
+import { CategoriesContext } from "../Filters/FiltersCategories";
+import CategoryContent from "./CategoryContent";
+import SubSubCategory from "./SubSubCategory";
 import {
-  TransactionSubCategory$data,
-  TransactionSubCategory$key,
-} from "./__generated__/TransactionSubCategory.graphql";
+  SubCategory$data,
+  SubCategory$key,
+} from "./__generated__/SubCategory.graphql";
 
-type Categories = TransactionSubCategory$data["subCategories"];
+type Categories = SubCategory$data["subCategories"];
 
 function filterByName(allCategories: Categories, searchTerm: string) {
   const test = (name: string | undefined) =>
@@ -25,15 +25,15 @@ function filterByName(allCategories: Categories, searchTerm: string) {
     : allCategories;
 }
 
-export default function TransactionSubCategory({
+export default function SubCategory({
   subCategory: subCategory$key,
 }: {
-  subCategory: TransactionSubCategory$key;
+  subCategory: SubCategory$key;
 }) {
   const subCategory = useFragment(
     graphql`
-      fragment TransactionSubCategory on Category {
-        ...TransactionCategoryContent
+      fragment SubCategory on Category {
+        ...CategoryContent
         subCategories {
           id @required(action: THROW)
           name @required(action: THROW)
@@ -43,7 +43,7 @@ export default function TransactionSubCategory({
               name @required(action: THROW)
             }
           }
-          ...TransactionSubSubCategory
+          ...SubSubCategory
         }
       }
     `,
@@ -59,12 +59,12 @@ export default function TransactionSubCategory({
 
   return (
     <div>
-      <TransactionCategoryContent category={subCategory} />
+      <CategoryContent category={subCategory} />
 
       {subCategories.length > 0 ? (
         <div className="pl-4">
           {subCategories.map((subSubCategory) => (
-            <TransactionSubSubCategory
+            <SubSubCategory
               key={subSubCategory.id}
               subCategory={subSubCategory}
             />

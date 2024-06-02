@@ -2,7 +2,7 @@ import { PubSubChannels } from "@/lib/types";
 import { usePubSub } from "@/lib/usePubSub";
 import { useCallback, useState } from "react";
 import { graphql, useMutation } from "react-relay";
-import { FiltersState } from "./TransactionsFiltersReducer";
+import { FiltersState } from "../Filters/FiltersReducer";
 import { useTransactionSetCategoryAllMutation } from "./__generated__/useTransactionSetCategoryAllMutation.graphql";
 import { useTransactionSetCategoryMutation } from "./__generated__/useTransactionSetCategoryMutation.graphql";
 

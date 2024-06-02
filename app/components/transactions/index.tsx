@@ -1,17 +1,14 @@
-import { Accordion, AccordionItem, Badge } from "@nextui-org/react";
 import { useState } from "react";
 import { graphql, useLazyLoadQuery } from "react-relay";
 
-import { TransactionsQuery } from "./__generated__/TransactionsQuery.graphql";
-import TransactionsCategories from "./TransactionsCategories";
-import TransactionsFilters from "./TransactionsFilters";
-import TransactionsSources from "./TransactionsSources";
-import TransactionsStatistic from "./TransactionsStatistic";
+import Filters from "../Filters";
+import FiltersTransactions from "../Filters/FiltersTransactions";
+import useFilters from "../Filters/useFilters";
 import TransactionsTable, {
   PER_PAGE,
   TransactionsSelection,
 } from "./TransactionsTable";
-import useFilters from "./useFilters";
+import { TransactionsQuery } from "./__generated__/TransactionsQuery.graphql";
 
 export default function Transactions() {
   const [selectedTransactions, setSelectedTransactions] =
@@ -27,9 +24,8 @@ export default function Transactions() {
         $filters: filterTransactionsInput
       ) {
         ...TransactionsTable
-        ...TransactionsStatistic
-        ...TransactionsCategories
-        ...TransactionsFilters
+        ...Filters
+        ...FiltersTransactions
       }
     `,
     { filters: filtersState, first: PER_PAGE },
@@ -39,7 +35,7 @@ export default function Transactions() {
   return (
     <div className="flex flex-row">
       <div className="basis-3/4 py-3">
-        <TransactionsFilters
+        <FiltersTransactions
           data={data}
           dispatch={dispatch}
           filters={filtersState}
@@ -56,70 +52,8 @@ export default function Transactions() {
       </div>
 
       <div className="basis-1/4 p-6">
-        <Accordion defaultSelectedKeys={["categories"]} variant="shadow">
-          <AccordionItem
-            key="categories"
-            title={
-              <AccordionItemTitle
-                list={[
-                  ...(filtersState.categories ?? []),
-                  ...(filtersState.ignoreCategories ?? []),
-                ]}
-                name="Categories"
-              />
-            }
-          >
-            <TransactionsCategories
-              categories={data}
-              dispatch={dispatch}
-              filters={filtersState}
-            />
-          </AccordionItem>
-
-          <AccordionItem
-            key="months"
-            title={
-              <AccordionItemTitle list={filtersState.months} name="Months" />
-            }
-          >
-            <TransactionsStatistic
-              dispatch={dispatch}
-              filters={filtersState}
-              statistic={data}
-            />
-          </AccordionItem>
-          <AccordionItem
-            key="sources"
-            title={
-              <AccordionItemTitle list={filtersState.sources} name="Sources" />
-            }
-          >
-            <TransactionsSources dispatch={dispatch} filters={filtersState} />
-          </AccordionItem>
-        </Accordion>
+        <Filters data={data} />
       </div>
     </div>
-  );
-}
-
-function AccordionItemTitle({
-  list,
-  name,
-}: {
-  list: null | readonly string[];
-  name: string;
-}) {
-  return (
-    <Badge
-      color="primary"
-      content={(list ?? []).length > 0 ? list?.length : null}
-      placement="top-right"
-      shape="rectangle"
-      showOutline={false}
-      size="sm"
-      variant="solid"
-    >
-      <div className="pr-2">{name}</div>
-    </Badge>
   );
 }

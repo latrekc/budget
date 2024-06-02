@@ -8,7 +8,7 @@ import { useState } from "react";
 import { TiPlus } from "react-icons/ti";
 import { graphql, useFragment } from "react-relay";
 
-import TransactionSetCategoryButton from "../../buttons/TransactionSetCategoryButton";
+import TransactionSetCategoryButton from "../../TransactionSetCategoryButton";
 import { TransactionCellAddCategoryButton$key } from "./__generated__/TransactionCellAddCategoryButton.graphql";
 
 export default function TransactionCellAddCategoryButton({

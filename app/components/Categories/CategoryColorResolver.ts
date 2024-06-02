@@ -2,8 +2,8 @@ import chroma from "chroma-js";
 import { graphql } from "relay-runtime";
 import { readFragment } from "relay-runtime/lib/store/ResolverFragments";
 
-import { environment } from "../../../lib/relay";
-import { TransactionCategoryColorResolver$key } from "./__generated__/TransactionCategoryColorResolver.graphql";
+import { environment } from "../../lib/relay";
+import { CategoryColorResolver$key } from "./__generated__/CategoryColorResolver.graphql";
 
 type CategoryRecord = {
   id: string;
@@ -17,17 +17,15 @@ const ROOT_SCALE = "RdYlGn";
 
 /**
  * @RelayResolver Category.color: String
- * @rootFragment TransactionCategoryColorResolver
+ * @rootFragment CategoryColorResolver
  *
  * A color for the category
  */
-export function color(
-  categoryKey: TransactionCategoryColorResolver$key,
-): string {
+export function color(categoryKey: CategoryColorResolver$key): string {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const category = readFragment(
     graphql`
-      fragment TransactionCategoryColorResolver on Category {
+      fragment CategoryColorResolver on Category {
         id @required(action: THROW)
         parentCategory {
           id @required(action: THROW)
