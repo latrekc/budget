@@ -8,33 +8,15 @@ import { DashboardByTimePeriods$key } from "./__generated__/DashboardByTimePerio
 
 type EChartsOption = echarts.EChartsOption;
 
-export enum Period {
-  Days = "Days",
-  Months = "Months",
-  Years = "Years",
-}
-
 export default function DashboardByTimePeriods({
-  period,
   statistic: statistic$key,
 }: {
-  period: Period;
   statistic: DashboardByTimePeriods$key;
 }) {
   const data = useFragment(
     graphql`
-      fragment DashboardByTimePeriods on Query
-      @argumentDefinitions(
-        include_months: { type: "Boolean!" }
-        include_years: { type: "Boolean!" }
-      ) {
-        transactions_statistic_per_months @include(if: $include_months) {
-          id @required(action: THROW)
-          income @required(action: THROW)
-          outcome @required(action: THROW)
-        }
-
-        transactions_statistic_per_years @include(if: $include_years) {
+      fragment DashboardByTimePeriods on Query {
+        transactions_statistic_per_months {
           id @required(action: THROW)
           income @required(action: THROW)
           outcome @required(action: THROW)
@@ -44,36 +26,22 @@ export default function DashboardByTimePeriods({
     statistic$key,
   );
 
-  const records = useMemo(() => {
-    switch (period) {
-      case Period.Years:
-        return data.transactions_statistic_per_years ?? [];
-      case Period.Months:
-        return data.transactions_statistic_per_months ?? [];
-      case Period.Days:
-        return [];
-    }
-  }, [
-    data.transactions_statistic_per_years,
-    data.transactions_statistic_per_months,
-    period,
-  ]);
-
+  const records = useMemo(
+    () => data.transactions_statistic_per_months ?? [],
+    [data.transactions_statistic_per_months],
+  );
   const option: EChartsOption = useMemo(
     () => ({
-      dataZoom:
-        period === Period.Years
-          ? [{ end: 100, show: false, start: 0, type: "slider" }]
-          : [
-              {
-                end: 100,
-                handleSize: 8,
-                minSpan: 10,
-                show: true,
-                start: 0,
-                type: "slider",
-              },
-            ],
+      dataZoom: [
+        {
+          end: 100,
+          handleSize: 8,
+          minSpan: 10,
+          show: true,
+          start: 0,
+          type: "slider",
+        },
+      ],
       grid: {
         bottpm: 0,
         left: 0,
@@ -162,7 +130,7 @@ export default function DashboardByTimePeriods({
         type: "value",
       },
     }),
-    [period, records],
+    [records],
   );
 
   return <ReactECharts className="min-h-[720px] bg-white" option={option} />;
