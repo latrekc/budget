@@ -2,8 +2,8 @@ import { useState } from "react";
 import { graphql, useLazyLoadQuery } from "react-relay";
 
 import Filters from "../Filters";
+import { useFilters } from "../Filters/FiltersProvider";
 import FiltersTransactions from "../Filters/FiltersTransactions";
-import useFilters from "../Filters/useFilters";
 import TransactionsTable, {
   PER_PAGE,
   TransactionsSelection,

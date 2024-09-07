@@ -2,9 +2,9 @@ import { Accordion, AccordionItem, Badge } from "@nextui-org/react";
 import { graphql, useFragment } from "react-relay";
 import FiltersCategories from "./FiltersCategories";
 import FiltersMonths from "./FiltersMonths";
+import { useFilters } from "./FiltersProvider";
 import FiltersSources from "./FiltersSources";
 import { Filters$key } from "./__generated__/Filters.graphql";
-import useFilters from "./useFilters";
 
 export default function Filters({ data: data$key }: { data: Filters$key }) {
   const data = useFragment(

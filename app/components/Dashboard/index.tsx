@@ -1,7 +1,7 @@
 import { graphql, useLazyLoadQuery } from "react-relay";
 
 import Filters from "../Filters";
-import useFilters from "../Filters/useFilters";
+import { useFilters } from "../Filters/FiltersProvider";
 import DashboardByTimePeriods from "./DashboardByTimePeriods";
 import { DashboardQuery } from "./__generated__/DashboardQuery.graphql";
 
