@@ -34,6 +34,7 @@ model Category {
   parentCategoryId Int?
   subCategories    Category[]                 @relation("ParentCategory")
   transactions     TransactionsOnCategories[]
+  statistic        Statistic[]
 
   @@unique([name, parentCategoryId])
   @@map("categories")
@@ -69,4 +70,17 @@ view StatisticPerYears {
   outcome Float
 
   @@map("transactions_statistic_per_years")
+}
+
+view Statistic {
+  id      String @id @unique
+  year    Int
+  month   Int
+  income  Float
+  outcome Float
+
+  category   Category @relation(fields: [categoryId], references: [id])
+  categoryId Int
+
+  @@map("transactions_statistic")
 }
