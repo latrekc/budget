@@ -5,7 +5,7 @@ import { builder } from "../builder";
 
 builder.prismaObject("Statistic", {
   fields: (t) => ({
-    category: t.exposeID("categoryId"),
+    category: t.relation("category"),
     id: t.exposeID("id"),
     income: t.exposeFloat("income"),
     month: t.exposeInt("month"),
@@ -142,7 +142,7 @@ builder.queryField("transactions_statistic", (t) =>
   t.prismaField({
     args: {
       filters: t.arg({
-        required: true,
+        required: false,
         type: filterStatisticInput,
       }),
     },

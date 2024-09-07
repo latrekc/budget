@@ -53,9 +53,11 @@ export default function useFilters() {
     if (params.has("search")) {
       state.search = decodeURIComponent(params.get("search")!);
     }
+
     if (params.has("amount")) {
       state.amount = decodeURIComponent(params.get("amount")!);
     }
+
     if (params.has("amountRelation")) {
       state.amountRelation = enumFromStringValue<AmountRelation>(
         AmountRelation,
@@ -69,6 +71,16 @@ export default function useFilters() {
   const [filtersState, dispatch] = useReducer(
     TransactionsFiltersReducer,
     filtersInitialState,
+  );
+
+  const statisticFiltersState = useMemo(
+    () => ({
+      categories: filtersState.categories,
+      ignoreCategories: filtersState.ignoreCategories,
+      months: filtersState.months,
+      onlyIncome: filtersState.onlyIncome,
+    }),
+    [filtersState],
   );
 
   useEffect(() => {
@@ -134,5 +146,5 @@ export default function useFilters() {
     router.replace(`${pathname}?${params}`);
   }, [filtersState, pathname, router, searchParams]);
 
-  return { dispatch, filtersState };
+  return { dispatch, filtersState, statisticFiltersState };
 }

@@ -108,6 +108,7 @@ type Query {
     first: Int
     last: Int
   ): QueryTransactionsConnection
+  transactions_statistic(filters: filterStatisticInput): [Statistic!]
   transactions_statistic_per_months: [StatisticPerMonths!]
   transactions_statistic_per_years: [StatisticPerYears!]
   transactions_total(filters: filterTransactionsInput): TransactionTotal
@@ -130,6 +131,15 @@ enum Source {
   Revolut
   Sberbank
   Tinkoff
+}
+
+type Statistic {
+  category: Category
+  id: ID
+  income: Float
+  month: Int
+  outcome: Float
+  year: Int
 }
 
 type StatisticPerMonths {
@@ -168,6 +178,13 @@ type TransactionsOnCategories {
   amount: Float
   category: Category
   transaction: Transaction
+}
+
+input filterStatisticInput {
+  categories: [String!]
+  ignoreCategories: [String!]
+  months: [String!]
+  onlyIncome: Boolean = false
 }
 
 input filterTransactionsInput {
