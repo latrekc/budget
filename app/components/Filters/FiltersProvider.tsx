@@ -1,10 +1,38 @@
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useReducer } from "react";
-
 import { AmountRelation, enumFromStringValue } from "@/lib/types";
-import TransactionsFiltersReducer, { initialState } from "./FiltersReducer";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import {
+  Dispatch,
+  FC,
+  ReactNode,
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useReducer,
+} from "react";
+import FiltersReducer, {
+  FiltersReducerAction,
+  FiltersState,
+  initialState,
+} from "./FiltersReducer";
 
-export default function useFilters() {
+interface FiltersProviderProps {
+  children: ReactNode;
+}
+export interface FiltersContext {
+  dispatch: Dispatch<FiltersReducerAction>;
+  filtersState: FiltersState;
+  statisticFiltersState: Pick<
+    FiltersState,
+    "categories" | "ignoreCategories" | "months" | "onlyIncome"
+  >;
+}
+
+const ReactFiltersContext = createContext<FiltersContext | null>(null);
+
+export const FiltersProvider: FC<FiltersProviderProps> = function (props) {
+  const { children } = props;
+
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -69,7 +97,7 @@ export default function useFilters() {
   }, [searchParams]);
 
   const [filtersState, dispatch] = useReducer(
-    TransactionsFiltersReducer,
+    FiltersReducer,
     filtersInitialState,
   );
 
@@ -84,7 +112,7 @@ export default function useFilters() {
   );
 
   useEffect(() => {
-    const params = new URLSearchParams(searchParams);
+    const params = new URLSearchParams();
 
     if (filtersState.onlyIncome) {
       params.set("onlyIncome", "true");
@@ -144,7 +172,23 @@ export default function useFilters() {
     }
 
     router.replace(`${pathname}?${params}`);
-  }, [filtersState, pathname, router, searchParams]);
+  }, [filtersState, pathname, router]);
 
-  return { dispatch, filtersState, statisticFiltersState };
-}
+  const context = { dispatch, filtersState, statisticFiltersState };
+
+  return (
+    <ReactFiltersContext.Provider value={context}>
+      {children}
+    </ReactFiltersContext.Provider>
+  );
+};
+
+export const useFilters = (): FiltersContext => {
+  const context = useContext(ReactFiltersContext);
+
+  if (!context) {
+    throw new Error("useFilters called outside of FiltersProvider");
+  }
+
+  return context;
+};
