@@ -15,6 +15,8 @@ type CategoryRecord = {
 // https://github.com/gka/chroma.js/blob/main/src/colors/colorbrewer.js
 const ROOT_SCALE = "RdYlGn";
 
+const COLORS_CACHE = new Map<string, string>();
+
 /**
  * @RelayResolver Category.color: String
  * @rootFragment CategoryColorResolver
@@ -56,8 +58,12 @@ export function color(categoryKey: CategoryColorResolver$key): string {
     categories: CategoryRecord[],
     categoryId: string,
   ) => {
-    const index = categories.findIndex((data) => data?.id === categoryId);
-    return parentColors.at(index)!;
+    if (!COLORS_CACHE.has(category.id)) {
+      const index = categories.findIndex((data) => data?.id === categoryId);
+      COLORS_CACHE.set(category.id, parentColors.at(index)!);
+    }
+
+    return COLORS_CACHE.get(category.id)!;
   };
 
   const rootCategories = filterByParent(null);
