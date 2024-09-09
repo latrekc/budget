@@ -2,25 +2,21 @@ DROP VIEW transactions_statistic;
 
 CREATE VIEW transactions_statistic AS
 SELECT
-  (
-    income.year || '-' || income.month || '-' || income.categoryId
+  COALESCE(
+    income.monthId || '-' || income.categoryId,
+    outcome.monthId || '-' || outcome.categoryId
   ) AS id,
-  income.year,
-  income.month,
-  income.sum AS income,
-  outcome.sum AS outcome,
-  income.categoryId
+  COALESCE(income.monthId, outcome.monthId) AS monthId,
+  COALESCE(income.sum, 0) AS income,
+  COALESCE(outcome.sum, 0) AS outcome,
+  COALESCE(income.categoryId, outcome.categoryId) AS categoryId
 FROM
   (
     SELECT
       strftime (
-        "%Y",
+        "%Y-%m",
         datetime (t.date / 1000, 'unixepoch', 'localtime')
-      ) AS year,
-      strftime (
-        "%m",
-        datetime (t.date / 1000, 'unixepoch', 'localtime')
-      ) AS month,
+      ) AS monthId,
       SUM(t2c.amount * 100) / 100 AS sum,
       t2c.categoryId
     FROM
@@ -29,20 +25,15 @@ FROM
     WHERE
       t2c.amount > 0
     GROUP BY
-      year,
-      month,
+      monthId,
       categoryId
   ) AS income
-  INNER JOIN (
+  RIGHT OUTER JOIN (
     SELECT
       strftime (
-        "%Y",
+        "%Y-%m",
         datetime (t.date / 1000, 'unixepoch', 'localtime')
-      ) AS year,
-      strftime (
-        "%m",
-        datetime (t.date / 1000, 'unixepoch', 'localtime')
-      ) AS month,
+      ) AS monthId,
       SUM(t2c.amount * 100) / 100 AS sum,
       t2c.categoryId
     FROM
@@ -51,12 +42,9 @@ FROM
     WHERE
       t2c.amount < 0
     GROUP BY
-      year,
-      month,
+      monthId,
       categoryId
-  ) AS outcome ON income.year = outcome.year
-  AND income.month = outcome.month
+  ) AS outcome ON income.monthId = outcome.monthId
   AND income.categoryId = outcome.categoryId
 ORDER BY
-  outcome.year DESC,
-  outcome.month DESC;
+  monthId DESC;
