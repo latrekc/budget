@@ -8,9 +8,8 @@ builder.prismaObject("Statistic", {
     category: t.relation("category"),
     id: t.exposeID("id"),
     income: t.exposeFloat("income"),
-    month: t.exposeInt("month"),
+    monthId: t.exposeString("monthId"),
     outcome: t.exposeFloat("outcome"),
-    year: t.exposeInt("year"),
   }),
 });
 
@@ -41,10 +40,42 @@ const filterStatisticInput = builder
     }),
   });
 
+async function categoriesWithSubCategories(
+  categoriesFromFilter: null | string[] | undefined,
+) {
+  const ids = (categoriesFromFilter ?? []).map((id) => parseId(id)!);
+
+  const records = await prisma.category.findMany({
+    select: {
+      id: true,
+    },
+    where: {
+      OR: [
+        {
+          id: {
+            in: ids,
+          },
+        },
+        {
+          parentCategoryId: {
+            in: ids,
+          },
+        },
+        {
+          parentCategory: {
+            parentCategoryId: {
+              in: ids,
+            },
+          },
+        },
+      ],
+    },
+  });
+  return records.map(({ id }) => id);
+}
+
 async function filtersToWhere(filters: StatisticFilter | null | undefined) {
   let where: Prisma.StatisticWhereInput | undefined = undefined;
-
-  const OR: Prisma.StatisticWhereInput[][] = [];
 
   if (filters != null) {
     where = {};
@@ -53,85 +84,39 @@ async function filtersToWhere(filters: StatisticFilter | null | undefined) {
       where.income = {
         gt: 0,
       };
+    } else {
+      where.OR = [{ income: { gt: 0 } }, { outcome: { lt: 0 } }];
     }
 
     if ((filters.months ?? []).length > 0) {
-      OR.push(
-        (filters.months ?? []).map((monthId) => {
-          const [year, month] = monthId.split("-").map(parseInt);
-
-          return {
-            month: {
-              equals: month,
-            },
-            year: {
-              equals: year,
-            },
-          };
-        }),
-      );
+      where.monthId = { in: filters.months ?? [] };
     }
 
-    if ((filters.categories ?? []).length > 0) {
-      const categoriesFromFilter: number[] = (filters.categories ?? []).map(
-        (id) => parseId(id)!,
-      );
+    let categoryIds: number[] | undefined = undefined;
 
-      const categoriesWithSubCategories = await prisma.category.findMany({
-        select: {
-          id: true,
-        },
-        where: {
-          OR: [
-            {
-              id: {
-                in: categoriesFromFilter,
-              },
-            },
-            {
-              parentCategoryId: {
-                in: categoriesFromFilter,
-              },
-            },
-            {
-              parentCategory: {
-                parentCategoryId: {
-                  in: categoriesFromFilter,
-                },
-              },
-            },
-          ],
-        },
-      });
+    if ((filters.categories ?? []).length > 0) {
+      categoryIds = await categoriesWithSubCategories(filters.categories);
 
       where.categoryId = {
-        in: categoriesWithSubCategories.map(({ id }) => id),
+        in: categoryIds,
       };
     }
 
     if ((filters.ignoreCategories ?? []).length > 0) {
-      const ignoreCategoriesFromFilter: number[] = (
-        filters.ignoreCategories ?? []
-      ).map((id) => parseId(id)!);
+      const ignoreCategoryIds = await categoriesWithSubCategories(
+        filters.ignoreCategories,
+      );
 
-      if (
-        where.categoryId !== undefined &&
-        typeof where.categoryId !== "number" &&
-        where.categoryId.in !== undefined
-      ) {
+      if (categoryIds !== undefined) {
         where.categoryId = {
-          in: where.categoryId.in,
-          notIn: ignoreCategoriesFromFilter,
+          in: categoryIds,
+          notIn: ignoreCategoryIds,
         };
       } else {
         where.categoryId = {
-          notIn: ignoreCategoriesFromFilter,
+          notIn: ignoreCategoryIds,
         };
       }
-    }
-
-    if (OR.length > 0) {
-      where.AND = OR.map((item) => ({ OR: item }));
     }
   }
 
@@ -149,7 +134,7 @@ builder.queryField("transactions_statistic", (t) =>
     resolve: async (query, _, args) => {
       return prisma.statistic.findMany({
         ...query,
-        orderBy: [{ year: "desc" }, { month: "desc" }],
+        orderBy: [{ monthId: "asc" }],
         where: await filtersToWhere(args.filters),
       });
     },
@@ -174,24 +159,5 @@ builder.queryField("transactions_statistic_per_months", (t) =>
         ...query,
       }),
     type: ["StatisticPerMonths"],
-  }),
-);
-
-builder.prismaObject("StatisticPerYears", {
-  fields: (t) => ({
-    id: t.exposeID("id"),
-    income: t.exposeFloat("income"),
-    outcome: t.exposeFloat("outcome"),
-    year: t.exposeInt("year"),
-  }),
-});
-
-builder.queryField("transactions_statistic_per_years", (t) =>
-  t.prismaField({
-    resolve: (query) =>
-      prisma.statisticPerYears.findMany({
-        ...query,
-      }),
-    type: ["StatisticPerYears"],
   }),
 );

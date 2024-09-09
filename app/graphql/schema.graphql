@@ -110,7 +110,6 @@ type Query {
   ): QueryTransactionsConnection
   transactions_statistic(filters: filterStatisticInput): [Statistic!]
   transactions_statistic_per_months: [StatisticPerMonths!]
-  transactions_statistic_per_years: [StatisticPerYears!]
   transactions_total(filters: filterTransactionsInput): TransactionTotal
 }
 
@@ -137,22 +136,14 @@ type Statistic {
   category: Category
   id: ID
   income: Float
-  month: Int
+  monthId: String
   outcome: Float
-  year: Int
 }
 
 type StatisticPerMonths {
   id: ID
   income: Float
   month: Int
-  outcome: Float
-  year: Int
-}
-
-type StatisticPerYears {
-  id: ID
-  income: Float
   outcome: Float
   year: Int
 }

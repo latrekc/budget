@@ -58,12 +58,14 @@ export function color(categoryKey: CategoryColorResolver$key): string {
     categories: CategoryRecord[],
     categoryId: string,
   ) => {
-    if (!COLORS_CACHE.has(category.id)) {
+    const key = JSON.stringify([parentColors, categories, categoryId]);
+
+    if (!COLORS_CACHE.has(key)) {
       const index = categories.findIndex((data) => data?.id === categoryId);
-      COLORS_CACHE.set(category.id, parentColors.at(index)!);
+      COLORS_CACHE.set(key, parentColors.at(index)!);
     }
 
-    return COLORS_CACHE.get(category.id)!;
+    return COLORS_CACHE.get(key)!;
   };
 
   const rootCategories = filterByParent(null);

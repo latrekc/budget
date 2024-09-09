@@ -19,6 +19,34 @@ function getTextSize(size: Size) {
   }
 }
 
+export function AmountValueFormat({
+  abs = false,
+  amount,
+  currency,
+  round = false,
+}: {
+  abs?: boolean;
+  amount: number;
+  currency: Currency;
+  round?: boolean;
+}) {
+  let displayAmount = amount;
+
+  if (round) {
+    displayAmount = Math.round(displayAmount);
+  }
+
+  if (abs) {
+    displayAmount = Math.abs(displayAmount);
+  }
+
+  return new Intl.NumberFormat("en-GB", {
+    currency: currency,
+    maximumFractionDigits: round ? 0 : 2,
+    style: "currency",
+  }).format(displayAmount);
+}
+
 export default function AmountValue({
   abs,
   amount,
@@ -32,27 +60,13 @@ export default function AmountValue({
   round?: boolean;
   size?: Size;
 }) {
-  let displayAmount = amount;
-
-  if (round) {
-    displayAmount = Math.round(displayAmount);
-  }
-
-  if (abs) {
-    displayAmount = Math.abs(displayAmount);
-  }
-
   return (
     <span
       className={`${
         amount > 0 ? "text-green-900" : "text-red-900"
       } text-mono whitespace-nowrap ${getTextSize(size)}`}
     >
-      {new Intl.NumberFormat("en-GB", {
-        currency: currency,
-        maximumFractionDigits: round ? 0 : 2,
-        style: "currency",
-      }).format(displayAmount)}
+      {AmountValueFormat({ abs, amount, currency, round })}
     </span>
   );
 }
