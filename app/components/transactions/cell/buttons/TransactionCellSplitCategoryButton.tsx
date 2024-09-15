@@ -88,7 +88,7 @@ export default function TransactionCellSplitCategoryButton({
     (key: React.Key) =>
       dispatch({
         payload: { amount: split.rest, id: key.toString() },
-        type: SplitCategoryReducerActionType.addCategory,
+        type: SplitCategoryReducerActionType.AddCategory,
       }),
     [split.rest],
   );
@@ -116,7 +116,7 @@ export default function TransactionCellSplitCategoryButton({
       onClose={() =>
         dispatch({
           payload: initialState,
-          type: SplitCategoryReducerActionType.resetState,
+          type: SplitCategoryReducerActionType.ResetState,
         })
       }
       onOpenChange={(open) => setIsOpen(open)}
@@ -155,7 +155,7 @@ export default function TransactionCellSplitCategoryButton({
                     onDelete={() =>
                       dispatch({
                         payload: { id },
-                        type: SplitCategoryReducerActionType.removeCategory,
+                        type: SplitCategoryReducerActionType.RemoveCategory,
                       })
                     }
                   />
@@ -169,7 +169,7 @@ export default function TransactionCellSplitCategoryButton({
                           amount: parseFloat(e.currentTarget.value),
                           id,
                         },
-                        type: SplitCategoryReducerActionType.updateCategory,
+                        type: SplitCategoryReducerActionType.UpdateCategory,
                       })
                     }
                     type="number"

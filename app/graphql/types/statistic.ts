@@ -123,7 +123,7 @@ async function filtersToWhere(filters: StatisticFilter | null | undefined) {
   return where;
 }
 
-builder.queryField("transactions_statistic", (t) =>
+builder.queryField("transactionsStatistic", (t) =>
   t.prismaField({
     args: {
       filters: t.arg({
@@ -152,7 +152,7 @@ builder.prismaObject("StatisticPerMonths", {
   }),
 });
 
-builder.queryField("transactions_statistic_per_months", (t) =>
+builder.queryField("transactionsStatisticPerMonths", (t) =>
   t.prismaField({
     resolve: (query) =>
       prisma.statisticPerMonths.findMany({

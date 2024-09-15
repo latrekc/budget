@@ -15,7 +15,7 @@ export default function ComplitedFilter({
   filters: FiltersState;
 }) {
   const onOnlyUncomplitedToggle = useCallback(
-    () => dispatch({ type: FiltersReducerActionType.toggleOnlyUncomplited }),
+    () => dispatch({ type: FiltersReducerActionType.ToggleOnlyUncomplited }),
     [dispatch],
   );
 

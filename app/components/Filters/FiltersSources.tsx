@@ -25,7 +25,7 @@ export default function FiltersSources({
       dispatch({
         payload:
           value.length > 0 && value.length < sources.length ? value : null,
-        type: FiltersReducerActionType.setSources,
+        type: FiltersReducerActionType.SetSources,
       });
     },
     [dispatch, sources.length],
@@ -42,7 +42,7 @@ export default function FiltersSources({
 
       dispatch({
         payload: newValue.length ? newValue : null,
-        type: FiltersReducerActionType.setSources,
+        type: FiltersReducerActionType.SetSources,
       });
     },
     [dispatch, filters.sources],

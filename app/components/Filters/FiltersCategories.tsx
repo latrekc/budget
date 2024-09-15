@@ -129,8 +129,8 @@ export default function FiltersCategories({
             : null,
         type:
           categoryMode === CategoryMode.SELECT
-            ? FiltersReducerActionType.setCategories
-            : FiltersReducerActionType.setIgnoreCategories,
+            ? FiltersReducerActionType.SetCategories
+            : FiltersReducerActionType.SetIgnoreCategories,
       });
     },
     [allCategories, categoryMode, dispatch],
@@ -162,7 +162,7 @@ export default function FiltersCategories({
 
         dispatch({
           payload: newValue.length ? newValue : null,
-          type: FiltersReducerActionType.setCategories,
+          type: FiltersReducerActionType.SetCategories,
         });
       } else {
         const newValue = filters.ignoreCategories!.filter(
@@ -171,7 +171,7 @@ export default function FiltersCategories({
 
         dispatch({
           payload: newValue.length ? newValue : null,
-          type: FiltersReducerActionType.setIgnoreCategories,
+          type: FiltersReducerActionType.SetIgnoreCategories,
         });
       }
     },

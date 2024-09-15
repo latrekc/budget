@@ -17,11 +17,11 @@ export default function TransactionsTotal({
   filters: FiltersState;
   selectedTransactions: TransactionsSelection;
 }) {
-  const [{ transactions_total }, refetch] = useRefetchableFragment(
+  const [{ transactionsTotal }, refetch] = useRefetchableFragment(
     graphql`
       fragment TransactionsTotal on Query
       @refetchable(queryName: "TransactionsTotalQuery") {
-        transactions_total(filters: $filters) {
+        transactionsTotal(filters: $filters) {
           count
           income
           outcome
@@ -43,25 +43,25 @@ export default function TransactionsTotal({
     <div className="inline-flex items-center justify-start text-xs">
       <div>
         <Content selectedTransactions={selectedTransactions} />{" "}
-        <b>{transactions_total?.count}</b> transactions
-        {(transactions_total?.income ?? 0) > 0 ||
-        (transactions_total?.outcome ?? 0) < 0
+        <b>{transactionsTotal?.count}</b> transactions
+        {(transactionsTotal?.income ?? 0) > 0 ||
+        (transactionsTotal?.outcome ?? 0) < 0
           ? " for "
           : null}
-        {(transactions_total?.income ?? 0) > 0 && (
+        {(transactionsTotal?.income ?? 0) > 0 && (
           <AmountValue
-            amount={transactions_total?.income ?? 0}
+            amount={transactionsTotal?.income ?? 0}
             currency={Currency.GBP}
             size={Size.Small}
           />
         )}
-        {(transactions_total?.income ?? 0) > 0 &&
-        (transactions_total?.outcome ?? 0) < 0
+        {(transactionsTotal?.income ?? 0) > 0 &&
+        (transactionsTotal?.outcome ?? 0) < 0
           ? " and "
           : null}
-        {(transactions_total?.outcome ?? 0) < 0 && (
+        {(transactionsTotal?.outcome ?? 0) < 0 && (
           <AmountValue
-            amount={transactions_total?.outcome ?? 0}
+            amount={transactionsTotal?.outcome ?? 0}
             currency={Currency.GBP}
             size={Size.Small}
           />

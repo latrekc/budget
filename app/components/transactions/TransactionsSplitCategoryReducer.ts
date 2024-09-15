@@ -12,28 +12,28 @@ export type SplitCategoryState = {
 };
 
 export enum SplitCategoryReducerActionType {
-  addCategory,
-  removeCategory,
-  updateCategory,
-  resetState,
+  AddCategory,
+  RemoveCategory,
+  UpdateCategory,
+  ResetState,
 }
 
 export type SplitCategoryReducerAction =
   | {
       payload: { amount: number; id: CategoryID };
-      type: SplitCategoryReducerActionType.addCategory;
+      type: SplitCategoryReducerActionType.AddCategory;
     }
   | {
       payload: { id: CategoryID };
-      type: SplitCategoryReducerActionType.removeCategory;
+      type: SplitCategoryReducerActionType.RemoveCategory;
     }
   | {
       payload: SplitCategory;
-      type: SplitCategoryReducerActionType.updateCategory;
+      type: SplitCategoryReducerActionType.UpdateCategory;
     }
   | {
       payload: SplitCategoryState;
-      type: SplitCategoryReducerActionType.resetState;
+      type: SplitCategoryReducerActionType.ResetState;
     };
 
 export default function SplitCategoryReducer(
@@ -49,7 +49,7 @@ export default function SplitCategoryReducer(
   }
 
   switch (action.type) {
-    case SplitCategoryReducerActionType.addCategory: {
+    case SplitCategoryReducerActionType.AddCategory: {
       if (state.categories.some(({ id }) => id === action.payload.id)) {
         return state;
       }
@@ -71,7 +71,7 @@ export default function SplitCategoryReducer(
       };
     }
 
-    case SplitCategoryReducerActionType.removeCategory: {
+    case SplitCategoryReducerActionType.RemoveCategory: {
       const newCategories = state.categories.filter(
         ({ id }) => id !== action.payload.id,
       );
@@ -85,7 +85,7 @@ export default function SplitCategoryReducer(
       };
     }
 
-    case SplitCategoryReducerActionType.updateCategory: {
+    case SplitCategoryReducerActionType.UpdateCategory: {
       const newCategories: SplitCategory[] = state.categories.map(
         (category) => {
           if (category.id! !== action.payload.id) {
@@ -106,7 +106,7 @@ export default function SplitCategoryReducer(
             amount: (action.payload.amount * 100 + rest * 100) / 100,
             id: action.payload.id,
           },
-          type: SplitCategoryReducerActionType.updateCategory,
+          type: SplitCategoryReducerActionType.UpdateCategory,
         });
       }
 
@@ -117,7 +117,7 @@ export default function SplitCategoryReducer(
       };
     }
 
-    case SplitCategoryReducerActionType.resetState:
+    case SplitCategoryReducerActionType.ResetState:
       return action.payload;
   }
 }
