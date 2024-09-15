@@ -4,7 +4,7 @@ import ReactECharts from "echarts-for-react";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { graphql, useFragment } from "react-relay";
 
-import { createRoot } from "react-dom/client";
+import { createRoot, Root } from "react-dom/client";
 
 import {
   ScrollShadow,
@@ -17,8 +17,8 @@ import {
 } from "@nextui-org/react";
 import { BarSeriesOption, graphic } from "echarts";
 import AmountValue, { Size } from "../AmountValue";
-import CategoryChip2 from "../Categories/CategoryChip2";
 import { CategoryChip$key } from "../Categories/__generated__/CategoryChip.graphql";
+import CategoryChip2 from "../Categories/CategoryChip2";
 import { DashboardByTimePeriods$key } from "./__generated__/DashboardByTimePeriods.graphql";
 
 type EChartsOption = echarts.EChartsOption;
@@ -129,11 +129,11 @@ export default function DashboardByTimePeriods({
           }
           const category = categories.get(record.category.id)!;
 
-          if (record.income != 0) {
-            category.data.push([record.monthId, Math.round(record.income)]);
-          }
-          if (record.outcome != 0) {
-            category.data.push([record.monthId, Math.round(record.outcome)]);
+          if (record.income + record.outcome != 0) {
+            category.data.push([
+              record.monthId,
+              Math.round(record.income + record.outcome),
+            ]);
           }
 
           return categories;
@@ -144,8 +144,10 @@ export default function DashboardByTimePeriods({
   );
 
   const tooltipNode = useRef<HTMLDivElement | null>(null);
+  const tooltipRoot = useRef<Root | null>(null);
   useEffect(() => {
     tooltipNode.current = document.createElement("div");
+    tooltipRoot.current = createRoot(tooltipNode.current);
   });
 
   const categoryToSeries = useCallback(
@@ -224,11 +226,11 @@ export default function DashboardByTimePeriods({
               throw new Error("No array params here please");
             }
 
-            if (tooltipNode.current == null) {
+            if (tooltipNode.current == null || tooltipRoot.current == null) {
               throw new Error("No root");
             }
 
-            createRoot(tooltipNode.current).render(
+            tooltipRoot.current.render(
               <DashboardTooltip
                 category={category}
                 data={categoryA.data}
@@ -244,6 +246,44 @@ export default function DashboardByTimePeriods({
       } as BarSeriesOption;
     },
     [allCategories, visible_months],
+  );
+
+  const categoriesOrder = useMemo(
+    () =>
+      [
+        ...[...allCategories.values()]
+          .map((category) => {
+            if (category == null || category?.parentCategory != null) {
+              return [];
+            }
+
+            const result = [];
+
+            if (categories_statistic.has(category.id)) {
+              result.push(categories_statistic.get(category.id));
+            }
+
+            if (category.subCategories != undefined) {
+              category.subCategories.forEach((subCategory) => {
+                if (categories_statistic.has(subCategory)) {
+                  result.push(categories_statistic.get(subCategory));
+                }
+
+                allCategories
+                  .get(subCategory)!
+                  .subCategories?.forEach((subSubCategory) => {
+                    if (categories_statistic.has(subSubCategory)) {
+                      result.push(categories_statistic.get(subSubCategory));
+                    }
+                  });
+              });
+            }
+
+            return result;
+          })
+          .flat(),
+      ].filter((category) => category != undefined),
+    [allCategories, categories_statistic],
   );
 
   const option: EChartsOption = useMemo(
@@ -268,41 +308,7 @@ export default function DashboardByTimePeriods({
         show: false,
       },
       series: [
-        ...[
-          ...[...allCategories.values()]
-            .map((category) => {
-              if (category == null || category?.parentCategory != null) {
-                return [];
-              }
-
-              const result = [];
-
-              if (categories_statistic.has(category.id)) {
-                result.push(categories_statistic.get(category.id));
-              }
-
-              if (category.subCategories != undefined) {
-                category.subCategories.forEach((subCategory) => {
-                  if (categories_statistic.has(subCategory)) {
-                    result.push(categories_statistic.get(subCategory));
-                  }
-
-                  allCategories
-                    .get(subCategory)!
-                    .subCategories?.forEach((subSubCategory) => {
-                      if (categories_statistic.has(subSubCategory)) {
-                        result.push(categories_statistic.get(subSubCategory));
-                      }
-                    });
-                });
-              }
-
-              return result;
-            })
-            .flat(),
-        ]
-          .filter((category) => category != undefined)
-          .map((category) => categoryToSeries(category!)),
+        ...categoriesOrder.map((category) => categoryToSeries(category!)),
         {
           areaStyle: {
             color: "#7bc043",

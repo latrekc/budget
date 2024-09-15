@@ -39,6 +39,18 @@ module.exports = {
         "react/prop-types": 1,
         "react/react-in-jsx-scope": 0,
         "relay/generated-flow-types": 0,
+        "@typescript-eslint/no-unused-vars": [
+          "error",
+          {
+            args: "all",
+            argsIgnorePattern: "^_",
+            caughtErrors: "all",
+            caughtErrorsIgnorePattern: "^_",
+            destructuredArrayIgnorePattern: "^_",
+            varsIgnorePattern: "^_",
+            ignoreRestSiblings: true,
+          },
+        ],
       },
       settings: {
         "import/parsers": {
