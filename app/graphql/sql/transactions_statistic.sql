@@ -28,7 +28,7 @@ FROM
       monthId,
       categoryId
   ) AS income
-  RIGHT OUTER JOIN (
+  FULL OUTER JOIN (
     SELECT
       strftime (
         "%Y-%m",

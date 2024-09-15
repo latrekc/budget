@@ -2,11 +2,11 @@ DROP VIEW transactions_statistic_per_months;
 
 CREATE VIEW transactions_statistic_per_months AS
 SELECT
-  (income.year || '-' || income.month) AS id,
-  income.year,
-  income.month,
-  income.sum AS income,
-  outcome.sum AS outcome
+  COALESCE(income.monthId, outcome.monthId) AS id,
+  COALESCE(income.year, outcome.year) AS year,
+  COALESCE(income.month, outcome.month) AS month,
+  COALESCE(income.sum, 0) AS income,
+  COALESCE(outcome.sum, 0) AS outcome
 FROM
   (
     SELECT
@@ -18,16 +18,21 @@ FROM
         "%m",
         datetime (t.date / 1000, 'unixepoch', 'localtime')
       ) AS month,
+      strftime (
+        "%Y-%m",
+        datetime (t.date / 1000, 'unixepoch', 'localtime')
+      ) AS monthId,
       SUM(amount * 100) / 100 AS sum
     FROM
       transactions t
     WHERE
       amount > 0
     GROUP BY
+      monthId,
       year,
       month
   ) AS income
-  INNER JOIN (
+  FULL OUTER JOIN (
     SELECT
       strftime (
         "%Y",
@@ -37,16 +42,19 @@ FROM
         "%m",
         datetime (t.date / 1000, 'unixepoch', 'localtime')
       ) AS month,
+      strftime (
+        "%Y-%m",
+        datetime (t.date / 1000, 'unixepoch', 'localtime')
+      ) AS monthId,
       SUM(amount * 100) / 100 AS sum
     FROM
       transactions t
     WHERE
       amount < 0
     GROUP BY
+      monthId,
       year,
       month
-  ) AS outcome ON income.year = outcome.year
-  AND income.month = outcome.month
+  ) AS outcome ON income.monthId = outcome.monthId
 ORDER BY
-  outcome.year DESC,
-  outcome.month DESC;
+  id DESC;
