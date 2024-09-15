@@ -21,7 +21,7 @@ program
   .description("CLI to import bank transactions into a database")
   .version("0.8.0");
 
-function parsePathToCSVFile(filepath: string): string {
+function parsePathToCsvFile(filepath: string): string {
   if (!filepath.endsWith(".csv")) {
     throw new InvalidArgumentError("Not a CSV file.");
   }
@@ -79,14 +79,14 @@ async function upsertTransactions(type: Source, records: Transaction[]) {
 
 function parseTransactionsFile<T>(
   csvFilePath: string,
-  on_record: (record: T) => Transaction,
+  onRecord: (record: T) => Transaction,
 ): Transaction[] {
   const fileContent = fs.readFileSync(csvFilePath, { encoding: "utf-8" });
 
   return parse(fileContent, {
     columns: true,
     delimiter: ",",
-    on_record,
+    onRecord,
     trim: true,
   });
 }
@@ -94,7 +94,7 @@ function parseTransactionsFile<T>(
 program
   .command("monzo")
   .description("Import Monzo transactions")
-  .argument("<path>", "path to Monzo export file", parsePathToCSVFile)
+  .argument("<path>", "path to Monzo export file", parsePathToCsvFile)
   .action(async (csvFilePath: string) => {
     const records = parseTransactionsFile<{
       Amount: string;
@@ -125,7 +125,7 @@ program
 program
   .command("revolut")
   .description("Import Revolut transactions")
-  .argument("<path>", "path to Revolut export file", parsePathToCSVFile)
+  .argument("<path>", "path to Revolut export file", parsePathToCsvFile)
   .action(async (csvFilePath: string) => {
     const records = parseTransactionsFile<{
       Amount: string;

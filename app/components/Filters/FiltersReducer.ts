@@ -13,51 +13,51 @@ export type FiltersState = {
 };
 
 export enum FiltersReducerActionType {
-  toggleOnlyIncome,
-  toggleOnlyUncomplited,
-  setAmount,
-  setSources,
-  setMonths,
-  setSearch,
-  setCategories,
-  setIgnoreCategories,
-  setAmountRelation,
+  ToggleOnlyIncome,
+  ToggleOnlyUncomplited,
+  SetAmount,
+  SetSources,
+  SetMonths,
+  SetSearch,
+  SetCategories,
+  SetIgnoreCategories,
+  SetAmountRelation,
 }
 
 export type FiltersReducerAction =
   | {
       payload: FiltersState["amount"];
-      type: FiltersReducerActionType.setAmount;
+      type: FiltersReducerActionType.SetAmount;
     }
   | {
       payload: FiltersState["amountRelation"];
-      type: FiltersReducerActionType.setAmountRelation;
+      type: FiltersReducerActionType.SetAmountRelation;
     }
   | {
       payload: FiltersState["categories"];
-      type: FiltersReducerActionType.setCategories;
+      type: FiltersReducerActionType.SetCategories;
     }
   | {
       payload: FiltersState["ignoreCategories"];
-      type: FiltersReducerActionType.setIgnoreCategories;
+      type: FiltersReducerActionType.SetIgnoreCategories;
     }
   | {
       payload: FiltersState["months"];
-      type: FiltersReducerActionType.setMonths;
+      type: FiltersReducerActionType.SetMonths;
     }
   | {
       payload: FiltersState["search"];
-      type: FiltersReducerActionType.setSearch;
+      type: FiltersReducerActionType.SetSearch;
     }
   | {
       payload: FiltersState["sources"];
-      type: FiltersReducerActionType.setSources;
+      type: FiltersReducerActionType.SetSources;
     }
   | {
-      type: FiltersReducerActionType.toggleOnlyIncome;
+      type: FiltersReducerActionType.ToggleOnlyIncome;
     }
   | {
-      type: FiltersReducerActionType.toggleOnlyUncomplited;
+      type: FiltersReducerActionType.ToggleOnlyUncomplited;
     };
 
 export const initialState: FiltersState = {
@@ -77,52 +77,52 @@ export default function FiltersReducer(
   action: FiltersReducerAction,
 ): FiltersState {
   switch (action.type) {
-    case FiltersReducerActionType.toggleOnlyIncome:
+    case FiltersReducerActionType.ToggleOnlyIncome:
       return {
         ...state,
         onlyIncome: !state.onlyIncome,
       };
-    case FiltersReducerActionType.toggleOnlyUncomplited:
+    case FiltersReducerActionType.ToggleOnlyUncomplited:
       return {
         ...state,
         onlyUncomplited: !state.onlyUncomplited,
       };
 
-    case FiltersReducerActionType.setAmount:
+    case FiltersReducerActionType.SetAmount:
       return {
         ...state,
         amount: action.payload,
       };
-    case FiltersReducerActionType.setAmountRelation:
+    case FiltersReducerActionType.SetAmountRelation:
       return {
         ...state,
         amountRelation: action.payload,
       };
 
-    case FiltersReducerActionType.setSources:
+    case FiltersReducerActionType.SetSources:
       return {
         ...state,
         sources: action.payload,
       };
 
-    case FiltersReducerActionType.setMonths:
+    case FiltersReducerActionType.SetMonths:
       return {
         ...state,
         months: action.payload,
       };
 
-    case FiltersReducerActionType.setSearch:
+    case FiltersReducerActionType.SetSearch:
       return {
         ...state,
         search: action.payload,
       };
 
-    case FiltersReducerActionType.setCategories:
+    case FiltersReducerActionType.SetCategories:
       return {
         ...state,
         categories: action.payload,
       };
-    case FiltersReducerActionType.setIgnoreCategories:
+    case FiltersReducerActionType.SetIgnoreCategories:
       return {
         ...state,
         ignoreCategories: action.payload,

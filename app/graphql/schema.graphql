@@ -108,9 +108,9 @@ type Query {
     first: Int
     last: Int
   ): QueryTransactionsConnection
-  transactions_statistic(filters: filterStatisticInput): [Statistic!]
-  transactions_statistic_per_months: [StatisticPerMonths!]
-  transactions_total(filters: filterTransactionsInput): TransactionTotal
+  transactionsStatistic(filters: filterStatisticInput): [Statistic!]
+  transactionsStatisticPerMonths: [StatisticPerMonths!]
+  transactionsTotal(filters: filterTransactionsInput): TransactionTotal
 }
 
 type QueryTransactionsConnection {

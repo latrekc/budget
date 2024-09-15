@@ -58,7 +58,7 @@ export default function FiltersMonths({
   const data = useFragment(
     graphql`
       fragment FiltersMonths on Query {
-        transactions_statistic_per_months {
+        transactionsStatisticPerMonths {
           id @required(action: THROW)
           year @required(action: THROW)
           month @required(action: THROW)
@@ -71,8 +71,8 @@ export default function FiltersMonths({
   );
 
   const months = useMemo(
-    () => data.transactions_statistic_per_months ?? [],
-    [data.transactions_statistic_per_months],
+    () => data.transactionsStatisticPerMonths ?? [],
+    [data.transactionsStatisticPerMonths],
   );
 
   const years: Result = useMemo(
@@ -113,7 +113,7 @@ export default function FiltersMonths({
       dispatch({
         payload:
           value.length > 0 && value.length < months.length ? value : null,
-        type: FiltersReducerActionType.setMonths,
+        type: FiltersReducerActionType.SetMonths,
       });
     },
     [dispatch, months.length],
@@ -130,7 +130,7 @@ export default function FiltersMonths({
 
       dispatch({
         payload: newValue.length ? newValue : null,
-        type: FiltersReducerActionType.setMonths,
+        type: FiltersReducerActionType.SetMonths,
       });
     },
     [dispatch, filters.months],

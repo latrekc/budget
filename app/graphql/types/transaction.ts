@@ -294,7 +294,7 @@ builder.queryField("transactions", (t) =>
   }),
 );
 
-const TransactionTotal = builder.simpleObject("TransactionTotal", {
+const transactionTotal = builder.simpleObject("TransactionTotal", {
   fields: (t) => ({
     count: t.int({
       nullable: false,
@@ -308,7 +308,7 @@ const TransactionTotal = builder.simpleObject("TransactionTotal", {
   }),
 });
 
-builder.queryField("transactions_total", (t) =>
+builder.queryField("transactionsTotal", (t) =>
   t.field({
     args: {
       filters: t.arg({
@@ -362,7 +362,7 @@ builder.queryField("transactions_total", (t) =>
         outcome: outcome._sum.amount,
       };
     },
-    type: TransactionTotal,
+    type: transactionTotal,
   }),
 );
 

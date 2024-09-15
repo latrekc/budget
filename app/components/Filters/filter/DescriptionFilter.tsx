@@ -23,7 +23,7 @@ export default function DescriptionFilter({
   useEffect(() => {
     dispatch({
       payload: debouncedSearch.length > 0 ? debouncedSearch : null,
-      type: FiltersReducerActionType.setSearch,
+      type: FiltersReducerActionType.SetSearch,
     });
   }, [debouncedSearch, dispatch]);
 

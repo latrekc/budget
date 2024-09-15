@@ -62,12 +62,12 @@ export default function DashboardByTimePeriods({
           }
           ...CategoryChip
         }
-        transactions_statistic_per_months @required(action: THROW) {
+        transactionsStatisticPerMonths @required(action: THROW) {
           id @required(action: THROW)
           income @required(action: THROW)
           outcome @required(action: THROW)
         }
-        transactions_statistic(filters: $filters) @required(action: THROW) {
+        transactionsStatistic(filters: $filters) @required(action: THROW) {
           id @required(action: THROW)
           income @required(action: THROW)
           outcome @required(action: THROW)
@@ -101,22 +101,22 @@ export default function DashboardByTimePeriods({
     [data.categories],
   );
 
-  const visible_months = useMemo(
+  const visibleMonths = useMemo(
     () =>
       [
-        ...data.transactions_statistic
+        ...data.transactionsStatistic
           .reduce<Set<string>>((months, record) => {
             months.add(record.monthId);
             return months;
           }, new Set<string>())
           .values(),
       ].sort(),
-    [data.transactions_statistic],
+    [data.transactionsStatistic],
   );
 
-  const categories_statistic = useMemo(
+  const categoriesStatistic = useMemo(
     () =>
-      data.transactions_statistic.reduce<Map<string, CategoryAggregation>>(
+      data.transactionsStatistic.reduce<Map<string, CategoryAggregation>>(
         (categories, record) => {
           if (!categories.has(record.category.id)) {
             const { color, name } = allCategories.get(record.category.id)!;
@@ -140,7 +140,7 @@ export default function DashboardByTimePeriods({
         },
         new Map<string, CategoryAggregation>(),
       ),
-    [allCategories, data.transactions_statistic],
+    [allCategories, data.transactionsStatistic],
   );
 
   const tooltipNode = useRef<HTMLDivElement | null>(null);
@@ -207,7 +207,7 @@ export default function DashboardByTimePeriods({
                   },
                 ])
               : category.color,
-        data: visible_months.map((month) => {
+        data: visibleMonths.map((month) => {
           const value = categoryA.data.find((i) => i[0] === month);
           return [month, value != undefined ? value[1] : null];
         }),
@@ -245,7 +245,7 @@ export default function DashboardByTimePeriods({
         z: 2,
       } as BarSeriesOption;
     },
-    [allCategories, visible_months],
+    [allCategories, visibleMonths],
   );
 
   const categoriesOrder = useMemo(
@@ -259,21 +259,21 @@ export default function DashboardByTimePeriods({
 
             const result = [];
 
-            if (categories_statistic.has(category.id)) {
-              result.push(categories_statistic.get(category.id));
+            if (categoriesStatistic.has(category.id)) {
+              result.push(categoriesStatistic.get(category.id));
             }
 
             if (category.subCategories != undefined) {
               category.subCategories.forEach((subCategory) => {
-                if (categories_statistic.has(subCategory)) {
-                  result.push(categories_statistic.get(subCategory));
+                if (categoriesStatistic.has(subCategory)) {
+                  result.push(categoriesStatistic.get(subCategory));
                 }
 
                 allCategories
                   .get(subCategory)!
                   .subCategories?.forEach((subSubCategory) => {
-                    if (categories_statistic.has(subSubCategory)) {
-                      result.push(categories_statistic.get(subSubCategory));
+                    if (categoriesStatistic.has(subSubCategory)) {
+                      result.push(categoriesStatistic.get(subSubCategory));
                     }
                   });
               });
@@ -283,7 +283,7 @@ export default function DashboardByTimePeriods({
           })
           .flat(),
       ].filter((category) => category != undefined),
-    [allCategories, categories_statistic],
+    [allCategories, categoriesStatistic],
   );
 
   const option: EChartsOption = useMemo(
@@ -315,8 +315,8 @@ export default function DashboardByTimePeriods({
             opacity: 0.2,
           },
           color: "#7bc043",
-          data: data.transactions_statistic_per_months
-            .filter(({ id }) => visible_months.includes(id))
+          data: data.transactionsStatisticPerMonths
+            .filter(({ id }) => visibleMonths.includes(id))
             .map(({ id, income }) => [id, Math.round(income)]),
           lineStyle: {
             opacity: 0,
@@ -334,8 +334,8 @@ export default function DashboardByTimePeriods({
             opacity: 0.2,
           },
           color: "#ee4035",
-          data: data.transactions_statistic_per_months
-            .filter(({ id }) => visible_months.includes(id))
+          data: data.transactionsStatisticPerMonths
+            .filter(({ id }) => visibleMonths.includes(id))
             .map(({ id, outcome }) => [id, Math.round(outcome)]),
           lineStyle: {
             opacity: 0,
@@ -348,8 +348,8 @@ export default function DashboardByTimePeriods({
         },
         {
           color: "#000",
-          data: data.transactions_statistic_per_months
-            .filter(({ id }) => visible_months.includes(id))
+          data: data.transactionsStatisticPerMonths
+            .filter(({ id }) => visibleMonths.includes(id))
             .map(({ id, income, outcome }) => [
               id,
               Math.round(income + outcome),
@@ -393,11 +393,10 @@ export default function DashboardByTimePeriods({
       },
     }),
     [
-      allCategories,
-      categories_statistic,
+      categoriesOrder,
       categoryToSeries,
-      data.transactions_statistic_per_months,
-      visible_months,
+      data.transactionsStatisticPerMonths,
+      visibleMonths,
     ],
   );
 

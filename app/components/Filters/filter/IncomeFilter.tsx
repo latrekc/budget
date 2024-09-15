@@ -15,7 +15,7 @@ export default function IncomeFilter({
   filters: FiltersState;
 }) {
   const onOnlyIncomeToggle = useCallback(
-    () => dispatch({ type: FiltersReducerActionType.toggleOnlyIncome }),
+    () => dispatch({ type: FiltersReducerActionType.ToggleOnlyIncome }),
     [dispatch],
   );
 

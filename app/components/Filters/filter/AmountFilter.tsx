@@ -35,7 +35,7 @@ export default function AmountFilter({
     dispatch({
       payload:
         debouncedAmount.trim().length > 0 ? debouncedAmount.trim() : null,
-      type: FiltersReducerActionType.setAmount,
+      type: FiltersReducerActionType.SetAmount,
     });
   }, [debouncedAmount, dispatch]);
 
@@ -69,7 +69,7 @@ export default function AmountFilter({
 
       dispatch({
         payload: value,
-        type: FiltersReducerActionType.setAmountRelation,
+        type: FiltersReducerActionType.SetAmountRelation,
       });
     },
     [dispatch],

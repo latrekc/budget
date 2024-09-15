@@ -34,11 +34,27 @@ module.exports = {
       },
       plugins: ["relay", "perfectionist"],
       rules: {
-        "perfectionist/sort-imports": 0,
-        "perfectionist/sort-named-imports": 0,
-        "react/prop-types": 1,
-        "react/react-in-jsx-scope": 0,
-        "relay/generated-flow-types": 0,
+        "@typescript-eslint/naming-convention": [
+          "error",
+          {
+            format: ["strictCamelCase"],
+            leadingUnderscore: "allowSingleOrDouble",
+            selector: "variableLike",
+          },
+          {
+            format: ["strictCamelCase", "UPPER_CASE", "PascalCase"],
+            modifiers: ["const"],
+            selector: "variable",
+          },
+          {
+            format: ["PascalCase"],
+            selector: "enumMember",
+          },
+          {
+            format: ["camelCase", "PascalCase"],
+            selector: "function",
+          },
+        ],
         "@typescript-eslint/no-unused-vars": [
           "error",
           {
@@ -47,10 +63,15 @@ module.exports = {
             caughtErrors: "all",
             caughtErrorsIgnorePattern: "^_",
             destructuredArrayIgnorePattern: "^_",
-            varsIgnorePattern: "^_",
             ignoreRestSiblings: true,
+            varsIgnorePattern: "^_",
           },
         ],
+        "perfectionist/sort-imports": 0,
+        "perfectionist/sort-named-imports": 0,
+        "react/prop-types": 1,
+        "react/react-in-jsx-scope": 0,
+        "relay/generated-flow-types": 0,
       },
       settings: {
         "import/parsers": {
