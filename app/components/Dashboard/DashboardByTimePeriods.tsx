@@ -307,7 +307,6 @@ export default function DashboardByTimePeriods({
         show: false,
       },
       series: [
-        ...categoriesOrder.map((category) => categoryToSeries(category!)),
         {
           areaStyle: {
             color: "#7bc043",
@@ -359,6 +358,7 @@ export default function DashboardByTimePeriods({
           type: "line",
           z: 1,
         },
+        ...categoriesOrder.map((category) => categoryToSeries(category!)),
       ],
       tooltip: {
         alwaysShowContent: true,
