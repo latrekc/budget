@@ -6,20 +6,10 @@ import { graphql, useFragment } from "react-relay";
 
 import { createRoot, Root } from "react-dom/client";
 
-import {
-  ScrollShadow,
-  Table,
-  TableBody,
-  TableCell,
-  TableColumn,
-  TableHeader,
-  TableRow,
-} from "@nextui-org/react";
 import { BarSeriesOption, graphic } from "echarts";
-import AmountValue, { Size } from "../AmountValue";
 import { CategoryChip$key } from "../Categories/__generated__/CategoryChip.graphql";
-import CategoryChip2 from "../Categories/CategoryChip2";
 import { DashboardByTimePeriods$key } from "./__generated__/DashboardByTimePeriods.graphql";
+import { DashboardTooltip } from "./DashboardTooltip";
 
 type EChartsOption = echarts.EChartsOption;
 
@@ -62,11 +52,6 @@ export default function DashboardByTimePeriods({
           }
           ...CategoryChip
         }
-        transactionsStatisticPerMonths @required(action: THROW) {
-          id @required(action: THROW)
-          income @required(action: THROW)
-          outcome @required(action: THROW)
-        }
         transactionsStatistic(filters: $statisticFilters)
           @required(action: THROW) {
           id @required(action: THROW)
@@ -102,14 +87,27 @@ export default function DashboardByTimePeriods({
     [data.categories],
   );
 
-  const visibleMonths = useMemo(
+  const monthsStatistic = useMemo(
     () =>
       [
         ...data.transactionsStatistic
-          .reduce<Set<string>>((months, record) => {
-            months.add(record.monthId);
+          .reduce<
+            Map<string, { income: number; month: string; outcome: number }>
+          >((months, record) => {
+            if (!months.has(record.monthId)) {
+              months.set(record.monthId, {
+                income: 0,
+                month: record.monthId,
+                outcome: 0,
+              });
+            }
+            const month = months.get(record.monthId)!;
+
+            month.income += record.income;
+            month.outcome += record.outcome;
+
             return months;
-          }, new Set<string>())
+          }, new Map<string, { income: number; month: string; outcome: number }>())
           .values(),
       ].sort(),
     [data.transactionsStatistic],
@@ -208,7 +206,7 @@ export default function DashboardByTimePeriods({
                   },
                 ])
               : category.color,
-        data: visibleMonths.map((month) => {
+        data: monthsStatistic.map(({ month }) => {
           const value = categoryA.data.find((i) => i[0] === month);
           return [month, value != undefined ? value[1] : null];
         }),
@@ -246,7 +244,7 @@ export default function DashboardByTimePeriods({
         z: 2,
       } as BarSeriesOption;
     },
-    [allCategories, visibleMonths],
+    [allCategories, monthsStatistic],
   );
 
   const categoriesOrder = useMemo(
@@ -316,9 +314,9 @@ export default function DashboardByTimePeriods({
             opacity: 0.2,
           },
           color: "#7bc043",
-          data: data.transactionsStatisticPerMonths
-            .filter(({ id }) => visibleMonths.includes(id))
-            .map(({ id, income }) => [id, Math.round(income)]),
+          data: monthsStatistic
+            .filter(({ income }) => income > 0)
+            .map(({ income, month }) => [month, Math.round(income)]),
           lineStyle: {
             opacity: 0,
           },
@@ -335,9 +333,9 @@ export default function DashboardByTimePeriods({
             opacity: 0.2,
           },
           color: "#ee4035",
-          data: data.transactionsStatisticPerMonths
-            .filter(({ id }) => visibleMonths.includes(id))
-            .map(({ id, outcome }) => [id, Math.round(outcome)]),
+          data: monthsStatistic
+            .filter(({ outcome }) => outcome < 0)
+            .map(({ month, outcome }) => [month, Math.round(outcome)]),
           lineStyle: {
             opacity: 0,
           },
@@ -349,10 +347,10 @@ export default function DashboardByTimePeriods({
         },
         {
           color: "#000",
-          data: data.transactionsStatisticPerMonths
-            .filter(({ id }) => visibleMonths.includes(id))
-            .map(({ id, income, outcome }) => [
-              id,
+          data: monthsStatistic
+            .filter(({ income, outcome }) => income + outcome != 0)
+            .map(({ income, month, outcome }) => [
+              month,
               Math.round(income + outcome),
             ]),
           name: "Saldo",
@@ -393,115 +391,8 @@ export default function DashboardByTimePeriods({
         type: "value",
       },
     }),
-    [
-      categoriesOrder,
-      categoryToSeries,
-      data.transactionsStatisticPerMonths,
-      visibleMonths,
-    ],
+    [categoriesOrder, categoryToSeries, monthsStatistic],
   );
 
-  return <ReactECharts className="min-h-[2000px] bg-white" option={option} />;
-}
-
-function DashboardTooltip({
-  category,
-  data,
-  grandParentCategory,
-  parentCategory,
-}: {
-  category: { color: string; name: string };
-  data: [string, null | number][];
-  grandParentCategory: { color: string; name: string } | undefined;
-  parentCategory: { color: string; name: string } | undefined;
-}) {
-  const rows = useMemo(
-    () => [
-      ...data
-        .reduce<
-          Map<string, { income: number; month: string; outcome: number }>
-        >((all, [month, amount]) => {
-          if (!all.has(month)) {
-            all.set(month, { income: 0, month, outcome: 0 });
-          }
-          const row = all.get(month)!;
-
-          if (amount != null) {
-            if (amount > 0) {
-              row.income = amount;
-            }
-            if (amount < 0) {
-              row.outcome = amount;
-            }
-          }
-
-          return all;
-        }, new Map())
-        .values(),
-    ],
-    [data],
-  );
-
-  const total = useMemo(
-    () => data.reduce<number>((all, [_, amount]) => all + (amount ?? 0), 0),
-    [data],
-  );
-
-  return (
-    <>
-      <div className="mb-4 flex shrink flex-row flex-wrap">
-        <CategoryChip2
-          amount={total}
-          categories={[category, parentCategory, grandParentCategory]}
-          currency="GBP"
-        />
-      </div>
-      <ScrollShadow className="h-[400px]">
-        <Table removeWrapper>
-          <TableHeader>
-            <TableColumn>Name</TableColumn>
-            <TableColumn className="text-right">Income</TableColumn>
-            <TableColumn className="text-right">Outcome</TableColumn>
-            <TableColumn className="text-right">Saldo</TableColumn>
-          </TableHeader>
-          <TableBody>
-            {rows.map(({ income, month, outcome }) => (
-              <TableRow key="1">
-                <TableCell>{month}</TableCell>
-                <TableCell className="text-right">
-                  {income > 0 ? (
-                    <AmountValue
-                      amount={income}
-                      currency="GBP"
-                      size={Size.Small}
-                    />
-                  ) : (
-                    "—"
-                  )}
-                </TableCell>
-                <TableCell className="text-right">
-                  {outcome < 0 ? (
-                    <AmountValue
-                      amount={outcome}
-                      currency="GBP"
-                      size={Size.Small}
-                    />
-                  ) : (
-                    "—"
-                  )}
-                </TableCell>
-                <TableCell className="text-right">
-                  {income + outcome != 0 ? (
-                    <AmountValue amount={income + outcome} currency="GBP" />
-                  ) : (
-                    "—"
-                  )}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </ScrollShadow>
-    </>
-  );
+  return <ReactECharts className="min-h-[1000px] bg-white" option={option} />;
 }
