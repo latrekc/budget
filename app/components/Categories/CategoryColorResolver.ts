@@ -38,8 +38,13 @@ export function color(categoryKey: CategoryColorResolver$key): string {
   );
 
   const source = environment.getStore().getSource();
+  const root = source.get("client:root")!;
+  const rootCategoriesKey = Object.keys(root).find((k) =>
+    k.startsWith("categories"),
+  )!;
+
   const allCategories = (
-    source.get("client:root")!.categories as {
+    root[rootCategoriesKey] as {
       __refs: [string];
     }
   ).__refs.map((categoryId) => source.get(categoryId) as CategoryRecord);

@@ -29,18 +29,42 @@ type Error {
   message: String
 }
 
+input FilterCategoryInput {
+  months: [String!]
+  onlyIncome: Boolean = false
+}
+
+input FilterStatisticInput {
+  categories: [String!]
+  ignoreCategories: [String!]
+  months: [String!]
+  onlyIncome: Boolean = false
+}
+
+input FilterTransactionsInput {
+  amount: String
+  amountRelation: AmountRelation
+  categories: [String!]
+  ignoreCategories: [String!]
+  months: [String!]
+  onlyIncome: Boolean = false
+  onlyUncomplited: Boolean = false
+  search: String
+  sources: [String!]
+}
+
 type Mutation {
   createCategory(name: String!, parent: ID): MutationCreateCategoryResult
   deleteCategoriesForTransactions(
-    transactions: [updateCategoriesForTransactionsInput!]!
+    transactions: [UpdateCategoriesForTransactionsInput!]!
   ): MutationDeleteCategoriesForTransactionsResult
   deleteCategory(id: ID!): MutationDeleteCategoryResult
   updateCategoriesForAllTransactions(
     category: String!
-    filters: filterTransactionsInput!
+    filters: FilterTransactionsInput!
   ): MutationUpdateCategoriesForAllTransactionsResult
   updateCategoriesForTransactions(
-    transactions: [updateCategoriesForTransactionsInput!]!
+    transactions: [UpdateCategoriesForTransactionsInput!]!
   ): MutationUpdateCategoriesForTransactionsResult
   updateCategory(
     id: ID!
@@ -99,18 +123,18 @@ type PageInfo {
 }
 
 type Query {
-  categories: [Category!]
+  categories(filters: FilterCategoryInput): [Category!]
   ok: Boolean
   transactions(
     after: ID
     before: ID
-    filters: filterTransactionsInput
+    filters: FilterTransactionsInput
     first: Int
     last: Int
   ): QueryTransactionsConnection
-  transactionsStatistic(filters: filterStatisticInput): [Statistic!]
+  transactionsStatistic(filters: FilterStatisticInput): [Statistic!]
   transactionsStatisticPerMonths: [StatisticPerMonths!]
-  transactionsTotal(filters: filterTransactionsInput): TransactionTotal
+  transactionsTotal(filters: FilterTransactionsInput): TransactionTotal
 }
 
 type QueryTransactionsConnection {
@@ -171,26 +195,7 @@ type TransactionsOnCategories {
   transaction: Transaction
 }
 
-input filterStatisticInput {
-  categories: [String!]
-  ignoreCategories: [String!]
-  months: [String!]
-  onlyIncome: Boolean = false
-}
-
-input filterTransactionsInput {
-  amount: String
-  amountRelation: AmountRelation
-  categories: [String!]
-  ignoreCategories: [String!]
-  months: [String!]
-  onlyIncome: Boolean = false
-  onlyUncomplited: Boolean = false
-  search: String
-  sources: [String!]
-}
-
-input updateCategoriesForTransactionsInput {
+input UpdateCategoriesForTransactionsInput {
   amount: Float!
   category: ID!
   transaction: ID!

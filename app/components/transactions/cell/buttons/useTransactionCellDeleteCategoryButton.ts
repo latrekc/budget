@@ -27,7 +27,7 @@ export default function useTransactionCellDeleteCategoryButton(
   const [commitDeleteMutation, isDeleteMutationInFlight] =
     useMutation<useTransactionCellDeleteCategoryButtonMutation>(graphql`
       mutation useTransactionCellDeleteCategoryButtonMutation(
-        $transactions: [updateCategoriesForTransactionsInput!]!
+        $transactions: [UpdateCategoriesForTransactionsInput!]!
       ) {
         deleteCategoriesForTransactions(transactions: $transactions) {
           ... on MutationDeleteCategoriesForTransactionsSuccess {

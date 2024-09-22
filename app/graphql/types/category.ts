@@ -1,39 +1,71 @@
+import { Prisma } from "@prisma/client";
+import { parse as parseDate } from "date-format-parse";
+import { GraphQLResolveInfo } from "graphql";
 import prisma, { parseId } from "../../lib/prisma";
 import { builder } from "../builder";
+import { TransactionFilter } from "./transaction";
+
+async function resolveAmount(
+  relation: "income" | "outcome",
+  root: {
+    id: number;
+  },
+  info: GraphQLResolveInfo,
+) {
+  const filters =
+    (info.variableValues.categoryFilters as CategoryFilter) ??
+    (info.variableValues.filters as TransactionFilter) ??
+    (info.variableValues.statisticFilters as TransactionFilter);
+
+  if (relation === "income" && filters?.onlyIncome === true) {
+    return 0;
+  }
+
+  const where: Prisma.TransactionsOnCategoriesWhereInput = {
+    amount: {
+      [relation === "income" ? "gt" : "lt"]: 0,
+    },
+    categoryId: { equals: root.id },
+  };
+
+  if (filters?.months != null) {
+    where.transaction = {
+      OR: filters?.months.map((monthId) => {
+        const month = parseDate(monthId, "YYYY-MM");
+        const nextMonth = new Date(month);
+        nextMonth.setMonth(month.getMonth() + 1);
+
+        return {
+          date: {
+            gte: month,
+            lt: nextMonth,
+          },
+        };
+      }),
+    };
+  }
+
+  const result = await prisma.transactionsOnCategories.aggregate({
+    _sum: { amount: true },
+    where,
+  });
+
+  return result._sum.amount ?? 0;
+}
 
 builder.prismaObject("Category", {
   fields: (t) => ({
     id: t.exposeID("id"),
     income: t.float({
       nullable: false,
-      resolve: async (root) => {
-        const result = await prisma.transactionsOnCategories.aggregate({
-          _sum: { amount: true },
-          where: {
-            amount: {
-              gt: 0,
-            },
-            categoryId: { equals: root.id },
-          },
-        });
-        return result._sum.amount ?? 0;
-      },
+      resolve: async (root, _args, _context, info) =>
+        resolveAmount("income", root, info),
     }),
     name: t.exposeString("name"),
     outcome: t.float({
       nullable: false,
-      resolve: async (root) => {
-        const result = await prisma.transactionsOnCategories.aggregate({
-          _sum: { amount: true },
-          where: {
-            amount: {
-              lt: 0,
-            },
-            categoryId: { equals: root.id },
-          },
-        });
-        return result._sum.amount ?? 0;
-      },
+      resolve: async (root, _args, _context, info) =>
+        resolveAmount("outcome", root, info),
     }),
     parentCategory: t.relation("parentCategory", {
       nullable: true,
@@ -48,8 +80,30 @@ builder.prismaObject("Category", {
   }),
 });
 
+type CategoryFilter = Pick<TransactionFilter, "months" | "onlyIncome">;
+
+const filterCategoriesInput = builder
+  .inputRef<CategoryFilter>("FilterCategoryInput")
+  .implement({
+    fields: (t) => ({
+      months: t.stringList({
+        required: false,
+      }),
+      onlyIncome: t.boolean({
+        defaultValue: false,
+        required: false,
+      }),
+    }),
+  });
+
 builder.queryField("categories", (t) =>
   t.prismaField({
+    args: {
+      filters: t.arg({
+        required: false,
+        type: filterCategoriesInput,
+      }),
+    },
     resolve: (query) =>
       prisma.category.findMany({ ...query, orderBy: [{ name: "asc" }] }),
     type: ["Category"],

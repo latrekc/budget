@@ -23,7 +23,7 @@ export default function useTransactionSetCategory({
   const [commitMutation, isMutationInFlight] =
     useMutation<useTransactionSetCategoryMutation>(graphql`
       mutation useTransactionSetCategoryMutation(
-        $transactions: [updateCategoriesForTransactionsInput!]!
+        $transactions: [UpdateCategoriesForTransactionsInput!]!
       ) {
         updateCategoriesForTransactions(transactions: $transactions) {
           ... on MutationUpdateCategoriesForTransactionsSuccess {
@@ -49,7 +49,7 @@ export default function useTransactionSetCategory({
     useMutation<useTransactionSetCategoryAllMutation>(graphql`
       mutation useTransactionSetCategoryAllMutation(
         $category: String!
-        $filters: filterTransactionsInput!
+        $filters: FilterTransactionsInput!
       ) {
         updateCategoriesForAllTransactions(
           category: $category

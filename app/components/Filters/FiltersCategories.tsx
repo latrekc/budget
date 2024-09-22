@@ -86,7 +86,7 @@ export default function FiltersCategories({
     graphql`
       fragment FiltersCategories on Query
       @refetchable(queryName: "FiltersCategoriesRefetchQuery") {
-        categories {
+        categories(filters: $categoryFilters) {
           id @required(action: THROW)
           name @required(action: THROW)
           parentCategory {
