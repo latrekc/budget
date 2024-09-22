@@ -57,7 +57,7 @@ export default function Transactions() {
       </div>
 
       <div className="basis-1/4 p-6">
-        <Filters data={data} />
+        <Filters categories data={data} months sources />
       </div>
     </div>
   );
