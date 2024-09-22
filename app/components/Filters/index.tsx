@@ -6,7 +6,17 @@ import { useFilters } from "./FiltersProvider";
 import FiltersSources from "./FiltersSources";
 import { Filters$key } from "./__generated__/Filters.graphql";
 
-export default function Filters({ data: data$key }: { data: Filters$key }) {
+export default function Filters({
+  categories = false,
+  data: data$key,
+  months = false,
+  sources = false,
+}: {
+  categories?: boolean;
+  data: Filters$key;
+  months?: boolean;
+  sources?: boolean;
+}) {
   const data = useFragment(
     graphql`
       fragment Filters on Query {
@@ -22,6 +32,7 @@ export default function Filters({ data: data$key }: { data: Filters$key }) {
   return (
     <Accordion defaultSelectedKeys={["categories"]} variant="shadow">
       <AccordionItem
+        hidden={!categories}
         key="categories"
         title={
           <AccordionItemTitle
@@ -41,6 +52,7 @@ export default function Filters({ data: data$key }: { data: Filters$key }) {
       </AccordionItem>
 
       <AccordionItem
+        hidden={!months}
         key="months"
         title={<AccordionItemTitle list={filtersState.months} name="Months" />}
       >
@@ -51,6 +63,7 @@ export default function Filters({ data: data$key }: { data: Filters$key }) {
         />
       </AccordionItem>
       <AccordionItem
+        hidden={!sources}
         key="sources"
         title={
           <AccordionItemTitle list={filtersState.sources} name="Sources" />
