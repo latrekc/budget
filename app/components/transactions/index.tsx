@@ -14,21 +14,26 @@ export default function Transactions() {
   const [selectedTransactions, setSelectedTransactions] =
     useState<TransactionsSelection>(new Set([]));
 
-  const { dispatch, filtersState } = useFilters();
+  const { categoryFiltersState, dispatch, filtersState } = useFilters();
 
   const data = useLazyLoadQuery<TransactionsQuery>(
     graphql`
       query TransactionsQuery(
         $first: Int
         $after: ID
-        $filters: filterTransactionsInput
+        $filters: FilterTransactionsInput
+        $categoryFilters: FilterCategoryInput
       ) {
         ...TransactionsTable
         ...Filters
         ...FiltersTransactions
       }
     `,
-    { filters: filtersState, first: PER_PAGE },
+    {
+      categoryFilters: categoryFiltersState,
+      filters: filtersState,
+      first: PER_PAGE,
+    },
     { fetchPolicy: "store-and-network" },
   );
 

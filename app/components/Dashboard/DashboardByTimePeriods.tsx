@@ -47,7 +47,7 @@ export default function DashboardByTimePeriods({
   const data = useFragment(
     graphql`
       fragment DashboardByTimePeriods on Query {
-        categories @required(action: THROW) {
+        categories(filters: $categoryFilters) @required(action: THROW) {
           color @required(action: THROW)
           id @required(action: THROW)
           name @required(action: THROW)
@@ -67,7 +67,8 @@ export default function DashboardByTimePeriods({
           income @required(action: THROW)
           outcome @required(action: THROW)
         }
-        transactionsStatistic(filters: $filters) @required(action: THROW) {
+        transactionsStatistic(filters: $statisticFilters)
+          @required(action: THROW) {
           id @required(action: THROW)
           income @required(action: THROW)
           outcome @required(action: THROW)

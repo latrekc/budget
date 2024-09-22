@@ -20,6 +20,7 @@ interface FiltersProviderProps {
   children: ReactNode;
 }
 export interface FiltersContext {
+  categoryFiltersState: Pick<FiltersState, "months" | "onlyIncome">;
   dispatch: Dispatch<FiltersReducerAction>;
   filtersState: FiltersState;
   statisticFiltersState: Pick<
@@ -111,6 +112,14 @@ export const FiltersProvider: FC<FiltersProviderProps> = function (props) {
     [filtersState],
   );
 
+  const categoryFiltersState = useMemo(
+    () => ({
+      months: filtersState.months,
+      onlyIncome: filtersState.onlyIncome,
+    }),
+    [filtersState],
+  );
+
   useEffect(() => {
     const params = new URLSearchParams();
 
@@ -174,7 +183,12 @@ export const FiltersProvider: FC<FiltersProviderProps> = function (props) {
     router.replace(`${pathname}?${params}`);
   }, [filtersState, pathname, router]);
 
-  const context = { dispatch, filtersState, statisticFiltersState };
+  const context = {
+    categoryFiltersState,
+    dispatch,
+    filtersState,
+    statisticFiltersState,
+  };
 
   return (
     <ReactFiltersContext.Provider value={context}>

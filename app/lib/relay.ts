@@ -5,6 +5,7 @@ import {
   RecordSource,
   RelayFeatureFlags,
   RequestParameters,
+  RequiredFieldLogger,
   Store,
   Variables,
 } from "relay-runtime";
@@ -33,13 +34,23 @@ function fetchFunction(params: RequestParameters, variables: Variables) {
   return Observable.from(response.then((data) => data.json()));
 }
 
+function requiredFieldLogger(event: Parameters<RequiredFieldLogger>[0]) {
+  if (event.kind === "relay_resolver.error") {
+    // Log this somewhere!
+    console.error(
+      `Resolver error encountered in ${event.owner}.${event.fieldPath}`,
+    );
+    console.warn(event.error);
+  }
+}
+
 /**
  * Creates a new Relay environment instance for managing (fetching, storing) GraphQL data.
  */
 function createEnvironment() {
   const network = Network.create(fetchFunction);
   const store = new Store(new RecordSource());
-  return new Environment({ network, store });
+  return new Environment({ network, requiredFieldLogger, store });
 }
 
 export const environment = createEnvironment();

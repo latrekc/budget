@@ -21,7 +21,7 @@ type StatisticFilter = {
 };
 
 const filterStatisticInput = builder
-  .inputRef<StatisticFilter>("filterStatisticInput")
+  .inputRef<StatisticFilter>("FilterStatisticInput")
   .implement({
     fields: (t) => ({
       categories: t.stringList({

@@ -49,7 +49,7 @@ builder.prismaObject("TransactionsOnCategories", {
   }),
 });
 
-type TransactionFilter = {
+export type TransactionFilter = {
   amount?: null | string;
   amountRelation?: AmountRelation | null;
   categories?: null | string[];
@@ -65,7 +65,7 @@ builder.enumType(AmountRelation, {
   name: "AmountRelation",
 });
 const filterTransactionsInput = builder
-  .inputRef<TransactionFilter>("filterTransactionsInput")
+  .inputRef<TransactionFilter>("FilterTransactionsInput")
   .implement({
     fields: (t) => ({
       amount: t.string({
@@ -371,7 +371,7 @@ const updateCategoriesForTransactionsInput = builder
     amount: number;
     category: number | string;
     transaction: number | string;
-  }>("updateCategoriesForTransactionsInput")
+  }>("UpdateCategoriesForTransactionsInput")
   .implement({
     fields: (t) => ({
       amount: t.float({ required: true }),

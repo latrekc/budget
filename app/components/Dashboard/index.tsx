@@ -6,16 +6,22 @@ import DashboardByTimePeriods from "./DashboardByTimePeriods";
 import { DashboardQuery } from "./__generated__/DashboardQuery.graphql";
 
 export default function Dashboard() {
-  const { statisticFiltersState } = useFilters();
+  const { categoryFiltersState, statisticFiltersState } = useFilters();
 
   const data = useLazyLoadQuery<DashboardQuery>(
     graphql`
-      query DashboardQuery($filters: filterStatisticInput) {
+      query DashboardQuery(
+        $statisticFilters: FilterStatisticInput
+        $categoryFilters: FilterCategoryInput
+      ) {
         ...Filters
         ...DashboardByTimePeriods
       }
     `,
-    { filters: statisticFiltersState },
+    {
+      categoryFilters: categoryFiltersState,
+      statisticFilters: statisticFiltersState,
+    },
     { fetchPolicy: "store-and-network" },
   );
 
