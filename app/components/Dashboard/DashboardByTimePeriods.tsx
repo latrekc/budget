@@ -6,7 +6,7 @@ import { graphql, useFragment } from "react-relay";
 
 import { createRoot, Root } from "react-dom/client";
 
-import { BarSeriesOption, graphic } from "echarts";
+import { BarSeriesOption, graphic, SunburstSeriesOption } from "echarts";
 import { CategoryChip$key } from "../Categories/__generated__/CategoryChip.graphql";
 import { DashboardByTimePeriods$key } from "./__generated__/DashboardByTimePeriods.graphql";
 import { DashboardTooltip } from "./DashboardTooltip";
@@ -142,6 +142,110 @@ export default function DashboardByTimePeriods({
     [allCategories, data.transactionsStatistic],
   );
 
+  const categoryToSunburstData = useCallback(
+    (
+      categoryId: string,
+      relation: "income" | "outcome",
+    ): NonNullable<SunburstSeriesOption["data"]>[0] => {
+      const categoryA = categoriesStatistic.get(categoryId);
+      const category = allCategories.get(categoryId)!;
+      const parentCategory = allCategories.get(category.parentCategory);
+      const grandParentCategory = allCategories.get(
+        parentCategory?.parentCategory,
+      );
+
+      const result: NonNullable<SunburstSeriesOption["data"]>[0] & {
+        tooltip: {
+          formatter: () => HTMLElement | null;
+          position: [string, string];
+        };
+      } = {
+        children: (category.subCategories ?? []).map((subSategoryId) =>
+          categoryToSunburstData(subSategoryId, relation),
+        ),
+        itemStyle: {
+          color: category.color,
+        },
+        label: {
+          minAngle: 3,
+        },
+        name: category.name,
+        tooltip: {
+          formatter() {
+            if ((categoryA?.data?.length ?? 0) > 0) {
+              if (tooltipNode.current == null || tooltipRoot.current == null) {
+                throw new Error("No root");
+              }
+
+              tooltipRoot.current.render(
+                <DashboardTooltip
+                  category={category}
+                  current={undefined}
+                  data={categoryA?.data ?? []}
+                  grandParentCategory={grandParentCategory}
+                  parentCategory={parentCategory}
+                />,
+              );
+              return tooltipNode.current;
+            } else {
+              return null;
+            }
+          },
+          position: ["90%", "10%"],
+        },
+        value:
+          categoryA?.data.reduce((aggr, [_, value]) => {
+            if (value != null) {
+              if (relation == "income" && value > 0) {
+                aggr += value;
+              }
+
+              if (relation == "outcome" && value < 0) {
+                aggr -= value;
+              }
+            }
+
+            return aggr;
+          }, 0) ?? 0,
+      };
+
+      result.children?.forEach((child) => {
+        if (
+          typeof result.value === "number" &&
+          typeof child.value === "number"
+        ) {
+          result.value += child.value;
+        }
+      });
+
+      return result;
+    },
+    [allCategories, categoriesStatistic],
+  );
+
+  const sunburstIncomeStatistic = useMemo<SunburstSeriesOption["data"]>(
+    () =>
+      [...allCategories.values()]
+        .filter(
+          (category) =>
+            category !== undefined && category.parentCategory == null,
+        )
+        .map((category) => categoryToSunburstData(category!.id, "income"))
+        .filter((category) => category != undefined),
+    [allCategories, categoryToSunburstData],
+  );
+  const sunburstOutcomeStatistic = useMemo<SunburstSeriesOption["data"]>(
+    () =>
+      [...allCategories.values()]
+        .filter(
+          (category) =>
+            category !== undefined && category.parentCategory == null,
+        )
+        .map((category) => categoryToSunburstData(category!.id, "outcome"))
+        .filter((category) => category != undefined),
+    [allCategories, categoryToSunburstData],
+  );
+
   const tooltipNode = useRef<HTMLDivElement | null>(null);
   const tooltipRoot = useRef<Root | null>(null);
   useEffect(() => {
@@ -224,6 +328,13 @@ export default function DashboardByTimePeriods({
             if (params instanceof Array) {
               throw new Error("No array params here please");
             }
+            if (
+              !(params.value instanceof Array) ||
+              params.value[0] == undefined ||
+              typeof params.value[0] != "string"
+            ) {
+              throw new Error("Not array value");
+            }
 
             if (tooltipNode.current == null || tooltipRoot.current == null) {
               throw new Error("No root");
@@ -232,6 +343,7 @@ export default function DashboardByTimePeriods({
             tooltipRoot.current.render(
               <DashboardTooltip
                 category={category}
+                current={params.value[0]}
                 data={categoryA.data}
                 grandParentCategory={grandParentCategory}
                 parentCategory={parentCategory}
@@ -239,6 +351,7 @@ export default function DashboardByTimePeriods({
             );
             return tooltipNode.current;
           },
+          position: "right",
         },
         type: "bar",
         z: 2,
@@ -285,7 +398,7 @@ export default function DashboardByTimePeriods({
     [allCategories, categoriesStatistic],
   );
 
-  const option: EChartsOption = useMemo(
+  const barChart: EChartsOption = useMemo(
     () => ({
       dataZoom: [
         {
@@ -392,5 +505,87 @@ export default function DashboardByTimePeriods({
     [categoriesOrder, categoryToSeries, monthsStatistic],
   );
 
-  return <ReactECharts className="min-h-[1000px] bg-white" option={option} />;
+  const sunburstToSeries = useCallback(
+    (
+      data: SunburstSeriesOption["data"],
+      center: [string, string],
+    ): SunburstSeriesOption => ({
+      center,
+      data,
+      emphasis: {
+        focus: "ancestor",
+      },
+      levels: [
+        {},
+        {
+          itemStyle: {
+            borderWidth: 0,
+          },
+          label: {
+            align: "right",
+            padding: 0,
+          },
+          r: "30%",
+          r0: "10%",
+        },
+        {
+          itemStyle: {
+            borderWidth: 0,
+          },
+          label: {
+            align: "right",
+            padding: 0,
+          },
+          r: "60%",
+          r0: "30%",
+        },
+        {
+          itemStyle: {
+            borderWidth: 0,
+          },
+          label: {
+            padding: 0,
+            position: "outside",
+            silent: false,
+          },
+          r: "75%",
+          r0: "60%",
+        },
+      ],
+      radius: [0, "75%"],
+      sort: undefined,
+      startAngle: 25,
+      type: "sunburst",
+    }),
+    [],
+  );
+
+  const sunburst: EChartsOption = useMemo(
+    () => ({
+      grid: {
+        show: false,
+      },
+      legend: {
+        show: false,
+      },
+      series: [
+        sunburstToSeries(sunburstIncomeStatistic, ["25%", "25%"]),
+        sunburstToSeries(sunburstOutcomeStatistic, ["60%", "60%"]),
+      ],
+      tooltip: {
+        alwaysShowContent: true,
+        enterable: true,
+        trigger: "item",
+      },
+      width: "100%",
+    }),
+    [sunburstIncomeStatistic, sunburstOutcomeStatistic, sunburstToSeries],
+  );
+
+  return (
+    <>
+      <ReactECharts className="min-h-[1000px] bg-white" option={barChart} />
+      <ReactECharts className="min-h-[1000px] bg-white" option={sunburst} />
+    </>
+  );
 }

@@ -13,11 +13,13 @@ import CategoryChip2 from "../Categories/CategoryChip2";
 
 export function DashboardTooltip({
   category,
+  current,
   data,
   grandParentCategory,
   parentCategory,
 }: {
   category: { color: string; name: string };
+  current?: string;
   data: [string, null | number][];
   grandParentCategory: { color: string; name: string } | undefined;
   parentCategory: { color: string; name: string } | undefined;
@@ -63,8 +65,12 @@ export function DashboardTooltip({
           currency="GBP"
         />
       </div>
-      <ScrollShadow className="h-[400px]">
-        <Table removeWrapper>
+      <ScrollShadow className="max-h-[400px]">
+        <Table
+          removeWrapper
+          selectedKeys={current ? [current] : []}
+          selectionMode="single"
+        >
           <TableHeader>
             <TableColumn>Name</TableColumn>
             <TableColumn className="text-right">Income</TableColumn>
@@ -73,7 +79,7 @@ export function DashboardTooltip({
           </TableHeader>
           <TableBody>
             {rows.map(({ income, month, outcome }) => (
-              <TableRow key="1">
+              <TableRow key={month}>
                 <TableCell>{month}</TableCell>
                 <TableCell className="text-right">
                   {income > 0 ? (
