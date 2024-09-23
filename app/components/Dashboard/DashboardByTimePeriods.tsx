@@ -7,7 +7,10 @@ import { graphql, useFragment } from "react-relay";
 import { createRoot, Root } from "react-dom/client";
 
 import { BarSeriesOption, graphic, SunburstSeriesOption } from "echarts";
+import { AmountValueFormat } from "../AmountValue";
 import { CategoryChip$key } from "../Categories/__generated__/CategoryChip.graphql";
+import { useFilters } from "../Filters/FiltersProvider";
+import { FiltersReducerActionType } from "../Filters/FiltersReducer";
 import { DashboardByTimePeriods$key } from "./__generated__/DashboardByTimePeriods.graphql";
 import { DashboardTooltip } from "./DashboardTooltip";
 
@@ -167,7 +170,15 @@ export default function DashboardByTimePeriods({
           color: category.color,
         },
         label: {
-          minAngle: 3,
+          formatter(params) {
+            return `${category.name}: ${AmountValueFormat({
+              abs: true,
+              amount: params.value as number,
+              currency: "GBP",
+              round: true,
+            })}`;
+          },
+          minAngle: 10,
         },
         name: category.name,
         tooltip: {
@@ -471,7 +482,6 @@ export default function DashboardByTimePeriods({
         ...categoriesOrder.map((category) => categoryToSeries(category!)),
       ],
       tooltip: {
-        alwaysShowContent: true,
         enterable: true,
         trigger: "item",
       },
@@ -582,9 +592,31 @@ export default function DashboardByTimePeriods({
     [sunburstIncomeStatistic, sunburstOutcomeStatistic, sunburstToSeries],
   );
 
+  const { dispatch, filtersState } = useFilters();
+
+  const onEvents = useMemo(
+    () => ({
+      click: (event: { seriesId: string }) => {
+        const category = event.seriesId;
+
+        dispatch({
+          payload: category,
+          type: filtersState.categories?.includes(category)
+            ? FiltersReducerActionType.RemoveCategory
+            : FiltersReducerActionType.AddCategory,
+        });
+      },
+    }),
+    [dispatch, filtersState.categories],
+  );
+
   return (
     <>
-      <ReactECharts className="min-h-[1000px] bg-white" option={barChart} />
+      <ReactECharts
+        className="min-h-[1000px] bg-white"
+        onEvents={onEvents}
+        option={barChart}
+      />
       <ReactECharts className="min-h-[1000px] bg-white" option={sunburst} />
     </>
   );

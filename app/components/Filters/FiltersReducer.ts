@@ -13,6 +13,8 @@ export type FiltersState = {
 };
 
 export enum FiltersReducerActionType {
+  AddCategory,
+  RemoveCategory,
   ToggleOnlyIncome,
   ToggleOnlyUncomplited,
   SetAmount,
@@ -52,6 +54,14 @@ export type FiltersReducerAction =
   | {
       payload: FiltersState["sources"];
       type: FiltersReducerActionType.SetSources;
+    }
+  | {
+      payload: string;
+      type: FiltersReducerActionType.AddCategory;
+    }
+  | {
+      payload: string;
+      type: FiltersReducerActionType.RemoveCategory;
     }
   | {
       type: FiltersReducerActionType.ToggleOnlyIncome;
@@ -126,6 +136,22 @@ export default function FiltersReducer(
       return {
         ...state,
         ignoreCategories: action.payload,
+      };
+    case FiltersReducerActionType.AddCategory:
+      return {
+        ...state,
+        categories: state.categories?.includes(action.payload)
+          ? state.categories
+          : state.categories == undefined
+            ? [action.payload]
+            : state.categories?.concat(action.payload),
+      };
+    case FiltersReducerActionType.RemoveCategory:
+      return {
+        ...state,
+        categories: state.categories?.includes(action.payload)
+          ? state.categories.filter((category) => category !== action.payload)
+          : state.categories,
       };
   }
 }
