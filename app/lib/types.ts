@@ -5,6 +5,7 @@ export enum Source {
   Revolut = "Revolut",
   Sberbank = "Sberbank",
   Tinkoff = "Tinkoff",
+  Wise = "Wise",
 }
 
 export enum Currency {
