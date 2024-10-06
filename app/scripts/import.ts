@@ -159,6 +159,7 @@ program
     const accountCurrencies = new Map([
       ["40010432086735", Currency.GBP],
       ["40100018059063", Currency.GBP],
+      ["40119990719461", Currency.USD],
       ["40119990719539", Currency.USD],
       ["40119990876714", Currency.EUR],
       ["40126540108227", Currency.GBP],
