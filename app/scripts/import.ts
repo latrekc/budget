@@ -145,6 +145,29 @@ program
   });
 
 program
+  .command("wise")
+  .description("Import Wise transactions")
+  .argument("<path>", "path to Wise export file", parsePathToCsvFile)
+  .action(async (csvFilePath: string) => {
+    const records = parseTransactionsFile<{
+      Amount: string;
+      Currency: string;
+      Date: string;
+      Description: string;
+      "TransferWise ID": string;
+    }>(csvFilePath, (record) => ({
+      amount: parseFloat(record.Amount),
+      currency: enumFromStringValue(Currency, record.Currency),
+      date: parseDate(record.Date, "DD-MM-YYYY"),
+      description: record.Description,
+      id: record["TransferWise ID"],
+      source: Source.Wise,
+    }));
+
+    await upsertTransactions(Source.Wise, records);
+  });
+
+program
   .command("hsbc")
   .description("Import HSBC transactions")
   .argument(
