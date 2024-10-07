@@ -24,7 +24,7 @@ export default function CategoryAutocomplete({
   isDisabled?: boolean;
   isSmall?: boolean;
   label: string;
-  onSelect: (key: React.Key) => void;
+  onSelect: (key: React.Key | null) => void;
 }) {
   const { categories: allCategories } =
     useLazyLoadQuery<CategoryAutocompleteQuery>(

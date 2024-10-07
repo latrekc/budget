@@ -63,7 +63,11 @@ export default function useTransactionSetCategory({
     `);
 
   const onSave = useCallback(
-    (key: React.Key) => {
+    (key: React.Key | null) => {
+      if (key == null) {
+        return;
+      }
+
       if (transactions === "all") {
         if (filters == null) {
           throw new Error("Filters state is unknown");

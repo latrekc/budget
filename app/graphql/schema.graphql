@@ -154,6 +154,7 @@ enum Source {
   Revolut
   Sberbank
   Tinkoff
+  Wise
 }
 
 type Statistic {

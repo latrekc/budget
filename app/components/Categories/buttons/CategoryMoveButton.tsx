@@ -121,7 +121,7 @@ export default function CategoryMoveButton({
   }, [commitMoveMutation, id, name, onOpenChange, publish]);
 
   const onSelect = useCallback(
-    (key: React.Key) => {
+    (key: React.Key | null) => {
       commitMoveMutation({
         onCompleted(result) {
           if (result?.updateCategory?.error) {
@@ -134,7 +134,7 @@ export default function CategoryMoveButton({
         variables: {
           id: id,
           name: name,
-          parent: key.toString(),
+          parent: key?.toString(),
         },
       });
     },
