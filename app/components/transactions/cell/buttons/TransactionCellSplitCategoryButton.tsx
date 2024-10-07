@@ -85,9 +85,9 @@ export default function TransactionCellSplitCategoryButton({
   const [split, dispatch] = useReducer(SplitCategoryReducer, initialState);
 
   const onSelect = useCallback(
-    (key: React.Key) =>
+    (key: React.Key | null) =>
       dispatch({
-        payload: { amount: split.rest, id: key.toString() },
+        payload: { amount: split.rest, id: (key ?? "").toString() },
         type: SplitCategoryReducerActionType.AddCategory,
       }),
     [split.rest],
