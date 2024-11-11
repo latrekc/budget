@@ -1,29 +1,18 @@
-import { useDeferredPromise } from "@/lib/useDeferredPromise";
-import { useEffect } from "react";
-import { PreloadedQuery, useQueryLoader } from "react-relay";
+import { useDeferredValue, useEffect } from "react";
+import { useQueryLoader } from "react-relay";
 import { CategoryAutocompleteQuery } from "./CategoryAutocomplete";
 import { CategoryAutocompleteQuery as CategoryAutocompleteQueryType } from "./__generated__/CategoryAutocompleteQuery.graphql";
 
 export default function useCategoryAutocomplete() {
   const [preloadedQuery, loadQuery] =
     useQueryLoader<CategoryAutocompleteQueryType>(CategoryAutocompleteQuery);
-
-  const { defer, deferRef } =
-    useDeferredPromise<PreloadedQuery<CategoryAutocompleteQueryType>>();
+  const deferredQuery = useDeferredValue(preloadedQuery);
 
   useEffect(() => {
-    loadQuery({});
-  }, [loadQuery]);
-
-  if (preloadedQuery == null) {
-    if (!deferRef) {
-      throw defer().promise;
-    } else {
-      throw deferRef.promise;
+    if (preloadedQuery === null) {
+      loadQuery({});
     }
-  } else {
-    deferRef?.resolve(preloadedQuery);
-  }
+  }, [loadQuery, preloadedQuery]);
 
-  return { preloadedQuery };
+  return { preloadedQuery: deferredQuery };
 }

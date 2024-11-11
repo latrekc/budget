@@ -38,14 +38,15 @@ type Props = {
 
 export default function CategoryAutocomplete(props: Props) {
   const { preloadedQuery } = useCategoryAutocomplete();
-  return (
+
+  return preloadedQuery != null ? (
     <Suspense>
       <CategoryAutocompleteComponent
         {...props}
         preloadedQuery={preloadedQuery}
       />
     </Suspense>
-  );
+  ) : null;
 }
 
 function CategoryAutocompleteComponent({
