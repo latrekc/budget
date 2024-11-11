@@ -1,15 +1,19 @@
+import type {
+  RequestParameters,
+  RequiredFieldLogger,
+  Variables,
+} from "relay-runtime";
 import {
   Environment,
   Network,
   Observable,
   RecordSource,
   RelayFeatureFlags,
-  RequestParameters,
-  RequiredFieldLogger,
   Store,
-  Variables,
 } from "relay-runtime";
 RelayFeatureFlags.ENABLE_RELAY_RESOLVERS = true;
+
+const IS_SERVER = typeof window === typeof undefined;
 
 /**
  * Custom fetch function to handle GraphQL requests for a Relay environment.
@@ -47,10 +51,23 @@ function requiredFieldLogger(event: Parameters<RequiredFieldLogger>[0]) {
 /**
  * Creates a new Relay environment instance for managing (fetching, storing) GraphQL data.
  */
-function createEnvironment() {
+export function createEnvironment() {
   const network = Network.create(fetchFunction);
   const store = new Store(new RecordSource());
-  return new Environment({ network, requiredFieldLogger, store });
+  return new Environment({
+    isServer: IS_SERVER,
+    network,
+    requiredFieldLogger,
+    store,
+  });
 }
 
 export const environment = createEnvironment();
+
+export function getCurrentEnvironment() {
+  if (IS_SERVER) {
+    return createEnvironment();
+  }
+
+  return environment;
+}

@@ -1,4 +1,4 @@
-import TransactionCategoryAutocomplete from "../Categories/CategoryAutocomplete";
+import CategoryAutocomplete from "../Categories/CategoryAutocomplete";
 import { FiltersState } from "../Filters/FiltersReducer";
 import useTransactionSetCategory from "./useTransactionSetCategory";
 
@@ -18,7 +18,7 @@ export default function TransactionSetCategoryButton({
   });
 
   return (
-    <TransactionCategoryAutocomplete
+    <CategoryAutocomplete
       error={error}
       isDisabled={isMutationInFlight || transactions.length == 0}
       label="Update category"
