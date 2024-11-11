@@ -4,3 +4,4 @@ node_modules
 .next
 __generated__
 tsconfig.tsbuildinfo
+database.sqlite
