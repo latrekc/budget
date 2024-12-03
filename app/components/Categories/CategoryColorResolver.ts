@@ -1,5 +1,5 @@
 import chroma from "chroma-js";
-import { graphql } from "relay-runtime";
+import { graphql } from "react-relay";
 import { readFragment } from "relay-runtime/lib/store/ResolverFragments";
 
 import { environment } from "../../lib/relay";
