@@ -11,8 +11,8 @@ import { AmountValueFormat } from "../AmountValue";
 import { CategoryChip$key } from "../Categories/__generated__/CategoryChip.graphql";
 import { useFilters } from "../Filters/FiltersProvider";
 import { FiltersReducerActionType } from "../Filters/FiltersReducer";
-import { DashboardByTimePeriods$key } from "./__generated__/DashboardByTimePeriods.graphql";
 import { DashboardTooltip } from "./DashboardTooltip";
+import { DashboardByTimePeriods$key } from "./__generated__/DashboardByTimePeriods.graphql";
 
 type EChartsOption = echarts.EChartsOption;
 
@@ -157,12 +157,12 @@ export default function DashboardByTimePeriods({
         parentCategory?.parentCategory,
       );
 
-      const result: NonNullable<SunburstSeriesOption["data"]>[0] & {
+      const result: {
         tooltip: {
           formatter: () => HTMLElement | null;
           position: [string, string];
         };
-      } = {
+      } & NonNullable<SunburstSeriesOption["data"]>[0] = {
         children: (category.subCategories ?? []).map((subSategoryId) =>
           categoryToSunburstData(subSategoryId, relation),
         ),
