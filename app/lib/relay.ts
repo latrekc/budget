@@ -4,8 +4,8 @@ import {
   Observable,
   RecordSource,
   RelayFeatureFlags,
+  RelayFieldLogger,
   RequestParameters,
-  RequiredFieldLogger,
   Store,
   Variables,
 } from "relay-runtime";
@@ -34,7 +34,7 @@ function fetchFunction(params: RequestParameters, variables: Variables) {
   return Observable.from(response.then((data) => data.json()));
 }
 
-function requiredFieldLogger(event: Parameters<RequiredFieldLogger>[0]) {
+function relayFieldLogger(event: Parameters<RelayFieldLogger>[0]) {
   if (event.kind === "relay_resolver.error") {
     // Log this somewhere!
     console.error(
@@ -50,7 +50,7 @@ function requiredFieldLogger(event: Parameters<RequiredFieldLogger>[0]) {
 function createEnvironment() {
   const network = Network.create(fetchFunction);
   const store = new Store(new RecordSource());
-  return new Environment({ network, requiredFieldLogger, store });
+  return new Environment({ network, relayFieldLogger, store });
 }
 
 export const environment = createEnvironment();

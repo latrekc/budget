@@ -2,9 +2,9 @@
 import { Prisma, PrismaClient } from "@prisma/client";
 
 const prismaClientPropertyName = `__prevent-name-collision__prisma`;
-type GlobalThisWithPrismaClient = typeof globalThis & {
+type GlobalThisWithPrismaClient = {
   [prismaClientPropertyName]: PrismaClient;
-};
+} & typeof globalThis;
 
 const getPrismaClient = () => {
   const newGlobalThis = globalThis as GlobalThisWithPrismaClient;

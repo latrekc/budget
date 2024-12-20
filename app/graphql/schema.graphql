@@ -80,7 +80,7 @@ type MutationCreateCategorySuccess {
 }
 
 union MutationDeleteCategoriesForTransactionsResult =
-    Error
+  | Error
   | MutationDeleteCategoriesForTransactionsSuccess
 
 type MutationDeleteCategoriesForTransactionsSuccess {
@@ -94,7 +94,7 @@ type MutationDeleteCategorySuccess {
 }
 
 union MutationUpdateCategoriesForAllTransactionsResult =
-    Error
+  | Error
   | MutationUpdateCategoriesForAllTransactionsSuccess
 
 type MutationUpdateCategoriesForAllTransactionsSuccess {
@@ -102,7 +102,7 @@ type MutationUpdateCategoriesForAllTransactionsSuccess {
 }
 
 union MutationUpdateCategoriesForTransactionsResult =
-    Error
+  | Error
   | MutationUpdateCategoriesForTransactionsSuccess
 
 type MutationUpdateCategoriesForTransactionsSuccess {
