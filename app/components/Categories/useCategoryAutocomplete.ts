@@ -1,3 +1,5 @@
+import { PubSubChannels } from "@/lib/types";
+import { usePubSub } from "@/lib/usePubSub";
 import { useDeferredValue, useEffect } from "react";
 import { useQueryLoader } from "react-relay";
 import { CategoryAutocompleteQuery } from "./CategoryAutocomplete";
@@ -8,11 +10,16 @@ export default function useCategoryAutocomplete() {
     useQueryLoader<CategoryAutocompleteQueryType>(CategoryAutocompleteQuery);
   const deferredQuery = useDeferredValue(preloadedQuery);
 
+  const { subscribe } = usePubSub();
+
   useEffect(() => {
     if (preloadedQuery === null) {
       loadQuery({});
     }
-  }, [loadQuery, preloadedQuery]);
+    return subscribe(PubSubChannels.Categories, () => {
+      loadQuery({});
+    });
+  }, [loadQuery, preloadedQuery, subscribe]);
 
   return { preloadedQuery: deferredQuery };
 }

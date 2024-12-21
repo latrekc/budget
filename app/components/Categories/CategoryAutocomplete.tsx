@@ -58,7 +58,7 @@ function CategoryAutocompleteComponent({
   label,
   onSelect,
   preloadedQuery,
-}: Props & { preloadedQuery: PreloadedQuery<CategoryAutocompleteQueryType> }) {
+}: { preloadedQuery: PreloadedQuery<CategoryAutocompleteQueryType> } & Props) {
   const { categories: allCategories } =
     usePreloadedQuery<CategoryAutocompleteQueryType>(
       CategoryAutocompleteQuery,

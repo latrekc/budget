@@ -7,6 +7,7 @@ import {
   RelayFieldLogger,
   RequestParameters,
   Store,
+  Variables,
 } from "relay-runtime";
 RelayFeatureFlags.ENABLE_RELAY_RESOLVERS = true;
 
