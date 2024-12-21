@@ -95,6 +95,9 @@ importers:
       react-relay:
         specifier: ^18.2.0
         version: 18.2.0(react@18.3.1)
+      relay-nextjs:
+        specifier: ^3.0.1
+        version: 3.0.1
       relay-runtime:
         specifier: ^18.2.0
         version: 18.2.0
@@ -2885,6 +2888,9 @@ packages:
   lodash.get@4.4.2:
     resolution: {integrity: sha512-z+Uw/vLuy6gQe8cfaFWD7p0wVv8fJl3mbzXh33RS+0oW2wvUqiRXiQ69gLWSLpgB5/6sU+r6BlQR0MBILadqTQ==}
 
+  lodash.isequal@4.5.0:
+    resolution: {integrity: sha512-pDo3lu8Jhfjqls6GkMgpahsF9kCyayhgykjyLMNFTKWrpVdAQtYyB4muAMWozBB4ig/dtWAmsMxLEI8wuz+DYQ==}
+
   lodash.kebabcase@4.1.1:
     resolution: {integrity: sha512-N8XRTIMMqqDgSy4VLKPnJ/+hpGZN+PHQiJnSenYqPaVV/NCqEogTnAdZLQiGKhxX+JCs8waWq2t1XHWKOmlY8g==}
 
@@ -3277,6 +3283,9 @@ packages:
     resolution: {integrity: sha512-80WNmd9DA0tmZrw9qQa62GPPWfuXJknrmVmLcxvq4uZBdYqb1wYoKTmnlGUchvVWe0XiLupYkBoXVOxz3C8DYQ==}
     engines: {node: '>=0.12'}
 
+  randombytes@2.1.0:
+    resolution: {integrity: sha512-vYl3iOX+4CKUWuxGi9Ukhie6fsqXqS9FE2Zaic4tNFD2N2QQaXOMFbuKK4QmDHC0JO6B1Zp41J0LpT0oR68amQ==}
+
   react-dom@18.3.1:
     resolution: {integrity: sha512-5m4nQKp+rZRb09LNH59GM4BxTh9251/ylbKIbpe7TpGxfJ+9kv6BLkLBXIjjspbgbnIBNqlI23tRnTWT0snUIw==}
     peerDependencies:
@@ -3357,6 +3366,9 @@ packages:
     resolution: {integrity: sha512-P3o5/Gv/oLC9hckUaz/a+KvDgbFERpjtz5lgsJSIQILg9paaF3k1yaX9qSxErGuU4icZvjoK5G82a/bfPgGZpA==}
     hasBin: true
 
+  relay-nextjs@3.0.1:
+    resolution: {integrity: sha512-FQaQ59kQaDGchjXY5MYMsS0RXFPemXeqbT2CDZ07Jd7rM4lsTrItKTr1GZlJLomrlpvIN9ijNfokXR2ykBPWLA==}
+
   relay-runtime@18.2.0:
     resolution: {integrity: sha512-r4FYWlx1dPwFW+KQnuF1ugwVKR4toIFduCGheEf2paRc6nEEcCIgd2p2Jx2gRF+4niO3mCbRZvqdCoKaznUDzg==}
 
@@ -3399,6 +3411,9 @@ packages:
     resolution: {integrity: sha512-vj6RsCsWBCf19jIeHEfkRMw8DPiBb+DMXklQ/1SGDHOMlHdPUkZXFQ2YdplS23zESTijAcurb1aSgJA3AgMu1Q==}
     engines: {node: '>=0.4'}
 
+  safe-buffer@5.2.1:
+    resolution: {integrity: sha512-rp3So07KcdmmKbGvgaNxQSJr7bGVSVk5S9Eq1F+ppbRo70+YeaDxkw5Dd8NPN+GD6bjnYm2VuPuCXmpuYvmCXQ==}
+
   safe-regex-test@1.0.3:
     resolution: {integrity: sha512-CdASjNJPvRa7roO6Ra/gLYBTzYzzPyyBXxIMdGW3USQLyjWEls2RgW5UBTXaQVp+OrpeCK3bLem8smtmheoRuw==}
     engines: {node: '>= 0.4'}
@@ -3424,6 +3439,9 @@ packages:
     resolution: {integrity: sha512-oVekP1cKtI+CTDvHWYFUcMtsK/00wmAEfyqKfNdARm8u1wNVhSgaX7A8d4UuIlUI5e84iEwOhs7ZPYRmzU9U6A==}
     engines: {node: '>=10'}
     hasBin: true
+
+  serialize-javascript@5.0.1:
+    resolution: {integrity: sha512-SaaNal9imEO737H2c05Og0/8LUXG7EnsZyMa8MzkmuHoELfT6txuj0cMqRj6zfPKnmQ1yasR4PCJc8x+M4JSPA==}
 
   set-function-length@1.2.2:
     resolution: {integrity: sha512-pgRc4hJ4/sNjWCSS9AmnS40x3bNMDTknHgL5UaMBTMyJnU90EgWh1Rz+MC9eFu4BuN/UwZjKQuY/1v3rM7HMfg==}
@@ -7575,6 +7593,8 @@ snapshots:
 
   lodash.get@4.4.2: {}
 
+  lodash.isequal@4.5.0: {}
+
   lodash.kebabcase@4.1.1: {}
 
   lodash.mapkeys@4.6.0: {}
@@ -7891,6 +7911,10 @@ snapshots:
       discontinuous-range: 1.0.0
       ret: 0.1.15
 
+  randombytes@2.1.0:
+    dependencies:
+      safe-buffer: 5.2.1
+
   react-dom@18.3.1(react@18.3.1):
     dependencies:
       loose-envify: 1.4.0
@@ -7984,6 +8008,11 @@ snapshots:
 
   relay-compiler@18.2.0: {}
 
+  relay-nextjs@3.0.1:
+    dependencies:
+      lodash.isequal: 4.5.0
+      serialize-javascript: 5.0.1
+
   relay-runtime@18.2.0:
     dependencies:
       '@babel/runtime': 7.26.0
@@ -8029,6 +8058,8 @@ snapshots:
       has-symbols: 1.1.0
       isarray: 2.0.5
 
+  safe-buffer@5.2.1: {}
+
   safe-regex-test@1.0.3:
     dependencies:
       call-bind: 1.0.7
@@ -8050,6 +8081,10 @@ snapshots:
   semver@6.3.1: {}
 
   semver@7.6.3: {}
+
+  serialize-javascript@5.0.1:
+    dependencies:
+      randombytes: 2.1.0
 
   set-function-length@1.2.2:
     dependencies:

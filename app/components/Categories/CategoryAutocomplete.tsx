@@ -1,21 +1,30 @@
 import { Autocomplete, AutocompleteItem } from "@nextui-org/react";
-import { useCallback, useMemo, useState } from "react";
-import { graphql, useLazyLoadQuery } from "react-relay";
+import { Suspense, useCallback, useMemo, useState } from "react";
+import { PreloadedQuery, graphql, usePreloadedQuery } from "react-relay";
 import CategoryChip from "./CategoryChip";
 import {
-  CategoryAutocompleteQuery,
   CategoryAutocompleteQuery$data,
+  CategoryAutocompleteQuery as CategoryAutocompleteQueryType,
 } from "./__generated__/CategoryAutocompleteQuery.graphql";
+import useCategoryAutocomplete from "./useCategoryAutocomplete";
 
-export default function CategoryAutocomplete({
-  autoFocus = true,
-  error = null,
-  filterCallback,
-  isDisabled = false,
-  isSmall = false,
-  label,
-  onSelect,
-}: {
+export const CategoryAutocompleteQuery = graphql`
+  query CategoryAutocompleteQuery {
+    categories {
+      id @required(action: THROW)
+      name @required(action: THROW)
+      parentCategory {
+        name @required(action: THROW)
+        parentCategory {
+          name @required(action: THROW)
+        }
+      }
+      ...CategoryChip
+    }
+  }
+`;
+
+type Props = {
   autoFocus?: boolean;
   error?: null | string;
   filterCallback?: (
@@ -25,26 +34,35 @@ export default function CategoryAutocomplete({
   isSmall?: boolean;
   label: string;
   onSelect: (key: React.Key | null) => void;
-}) {
+};
+
+export default function CategoryAutocomplete(props: Props) {
+  const { preloadedQuery } = useCategoryAutocomplete();
+
+  return preloadedQuery != null ? (
+    <Suspense>
+      <CategoryAutocompleteComponent
+        {...props}
+        preloadedQuery={preloadedQuery}
+      />
+    </Suspense>
+  ) : null;
+}
+
+function CategoryAutocompleteComponent({
+  autoFocus = true,
+  error = null,
+  filterCallback,
+  isDisabled = false,
+  isSmall = false,
+  label,
+  onSelect,
+  preloadedQuery,
+}: { preloadedQuery: PreloadedQuery<CategoryAutocompleteQueryType> } & Props) {
   const { categories: allCategories } =
-    useLazyLoadQuery<CategoryAutocompleteQuery>(
-      graphql`
-        query CategoryAutocompleteQuery {
-          categories {
-            id @required(action: THROW)
-            name @required(action: THROW)
-            parentCategory {
-              name @required(action: THROW)
-              parentCategory {
-                name @required(action: THROW)
-              }
-            }
-            ...CategoryChip
-          }
-        }
-      `,
-      {},
-      { fetchPolicy: "store-and-network" },
+    usePreloadedQuery<CategoryAutocompleteQueryType>(
+      CategoryAutocompleteQuery,
+      preloadedQuery,
     );
 
   const filteredCategories = useMemo(
