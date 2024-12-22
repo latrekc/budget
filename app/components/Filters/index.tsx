@@ -34,6 +34,7 @@ export default function Filters({
       <AccordionItem
         hidden={!categories}
         key="categories"
+        textValue="Categories"
         title={
           <AccordionItemTitle
             list={[
@@ -54,6 +55,7 @@ export default function Filters({
       <AccordionItem
         hidden={!months}
         key="months"
+        textValue="Months"
         title={<AccordionItemTitle list={filtersState.months} name="Months" />}
       >
         <FiltersMonths
@@ -65,6 +67,7 @@ export default function Filters({
       <AccordionItem
         hidden={!sources}
         key="sources"
+        textValue="Sources"
         title={
           <AccordionItemTitle list={filtersState.sources} name="Sources" />
         }
