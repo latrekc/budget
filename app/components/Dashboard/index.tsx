@@ -1,28 +1,27 @@
-import { graphql, useLazyLoadQuery } from "react-relay";
+import { graphql, PreloadedQuery, usePreloadedQuery } from "react-relay";
 
 import Filters from "../Filters";
-import { useFilters } from "../Filters/FiltersProvider";
 import DashboardByTimePeriods from "./DashboardByTimePeriods";
-import { DashboardQuery } from "./__generated__/DashboardQuery.graphql";
+import { DashboardQuery as DashboardQueryType } from "./__generated__/DashboardQuery.graphql";
 
-export default function Dashboard() {
-  const { categoryFiltersState, statisticFiltersState } = useFilters();
+export const DashboardQuery = graphql`
+  query DashboardQuery(
+    $statisticFilters: FilterStatisticInput
+    $categoryFilters: FilterCategoryInput
+  ) {
+    ...Filters
+    ...DashboardByTimePeriods
+  }
+`;
 
-  const data = useLazyLoadQuery<DashboardQuery>(
-    graphql`
-      query DashboardQuery(
-        $statisticFilters: FilterStatisticInput
-        $categoryFilters: FilterCategoryInput
-      ) {
-        ...Filters
-        ...DashboardByTimePeriods
-      }
-    `,
-    {
-      categoryFilters: categoryFiltersState,
-      statisticFilters: statisticFiltersState,
-    },
-    { fetchPolicy: "store-and-network" },
+export default function Dashboard({
+  preloadedQuery,
+}: {
+  preloadedQuery: PreloadedQuery<DashboardQueryType>;
+}) {
+  const data = usePreloadedQuery<DashboardQueryType>(
+    DashboardQuery,
+    preloadedQuery,
   );
 
   return (

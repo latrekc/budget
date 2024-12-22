@@ -17,7 +17,7 @@ export default function useCategoryAutocomplete() {
       loadQuery({});
     }
     return subscribe(PubSubChannels.Categories, () => {
-      loadQuery({});
+      loadQuery({}, { networkCacheConfig: { force: true } });
     });
   }, [loadQuery, preloadedQuery, subscribe]);
 
