@@ -1,7 +1,7 @@
 type CategoryID = string;
 
 type SplitCategory = {
-  amount: number;
+  amounts: number[];
   id: CategoryID;
 };
 
@@ -20,7 +20,7 @@ export enum SplitCategoryReducerActionType {
 
 export type SplitCategoryReducerAction =
   | {
-      payload: { amount: number; id: CategoryID };
+      payload: { amounts: number[]; id: CategoryID };
       type: SplitCategoryReducerActionType.AddCategory;
     }
   | {
@@ -42,7 +42,17 @@ export default function SplitCategoryReducer(
 ): SplitCategoryState {
   function countRest(newCategories: Array<SplitCategory>) {
     const newCategoriesTotal = newCategories.reduce((sum, category) => {
-      return (sum * 100 + Math.abs(category.amount) * 100) / 100;
+      return (
+        (sum * 100 +
+          Math.abs(
+            category.amounts.reduce(
+              (sum, amount) => sum + (isNaN(amount) ? 0 : amount),
+              0,
+            ),
+          ) *
+            100) /
+        100
+      );
     }, 0);
 
     return (state.total * 100 - newCategoriesTotal * 100) / 100;
@@ -57,7 +67,7 @@ export default function SplitCategoryReducer(
       const newCategories = [
         ...state.categories,
         {
-          amount: action.payload.amount,
+          amounts: action.payload.amounts,
           id: action.payload.id,
         },
       ];
@@ -92,7 +102,7 @@ export default function SplitCategoryReducer(
             return category;
           }
           return {
-            amount: action.payload.amount,
+            amounts: action.payload.amounts,
             id: category.id,
           };
         },
@@ -103,7 +113,12 @@ export default function SplitCategoryReducer(
       if (rest < 0) {
         return SplitCategoryReducer(state, {
           payload: {
-            amount: (action.payload.amount * 100 + rest * 100) / 100,
+            amounts: [
+              (action.payload.amounts.reduce((sum, amount) => sum + amount, 0) *
+                100 +
+                rest * 100) /
+                100,
+            ],
             id: action.payload.id,
           },
           type: SplitCategoryReducerActionType.UpdateCategory,
