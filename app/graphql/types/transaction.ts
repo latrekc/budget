@@ -180,11 +180,22 @@ async function filtersToWhere(filters: TransactionFilter | null | undefined) {
     if (search.length > 0) {
       if (search.startsWith("!")) {
         search = search.slice(1);
-        where.NOT = {
-          description: {
-            contains: search,
-          },
-        };
+
+        if (search.includes("|")) {
+          where.AND = search.split("|").map((keyword) => ({
+            description: {
+              not: {
+                contains: keyword,
+              },
+            },
+          }));
+        } else {
+          where.NOT = {
+            description: {
+              contains: search,
+            },
+          };
+        }
       } else if (search.includes("|")) {
         OR.push(
           search.split("|").map((keyword) => ({
