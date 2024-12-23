@@ -22,20 +22,18 @@ import { TransactionsTable__RenderCell$key } from "./__generated__/TransactionsT
 import TransactionAmountCell from "./cell/TransactionAmountCell";
 import TransactionCategoriesButtonCell from "./cell/TransactionCategoriesButtonCell";
 import TransactionCategoriesCell from "./cell/TransactionCategoriesCell";
-import TransactionDateCell from "./cell/TransactionDateCell";
 import TransactionDescriptionCell from "./cell/TransactionDescriptionCell";
 import TransactionSourceCell from "./cell/TransactionSourceCell";
 
 enum Colunms {
   "Source" = "Source",
   // eslint-disable-next-line perfectionist/sort-enums
-  "Date" = "Date",
   "Description" = "Description",
+  // eslint-disable-next-line perfectionist/sort-enums
+  "Amount" = "Amount",
   // eslint-disable-next-line perfectionist/sort-enums
   "Categories" = "Categories",
   "CategoriesButton" = "",
-  // eslint-disable-next-line perfectionist/sort-enums
-  "Amount" = "Amount",
 }
 
 export const PER_PAGE = 20;
@@ -162,9 +160,6 @@ export default function TransactionsTable({
 
   const cellAlign = useCallback((columnKey: Colunms) => {
     switch (columnKey) {
-      case Colunms.Date:
-        return "text-center";
-
       case Colunms.Description:
         return "text-left";
 
@@ -258,7 +253,6 @@ function RenderCell({
   const transaction = useFragment(
     graphql`
       fragment TransactionsTable__RenderCell on Transaction {
-        ...TransactionDateCell
         ...TransactionDescriptionCell
         ...TransactionAmountCell
         ...TransactionSourceCell
@@ -270,9 +264,6 @@ function RenderCell({
   );
 
   switch (columnKey) {
-    case Colunms.Date:
-      return <TransactionDateCell transaction={transaction} />;
-
     case Colunms.Description:
       return <TransactionDescriptionCell transaction={transaction} />;
 
