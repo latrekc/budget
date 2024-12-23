@@ -3,9 +3,11 @@
 import {
   Accordion,
   AccordionItem,
+  Badge,
   Checkbox,
   CheckboxGroup,
   Chip,
+  Divider,
 } from "@nextui-org/react";
 import { Dispatch, useCallback, useMemo, useState } from "react";
 import { graphql, useFragment } from "react-relay";
@@ -32,19 +34,25 @@ type Year = {
 type Result = Map<number, Year>;
 
 export const monthNames = new Map([
-  [1, "Jan"],
-  [2, "Feb"],
-  [3, "Mar"],
-  [4, "Apr"],
+  [1, "January"],
+  [2, "February"],
+  [3, "March"],
+  [4, "April"],
   [5, "May"],
-  [6, "Jun"],
-  [7, "Jul"],
-  [8, "Aug"],
-  [9, "Sep"],
-  [10, "Oct"],
-  [11, "Nov"],
-  [12, "Dec"],
+  [6, "June"],
+  [7, "July"],
+  [8, "August"],
+  [9, "September"],
+  [10, "October"],
+  [11, "November"],
+  [12, "December"],
 ]);
+
+enum YearSelectedMonthsState {
+  ALL = "ALL",
+  INDETERMINATE = "Indeterminate",
+  NONE = "NONE",
+}
 
 export default function FiltersMonths({
   dispatch,
@@ -73,6 +81,11 @@ export default function FiltersMonths({
   const months = useMemo(
     () => data.transactionsStatisticPerMonths ?? [],
     [data.transactionsStatisticPerMonths],
+  );
+
+  const filterMonthsState = useMemo(
+    () => (filters.months != null ? [...filters.months] : []),
+    [filters.months],
   );
 
   const years: Result = useMemo(
@@ -108,99 +121,250 @@ export default function FiltersMonths({
     return keys;
   }, []);
 
-  const setSelected = useCallback(
-    (value: string[]) => {
-      dispatch({
-        payload:
-          value.length > 0 && value.length < months.length ? value : null,
-        type: FiltersReducerActionType.SetMonths,
-      });
-    },
-    [dispatch, months.length],
-  );
+  return (
+    <div className="max-h-[720px] min-h-[720px] overflow-scroll">
+      <ChipsComponent
+        dispatch={dispatch}
+        filterMonthsState={filterMonthsState}
+        years={years}
+      />
+      <Accordion
+        onSelectionChange={onSelectionChange}
+        selectedKeys={selectedKeys}
+        selectionBehavior="replace"
+        selectionMode="single"
+      >
+        {[...years.entries()].map(([yearNumber, year]) => {
+          const [selectedState, selectedCount] = getYearSelectedState(
+            year,
+            filterMonthsState,
+          );
 
-  const value = useMemo(
-    () => (filters.months != null ? [...filters.months] : []),
-    [filters.months],
+          return (
+            <AccordionItem
+              aria-label={yearNumber.toString()}
+              classNames={{
+                subtitle: "text-right",
+                title: "flex w-full justify-between",
+              }}
+              key={yearNumber.toString()}
+              subtitle={
+                year.income !== 0 && year.outcome !== 0 ? (
+                  <Balance income={year.income} outcome={year.outcome} />
+                ) : null
+              }
+              title={
+                <>
+                  <Badge
+                    color={
+                      selectedState === YearSelectedMonthsState.ALL
+                        ? "primary"
+                        : "default"
+                    }
+                    content={selectedCount}
+                    isInvisible={selectedState === YearSelectedMonthsState.NONE}
+                    size="sm"
+                    variant="flat"
+                  >
+                    <span className="text-2xl">{yearNumber}</span>
+                  </Badge>
+                  <AmountValue
+                    amount={(year.income * 100 + year.outcome * 100) / 100}
+                    currency="GBP"
+                    round
+                    size={Size.Big}
+                  />
+                </>
+              }
+            >
+              <YearComponent
+                dispatch={dispatch}
+                filterMonthsState={filterMonthsState}
+                key={yearNumber}
+                year={year}
+                yearNumber={yearNumber}
+              />
+            </AccordionItem>
+          );
+        })}
+      </Accordion>
+    </div>
   );
+}
 
-  const onRemove = useCallback(
+function ChipsComponent({
+  dispatch,
+  filterMonthsState,
+  years,
+}: {
+  dispatch: Dispatch<FiltersReducerAction>;
+  filterMonthsState: string[];
+  years: Result;
+}) {
+  const onRemoveMonth = useCallback(
     (toRemove: string) => {
-      const newValue = filters.months!.filter((item) => item !== toRemove);
+      const newValue = filterMonthsState.filter((item) => item !== toRemove);
 
       dispatch({
         payload: newValue.length ? newValue : null,
         type: FiltersReducerActionType.SetMonths,
       });
     },
-    [dispatch, filters.months],
+    [dispatch, filterMonthsState],
+  );
+
+  const onRemoveYear = useCallback(
+    (year: Year) => {
+      const newValue = filterMonthsState.filter(
+        (item) => !year.months.some(({ id }) => id === item),
+      );
+
+      dispatch({
+        payload: newValue.length ? newValue : null,
+        type: FiltersReducerActionType.SetMonths,
+      });
+    },
+    [dispatch, filterMonthsState],
+  );
+
+  return filterMonthsState.length > 0 ? (
+    <div className="inline-flex flex-wrap items-center justify-start gap-2">
+      {[...years.entries()].map(([yearNumber, year]) => {
+        switch (getYearSelectedState(year, filterMonthsState)[0]) {
+          case YearSelectedMonthsState.NONE:
+            return null;
+          case YearSelectedMonthsState.ALL:
+            return (
+              <Chip
+                color="primary"
+                key={yearNumber}
+                onClose={() => onRemoveYear(year)}
+                variant="flat"
+              >
+                {yearNumber}
+              </Chip>
+            );
+          case YearSelectedMonthsState.INDETERMINATE:
+            return year.months.map(({ id, month }) =>
+              filterMonthsState.includes(id) ? (
+                <Chip key={id} onClose={() => onRemoveMonth(id)} variant="flat">
+                  {monthNames.get(month)} {yearNumber}
+                </Chip>
+              ) : null,
+            );
+        }
+      })}
+    </div>
+  ) : null;
+}
+
+function getYearSelectedState(year: Year, filterMonthsState: string[]) {
+  const selected = year.months.filter(({ id }) =>
+    filterMonthsState.includes(id),
+  ).length;
+
+  switch (selected) {
+    case 0:
+      return [YearSelectedMonthsState.NONE, 0];
+    case year.months.length:
+      return [YearSelectedMonthsState.ALL, selected];
+    default:
+      return [YearSelectedMonthsState.INDETERMINATE, selected];
+  }
+}
+
+function YearComponent({
+  dispatch,
+  filterMonthsState,
+  year,
+  yearNumber,
+}: {
+  dispatch: Dispatch<FiltersReducerAction>;
+  filterMonthsState: string[];
+  year: Year;
+  yearNumber: number;
+}) {
+  const yearSelection = useMemo(
+    () => getYearSelectedState(year, filterMonthsState)[0],
+    [filterMonthsState, year],
+  );
+
+  const toggleSelectedYear = useCallback(
+    (selected: boolean) => {
+      let newValue = [...filterMonthsState];
+
+      year.months.forEach(({ id }) => {
+        if (selected) {
+          if (!filterMonthsState.includes(id)) {
+            newValue.push(id);
+          }
+        } else {
+          newValue = newValue.filter((newId) => newId !== id);
+        }
+      });
+
+      dispatch({
+        payload: newValue,
+        type: FiltersReducerActionType.SetMonths,
+      });
+    },
+    [dispatch, filterMonthsState, year.months],
+  );
+
+  const setSelected = useCallback(
+    (value: string[]) => {
+      dispatch({
+        payload: value.length > 0 ? value : null,
+        type: FiltersReducerActionType.SetMonths,
+      });
+    },
+    [dispatch],
   );
 
   return (
-    <div className="max-h-[720px] min-h-[720px] overflow-scroll">
-      {filters.months && (
-        <div className="inline-flex flex-wrap items-center justify-start gap-2">
-          {filters.months?.map((month) => (
-            <Chip key={month} onClose={() => onRemove(month)} variant="flat">
-              {month}
-            </Chip>
-          ))}
-        </div>
-      )}
+    <>
+      <Checkbox
+        className="m-0 mt-1 min-w-[100%] flex-none cursor-pointer gap-4 p-4 hover:bg-content2"
+        isIndeterminate={
+          yearSelection === YearSelectedMonthsState.INDETERMINATE
+        }
+        isSelected={yearSelection === YearSelectedMonthsState.ALL}
+        key={yearNumber}
+        onValueChange={toggleSelectedYear}
+        value={yearNumber.toString()}
+      >
+        All months
+      </Checkbox>
 
-      <CheckboxGroup onValueChange={setSelected} value={value}>
-        <Accordion
-          onSelectionChange={onSelectionChange}
-          selectedKeys={selectedKeys}
-          selectionBehavior="replace"
-          selectionMode="single"
-        >
-          {[...years.keys()].map((yearNumber) => {
-            const year = years.get(yearNumber)!;
+      <Divider />
 
-            return (
-              <AccordionItem
-                aria-label={yearNumber.toString()}
-                key={yearNumber.toString()}
-                subtitle={
-                  <Balance income={year.income} outcome={year.outcome} />
-                }
-                title={
-                  <>
-                    <span className="text-2xl">{yearNumber}</span>{" "}
-                    <AmountValue
-                      amount={(year.income * 100 + year.outcome * 100) / 100}
-                      currency="GBP"
-                      round
-                      size={Size.Big}
-                    />
-                  </>
-                }
-              >
-                {year.months.map(({ id, income, month, outcome }) => (
-                  <Checkbox
-                    className="m-0 mt-1 min-w-[100%] flex-none cursor-pointer gap-4 rounded-lg border-2 border-white p-4 hover:bg-content2 data-[selected=true]:border-primary"
-                    key={id}
-                    value={id}
-                  >
-                    <div className="text-xl">
-                      {monthNames.get(month)}{" "}
-                      <AmountValue
-                        amount={(income * 100 + outcome * 100) / 100}
-                        currency="GBP"
-                        round
-                        size={Size.Big}
-                      />
-                    </div>
-                    <Balance income={income} outcome={outcome} />
-                  </Checkbox>
-                ))}
-              </AccordionItem>
-            );
-          })}
-        </Accordion>
+      <CheckboxGroup onValueChange={setSelected} value={filterMonthsState}>
+        {year.months.map(({ id, income, month, outcome }) => (
+          <Checkbox
+            classNames={{
+              base: "m-0 mt-1 min-w-[100%] flex-none cursor-pointer gap-4 rounded-lg border-2 border-white p-4 hover:bg-content2 data-[selected=true]:border-primary",
+              label: "w-full",
+            }}
+            key={id}
+            value={id}
+          >
+            <div className="flex justify-between text-xl">
+              {monthNames.get(month)}
+              <AmountValue
+                amount={(income * 100 + outcome * 100) / 100}
+                currency="GBP"
+                round
+                size={Size.Big}
+              />
+            </div>
+
+            <div className="text-right">
+              <Balance income={income} outcome={outcome} />
+            </div>
+          </Checkbox>
+        ))}
       </CheckboxGroup>
-    </div>
+    </>
   );
 }
 
