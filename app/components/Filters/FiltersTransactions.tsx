@@ -28,6 +28,7 @@ export default function FiltersTransactions({
     graphql`
       fragment FiltersTransactions on Query {
         ...TransactionsTotal
+        ...CategoriesFilter_Categories
       }
     `,
     data$key,
@@ -44,7 +45,7 @@ export default function FiltersTransactions({
         <ComplitedFilter dispatch={dispatch} filters={filters} />
         <IncomeFilter dispatch={dispatch} filters={filters} />
         <CategoriesFilter
-          dispatch={dispatch}
+          categories={data}
           filters={filters}
           selectedTransactions={selectedTransactions}
           setSelectedTransactions={setSelectedTransactions}

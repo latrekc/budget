@@ -16,10 +16,13 @@ import CategoryAutocomplete from "../CategoryAutocomplete";
 import { CategoryAutocompleteQuery$data } from "../__generated__/CategoryAutocompleteQuery.graphql";
 import { CategoryMoveButton$key } from "./__generated__/CategoryMoveButton.graphql";
 import { CategoryMoveButtonMutation } from "./__generated__/CategoryMoveButtonMutation.graphql";
+import { CategoryMoveButton_Categories$key } from "./__generated__/CategoryMoveButton_Categories.graphql";
 
 export default function CategoryMoveButton({
+  categories: categories$key,
   category: category$key,
 }: {
+  categories: CategoryMoveButton_Categories$key;
   category: CategoryMoveButton$key;
 }) {
   const { publish } = usePubSub();
@@ -44,6 +47,15 @@ export default function CategoryMoveButton({
       }
     `,
     category$key,
+  );
+
+  const categories = useFragment(
+    graphql`
+      fragment CategoryMoveButton_Categories on Query {
+        ...CategoryAutocomplete
+      }
+    `,
+    categories$key,
   );
 
   const ignoreIds = useMemo(() => {
@@ -171,6 +183,7 @@ export default function CategoryMoveButton({
             <Spacer />
 
             <CategoryAutocomplete
+              categories={categories}
               error={error}
               filterCallback={filterCallback}
               isDisabled={isMoveMutationInFlight}

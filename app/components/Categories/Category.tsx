@@ -3,8 +3,9 @@ import { graphql, useFragment } from "react-relay";
 import { useContext, useMemo } from "react";
 import { CategoriesContext } from "../Filters/FiltersCategories";
 import CategoryContent from "./CategoryContent";
-import TransactionSubCategory from "./SubCategory";
+import SubCategory from "./SubCategory";
 import { Category$data, Category$key } from "./__generated__/Category.graphql";
+import { Category_Categories$key } from "./__generated__/Category_Categories.graphql";
 
 type Categories = Category$data["subCategories"];
 
@@ -23,8 +24,10 @@ function filterByName(allCategories: Categories, searchTerm: string) {
 }
 
 export default function Category({
+  categories: categories$key,
   category: category$key,
 }: {
+  categories: Category_Categories$key;
   category: Category$key;
 }) {
   const category = useFragment(
@@ -47,6 +50,16 @@ export default function Category({
     category$key,
   );
 
+  const categories = useFragment(
+    graphql`
+      fragment Category_Categories on Query {
+        ...CategoryContent_Categories
+        ...SubCategory_Categories
+      }
+    `,
+    categories$key,
+  );
+
   const { filterName } = useContext(CategoriesContext);
 
   const subCategories = useMemo(
@@ -56,12 +69,13 @@ export default function Category({
 
   return (
     <div>
-      <CategoryContent category={category} />
+      <CategoryContent categories={categories} category={category} />
 
       {subCategories.length > 0 ? (
         <div className="pl-4">
           {subCategories.map((subCategory) => (
-            <TransactionSubCategory
+            <SubCategory
+              categories={categories}
               key={subCategory.id}
               subCategory={subCategory}
             />

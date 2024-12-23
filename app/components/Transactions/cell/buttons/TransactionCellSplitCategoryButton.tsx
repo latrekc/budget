@@ -4,11 +4,13 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@nextui-org/react";
-import { useCallback, useMemo, useReducer, useState } from "react";
+import { useCallback, useEffect, useMemo, useReducer, useState } from "react";
 import { LuSplit } from "react-icons/lu";
-import { graphql, useFragment, useLazyLoadQuery } from "react-relay";
+import { graphql, useFragment, useRefetchableFragment } from "react-relay";
 
 import AmountValue from "@/components/AmountValue";
+import { PubSubChannels } from "@/lib/types";
+import { usePubSub } from "@/lib/usePubSub";
 import { TiPlus } from "react-icons/ti";
 import CategoryAutocomplete from "../../../Categories/CategoryAutocomplete";
 import CategoryChip from "../../../Categories/CategoryChip";
@@ -17,26 +19,41 @@ import SplitCategoryReducer, {
 } from "../../TransactionsSplitCategoryReducer";
 import useTransactionSetCategory from "../../useTransactionSetCategory";
 import { TransactionCellSplitCategoryButton$key } from "./__generated__/TransactionCellSplitCategoryButton.graphql";
-import { TransactionCellSplitCategoryButtonQuery } from "./__generated__/TransactionCellSplitCategoryButtonQuery.graphql";
+import { TransactionCellSplitCategoryButton_Categories$key } from "./__generated__/TransactionCellSplitCategoryButton_Categories.graphql";
 
 export default function TransactionCellSplitCategoryButton({
+  categories: categories$key,
   transaction: transaction$key,
 }: {
+  categories: TransactionCellSplitCategoryButton_Categories$key;
   transaction: TransactionCellSplitCategoryButton$key;
 }) {
-  const { categories: allCategories } =
-    useLazyLoadQuery<TransactionCellSplitCategoryButtonQuery>(
-      graphql`
-        query TransactionCellSplitCategoryButtonQuery {
-          categories {
-            id @required(action: THROW)
-            ...CategoryChip
-          }
+  const [data, refetch] = useRefetchableFragment(
+    graphql`
+      fragment TransactionCellSplitCategoryButton_Categories on Query
+      @refetchable(
+        queryName: "TransactionCellSplitCategoryButtonRefetchQuery"
+      ) {
+        categories(filters: $categoryFilters) {
+          id @required(action: THROW)
+          ...CategoryChip
         }
-      `,
-      {},
-      { fetchPolicy: "store-and-network" },
-    );
+        ...CategoryAutocomplete
+      }
+    `,
+    categories$key,
+  );
+
+  const { categories: allCategories } = data;
+
+  const { subscribe } = usePubSub();
+
+  useEffect(() => {
+    return subscribe(PubSubChannels.Categories, () => {
+      console.log("Refetch categories for TransactionCellSplitCategoryButton");
+      refetch({}, { fetchPolicy: "network-only" });
+    });
+  }, [refetch, subscribe]);
 
   const {
     amount,
@@ -228,6 +245,7 @@ export default function TransactionCellSplitCategoryButton({
             <div className="flex w-full flex-row flex-wrap items-center justify-between gap-x-2 py-2">
               <CategoryAutocomplete
                 autoFocus={true}
+                categories={data}
                 error={error}
                 isSmall
                 label="Uncategorised"

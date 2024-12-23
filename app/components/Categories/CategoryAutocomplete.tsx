@@ -1,69 +1,66 @@
+import { PubSubChannels } from "@/lib/types";
+import { usePubSub } from "@/lib/usePubSub";
 import { Autocomplete, AutocompleteItem } from "@nextui-org/react";
-import { Suspense, useCallback, useMemo, useState } from "react";
-import { PreloadedQuery, graphql, usePreloadedQuery } from "react-relay";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { graphql, useRefetchableFragment } from "react-relay";
 import CategoryChip from "./CategoryChip";
 import {
-  CategoryAutocompleteQuery$data,
-  CategoryAutocompleteQuery as CategoryAutocompleteQueryType,
-} from "./__generated__/CategoryAutocompleteQuery.graphql";
-import useCategoryAutocomplete from "./useCategoryAutocomplete";
-
-export const CategoryAutocompleteQuery = graphql`
-  query CategoryAutocompleteQuery {
-    categories {
-      id @required(action: THROW)
-      name @required(action: THROW)
-      parentCategory {
-        name @required(action: THROW)
-        parentCategory {
-          name @required(action: THROW)
-        }
-      }
-      ...CategoryChip
-    }
-  }
-`;
+  CategoryAutocomplete$data,
+  CategoryAutocomplete$key,
+} from "./__generated__/CategoryAutocomplete.graphql";
 
 type Props = {
   autoFocus?: boolean;
+  categories: CategoryAutocomplete$key;
   error?: null | string;
   filterCallback?: (
-    categories: CategoryAutocompleteQuery$data["categories"],
-  ) => CategoryAutocompleteQuery$data["categories"];
+    categories: CategoryAutocomplete$data["categories_for_autocomplete"],
+  ) => CategoryAutocomplete$data["categories_for_autocomplete"];
   isDisabled?: boolean;
   isSmall?: boolean;
   label: string;
   onSelect: (key: React.Key | null) => void;
 };
 
-export default function CategoryAutocomplete(props: Props) {
-  const { preloadedQuery } = useCategoryAutocomplete();
-
-  return preloadedQuery != null ? (
-    <Suspense>
-      <CategoryAutocompleteComponent
-        {...props}
-        preloadedQuery={preloadedQuery}
-      />
-    </Suspense>
-  ) : null;
-}
-
-function CategoryAutocompleteComponent({
+export default function CategoryAutocomplete({
   autoFocus = true,
+  categories: categories$key,
   error = null,
   filterCallback,
   isDisabled = false,
   isSmall = false,
   label,
   onSelect,
-  preloadedQuery,
-}: { preloadedQuery: PreloadedQuery<CategoryAutocompleteQueryType> } & Props) {
-  const { categories: allCategories } =
-    usePreloadedQuery<CategoryAutocompleteQueryType>(
-      CategoryAutocompleteQuery,
-      preloadedQuery,
+}: Props) {
+  const [{ categories_for_autocomplete: allCategories }, refetch] =
+    useRefetchableFragment(
+      graphql`
+        fragment CategoryAutocomplete on Query
+        @refetchable(queryName: "CategoryAutocompleteRefetchQuery") {
+          categories_for_autocomplete: categories {
+            id @required(action: THROW)
+            name @required(action: THROW)
+            parentCategory {
+              name @required(action: THROW)
+              parentCategory {
+                name @required(action: THROW)
+              }
+            }
+            ...CategoryChip
+          }
+        }
+      `,
+      categories$key,
     );
+
+  const { subscribe } = usePubSub();
+
+  useEffect(() => {
+    return subscribe(PubSubChannels.Categories, () => {
+      console.log("Refetch categories for CategoryAutocomplete");
+      refetch({}, { fetchPolicy: "network-only" });
+    });
+  }, [refetch, subscribe]);
 
   const filteredCategories = useMemo(
     () =>

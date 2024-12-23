@@ -8,6 +8,7 @@ import {
   SubCategory$data,
   SubCategory$key,
 } from "./__generated__/SubCategory.graphql";
+import { SubCategory_Categories$key } from "./__generated__/SubCategory_Categories.graphql";
 
 type Categories = SubCategory$data["subCategories"];
 
@@ -26,8 +27,10 @@ function filterByName(allCategories: Categories, searchTerm: string) {
 }
 
 export default function SubCategory({
+  categories: categories$key,
   subCategory: subCategory$key,
 }: {
+  categories: SubCategory_Categories$key;
   subCategory: SubCategory$key;
 }) {
   const subCategory = useFragment(
@@ -50,6 +53,16 @@ export default function SubCategory({
     subCategory$key,
   );
 
+  const categories = useFragment(
+    graphql`
+      fragment SubCategory_Categories on Query {
+        ...CategoryContent_Categories
+        ...SubSubCategory_Categories
+      }
+    `,
+    categories$key,
+  );
+
   const { filterName } = useContext(CategoriesContext);
 
   const subCategories = useMemo(
@@ -59,12 +72,13 @@ export default function SubCategory({
 
   return (
     <div>
-      <CategoryContent category={subCategory} />
+      <CategoryContent categories={categories} category={subCategory} />
 
       {subCategories.length > 0 ? (
         <div className="pl-4">
           {subCategories.map((subSubCategory) => (
             <SubSubCategory
+              categories={categories}
               key={subSubCategory.id}
               subCategory={subSubCategory}
             />

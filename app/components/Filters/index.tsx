@@ -21,6 +21,7 @@ export default function Filters({
     graphql`
       fragment Filters on Query {
         ...FiltersCategories
+        ...FiltersCategories_Categories
         ...FiltersMonths
       }
     `,
@@ -48,6 +49,7 @@ export default function Filters({
         <FiltersCategories
           categories={data}
           dispatch={dispatch}
+          filterCategories={data}
           filters={filtersState}
         />
       </AccordionItem>

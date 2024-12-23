@@ -18,7 +18,9 @@ import { graphql, useFragment, usePaginationFragment } from "react-relay";
 
 import { FiltersState } from "../Filters/FiltersReducer";
 import { TransactionsTable$key } from "./__generated__/TransactionsTable.graphql";
-import { TransactionsTable__RenderCell$key } from "./__generated__/TransactionsTable__RenderCell.graphql";
+import { TransactionsTable_Categories$key } from "./__generated__/TransactionsTable_Categories.graphql";
+import { TransactionsTable_RenderCell$key } from "./__generated__/TransactionsTable_RenderCell.graphql";
+import { TransactionsTable_RenderCell_Categories$key } from "./__generated__/TransactionsTable_RenderCell_Categories.graphql";
 import TransactionAmountCell from "./cell/TransactionAmountCell";
 import TransactionCategoriesButtonCell from "./cell/TransactionCategoriesButtonCell";
 import TransactionCategoriesCell from "./cell/TransactionCategoriesCell";
@@ -46,11 +48,13 @@ export type TransactionsSelection =
     }>;
 
 export default function TransactionsTable({
+  categories: categories$key,
   filters,
   selectedTransactions,
   setSelectedTransactions,
   transactions: transactions$key,
 }: {
+  categories: TransactionsTable_Categories$key;
   filters: FiltersState;
   selectedTransactions: TransactionsSelection;
   setSelectedTransactions: (selected: TransactionsSelection) => void;
@@ -77,13 +81,22 @@ export default function TransactionsTable({
               id
               completed
               amount
-              ...TransactionsTable__RenderCell
+              ...TransactionsTable_RenderCell
             }
           }
         }
       }
     `,
     transactions$key,
+  );
+
+  const categories = useFragment(
+    graphql`
+      fragment TransactionsTable_Categories on Query {
+        ...TransactionsTable_RenderCell_Categories
+      }
+    `,
+    categories$key,
   );
 
   const { subscribe } = usePubSub();
@@ -230,6 +243,7 @@ export default function TransactionsTable({
               <TableCell className={cellAlign(columnKey as Colunms)}>
                 {item?.node == null ? null : (
                   <RenderCell
+                    categories={categories}
                     columnKey={columnKey as Colunms}
                     transaction={item.node}
                   />
@@ -244,15 +258,17 @@ export default function TransactionsTable({
 }
 
 function RenderCell({
+  categories: categories$key,
   columnKey,
   transaction: transaction$key,
 }: {
+  categories: TransactionsTable_RenderCell_Categories$key;
   columnKey: Colunms;
-  transaction: TransactionsTable__RenderCell$key;
+  transaction: TransactionsTable_RenderCell$key;
 }) {
   const transaction = useFragment(
     graphql`
-      fragment TransactionsTable__RenderCell on Transaction {
+      fragment TransactionsTable_RenderCell on Transaction {
         ...TransactionDescriptionCell
         ...TransactionAmountCell
         ...TransactionSourceCell
@@ -261,6 +277,15 @@ function RenderCell({
       }
     `,
     transaction$key,
+  );
+
+  const categories = useFragment(
+    graphql`
+      fragment TransactionsTable_RenderCell_Categories on Query {
+        ...TransactionCategoriesButtonCell_Categories
+      }
+    `,
+    categories$key,
   );
 
   switch (columnKey) {
@@ -277,6 +302,11 @@ function RenderCell({
       return <TransactionCategoriesCell transaction={transaction} />;
 
     case Colunms.CategoriesButton:
-      return <TransactionCategoriesButtonCell transaction={transaction} />;
+      return (
+        <TransactionCategoriesButtonCell
+          categories={categories}
+          transaction={transaction}
+        />
+      );
   }
 }

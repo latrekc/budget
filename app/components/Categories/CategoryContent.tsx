@@ -7,12 +7,15 @@ import { Currency } from "@/lib/types";
 import { CategoriesContext, CategoryMode } from "../Filters/FiltersCategories";
 import CategoryChip from "./CategoryChip";
 import { CategoryContent$key } from "./__generated__/CategoryContent.graphql";
+import { CategoryContent_Categories$key } from "./__generated__/CategoryContent_Categories.graphql";
 import CategoryButtons from "./buttons/CategoryButtons";
 
 export default function CategoryContent({
+  categories: categories$key,
   category: category$key,
   withAddButton = true,
 }: {
+  categories: CategoryContent_Categories$key;
   category: CategoryContent$key;
   withAddButton?: boolean;
 }) {
@@ -36,6 +39,14 @@ export default function CategoryContent({
       }
     `,
     category$key,
+  );
+  const categories = useFragment(
+    graphql`
+      fragment CategoryContent_Categories on Query {
+        ...CategoryButtons_Categories
+      }
+    `,
+    categories$key,
   );
 
   const test = useCallback(
@@ -77,7 +88,11 @@ export default function CategoryContent({
       <CategoryChip category={category} onlyLeaf />
 
       {isMatchFilter && (
-        <CategoryButtons category={category} withAddButton={withAddButton} />
+        <CategoryButtons
+          categories={categories}
+          category={category}
+          withAddButton={withAddButton}
+        />
       )}
     </div>
   ) : (

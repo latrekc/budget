@@ -10,10 +10,13 @@ import { graphql, useFragment } from "react-relay";
 
 import TransactionSetCategoryButton from "../../TransactionSetCategoryButton";
 import { TransactionCellAddCategoryButton$key } from "./__generated__/TransactionCellAddCategoryButton.graphql";
+import { TransactionCellAddCategoryButton_Categories$key } from "./__generated__/TransactionCellAddCategoryButton_Categories.graphql";
 
 export default function TransactionCellAddCategoryButton({
+  categories: categories$key,
   transaction: transaction$key,
 }: {
+  categories: TransactionCellAddCategoryButton_Categories$key;
   transaction: TransactionCellAddCategoryButton$key;
 }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -26,6 +29,15 @@ export default function TransactionCellAddCategoryButton({
       }
     `,
     transaction$key,
+  );
+
+  const categories = useFragment(
+    graphql`
+      fragment TransactionCellAddCategoryButton_Categories on Query {
+        ...TransactionSetCategoryButton_Categories
+      }
+    `,
+    categories$key,
   );
 
   return (
@@ -52,6 +64,7 @@ export default function TransactionCellAddCategoryButton({
         {() => (
           <div className="w-full p-4">
             <TransactionSetCategoryButton
+              categories={categories}
               onCompleted={() => setIsOpen(false)}
               transactions={[{ amount, transaction: id }]}
             />

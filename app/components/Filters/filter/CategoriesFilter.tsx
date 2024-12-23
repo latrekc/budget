@@ -6,23 +6,35 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@nextui-org/react";
-import { Dispatch, useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
+import { graphql, useFragment } from "react-relay";
 import TransactionSetCategoryButton from "../../Transactions/TransactionSetCategoryButton";
 import { TransactionsSelection } from "../../Transactions/TransactionsTable";
-import { FiltersReducerAction, FiltersState } from "../FiltersReducer";
+import { FiltersState } from "../FiltersReducer";
+import { CategoriesFilter_Categories$key } from "./__generated__/CategoriesFilter_Categories.graphql";
 
 export default function CategoriesFilter({
+  categories: categories$key,
   filters,
   selectedTransactions,
   setSelectedTransactions,
 }: {
-  dispatch: Dispatch<FiltersReducerAction>;
+  categories: CategoriesFilter_Categories$key;
   filters: FiltersState;
   selectedTransactions: TransactionsSelection;
   setSelectedTransactions: (selected: TransactionsSelection) => void;
 }) {
   const [isOpen, setIsOpen] = useState(false);
+
+  const categories = useFragment(
+    graphql`
+      fragment CategoriesFilter_Categories on Query {
+        ...TransactionSetCategoryButton_Categories
+      }
+    `,
+    categories$key,
+  );
 
   const transactions = useMemo(() => {
     if (selectedTransactions === "all") {
@@ -64,6 +76,7 @@ export default function CategoriesFilter({
           {() => (
             <div className="w-full p-4">
               <TransactionSetCategoryButton
+                categories={categories}
                 filters={filters}
                 onCompleted={onSetCategories}
                 transactions={transactions}

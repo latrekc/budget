@@ -9,7 +9,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import { graphql, useRefetchableFragment } from "react-relay";
+import { graphql, useFragment, useRefetchableFragment } from "react-relay";
 
 import Category from "../Categories/Category";
 import CategoryChip from "../Categories/CategoryChip";
@@ -24,6 +24,7 @@ import {
   FiltersCategories$data,
   FiltersCategories$key,
 } from "./__generated__/FiltersCategories.graphql";
+import { FiltersCategories_Categories$key } from "./__generated__/FiltersCategories_Categories.graphql";
 
 export enum CategoryMode {
   "EDIT" = "EDIT",
@@ -67,10 +68,12 @@ function filterByName(allCategories: Categories, searchTerm: string) {
 export default function FiltersCategories({
   categories: categories$key,
   dispatch,
+  filterCategories: filterCategories$key,
   filters,
 }: {
-  categories: FiltersCategories$key;
+  categories: FiltersCategories_Categories$key;
   dispatch: Dispatch<FiltersReducerAction>;
+  filterCategories: FiltersCategories$key;
   filters: FiltersState;
 }) {
   const [categoryMode, setCategoryMode] = useState<CategoryMode>(
@@ -106,6 +109,15 @@ export default function FiltersCategories({
         }
       }
     `,
+    filterCategories$key,
+  );
+
+  const categories = useFragment(
+    graphql`
+      fragment FiltersCategories_Categories on Query {
+        ...Category_Categories
+      }
+    `,
     categories$key,
   );
 
@@ -115,7 +127,7 @@ export default function FiltersCategories({
 
   useEffect(() => {
     return subscribe(PubSubChannels.Categories, () => {
-      console.log("Refetch categories");
+      console.log("Refetch categories for FiltersCategories");
       refetch({}, { fetchPolicy: "network-only" });
     });
   }, [refetch, subscribe]);
@@ -148,7 +160,7 @@ export default function FiltersCategories({
     [categoryMode, filters.categories, filters.ignoreCategories],
   );
 
-  const categories = useMemo(
+  const filteredCategories = useMemo(
     () => filterByName(allCategories, filterName) ?? [],
     [allCategories, filterName],
   );
@@ -236,10 +248,14 @@ export default function FiltersCategories({
         </RadioGroup>
 
         <CheckboxGroup onValueChange={setSelected} value={value}>
-          {categories
+          {filteredCategories
             ?.filter((category) => category.parentCategory == null)
             .map((category) => (
-              <Category category={category} key={category.id} />
+              <Category
+                categories={categories}
+                category={category}
+                key={category.id}
+              />
             ))}
         </CheckboxGroup>
 

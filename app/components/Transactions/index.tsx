@@ -17,6 +17,7 @@ export const TransactionsQuery = graphql`
     ...TransactionsTable
     ...Filters
     ...FiltersTransactions
+    ...TransactionsTable_Categories
   }
 `;
 
@@ -47,6 +48,7 @@ export default function Transactions({
         />
 
         <TransactionsTable
+          categories={data}
           filters={filtersState}
           selectedTransactions={selectedTransactions}
           setSelectedTransactions={setSelectedTransactions}
