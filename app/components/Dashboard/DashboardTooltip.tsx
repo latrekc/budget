@@ -1,3 +1,4 @@
+import { monthNames } from "@/lib/types";
 import {
   ScrollShadow,
   Table,
@@ -80,7 +81,7 @@ export function DashboardTooltip({
           <TableBody>
             {rows.map(({ income, month, outcome }) => (
               <TableRow key={month}>
-                <TableCell>{month}</TableCell>
+                <TableCell>{formatMonth(month)}</TableCell>
                 <TableCell className="text-right">
                   {income > 0 ? (
                     <AmountValue
@@ -117,4 +118,9 @@ export function DashboardTooltip({
       </ScrollShadow>
     </>
   );
+}
+
+function formatMonth(month: string) {
+  const [yearNumber, monthNumber] = month.split("-");
+  return `${monthNames.get(parseInt(monthNumber))} ${yearNumber}`;
 }
