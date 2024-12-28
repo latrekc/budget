@@ -23,6 +23,7 @@ export default function Filters({
         ...FiltersCategories
         ...FiltersCategories_Categories
         ...FiltersMonths
+        ...FiltersSources
       }
     `,
     data$key,
@@ -74,7 +75,11 @@ export default function Filters({
           <AccordionItemTitle list={filtersState.sources} name="Sources" />
         }
       >
-        <FiltersSources dispatch={dispatch} filters={filtersState} />
+        <FiltersSources
+          dispatch={dispatch}
+          filters={filtersState}
+          statistic={data}
+        />
       </AccordionItem>
     </Accordion>
   );

@@ -1,6 +1,7 @@
 import { Prisma } from "@prisma/client";
 
 import prisma, { parseId } from "../../lib/prisma";
+import { enumFromStringValue, Source } from "../../lib/types";
 import { builder } from "../builder";
 
 builder.prismaObject("Statistic", {
@@ -159,5 +160,24 @@ builder.queryField("transactionsStatisticPerMonths", (t) =>
         ...query,
       }),
     type: ["StatisticPerMonths"],
+  }),
+);
+
+builder.prismaObject("StatisticPerSource", {
+  fields: (t) => ({
+    id: t.exposeID("id"),
+    income: t.exposeFloat("income"),
+    outcome: t.exposeFloat("outcome"),
+    source: t.field({
+      resolve: (transaction) => enumFromStringValue(Source, transaction.source),
+      type: Source,
+    }),
+  }),
+});
+
+builder.queryField("transactionsStatisticPerSource", (t) =>
+  t.prismaField({
+    resolve: () => prisma.statisticPerSource.findMany(),
+    type: ["StatisticPerSource"],
   }),
 );

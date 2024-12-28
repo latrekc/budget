@@ -134,6 +134,7 @@ type Query {
   ): QueryTransactionsConnection
   transactionsStatistic(filters: FilterStatisticInput): [Statistic!]
   transactionsStatisticPerMonths: [StatisticPerMonths!]
+  transactionsStatisticPerSource: [StatisticPerSource!]
   transactionsTotal(filters: FilterTransactionsInput): TransactionTotal
 }
 
@@ -171,6 +172,13 @@ type StatisticPerMonths {
   month: Int
   outcome: Float
   year: Int
+}
+
+type StatisticPerSource {
+  id: ID
+  income: Float
+  outcome: Float
+  source: Source
 }
 
 type Transaction {

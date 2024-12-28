@@ -63,6 +63,15 @@ view StatisticPerMonths {
   @@map("transactions_statistic_per_months")
 }
 
+view StatisticPerSource {
+  id      String @id @unique
+  income  Float
+  outcome Float
+  source  String
+
+  @@map("transactions_statistic_per_source")
+}
+
 view Statistic {
   id      String @id @unique
   monthId String
