@@ -1,6 +1,6 @@
 import { Currency, PubSubChannels } from "@/lib/types";
 import { usePubSub } from "@/lib/usePubSub";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { graphql, useRefetchableFragment } from "react-relay";
 
 import AmountValue, { Size } from "../AmountValue";
@@ -39,32 +39,89 @@ export default function TransactionsTotal({
     });
   }, [filters, refetch, subscribe]);
 
+  const selectedIncome = useMemo(
+    () =>
+      selectedTransactions === "all" ||
+      selectedTransactions.size === transactionsTotal?.count
+        ? 0
+        : [...selectedTransactions].reduce((sum, { amount }) => {
+            if (amount > 0) {
+              sum += amount;
+            }
+
+            return sum;
+          }, 0),
+    [selectedTransactions, transactionsTotal?.count],
+  );
+
+  const selectedOutcome = useMemo(
+    () =>
+      selectedTransactions === "all" ||
+      selectedTransactions.size === transactionsTotal?.count
+        ? 0
+        : [...selectedTransactions].reduce((sum, { amount }) => {
+            if (amount < 0) {
+              sum += amount;
+            }
+
+            return sum;
+          }, 0),
+    [selectedTransactions, transactionsTotal?.count],
+  );
+
   return (
     <div className="inline-flex items-center justify-start text-xs">
       <div>
-        <Content selectedTransactions={selectedTransactions} />{" "}
+        <Content
+          selectedTransactions={selectedTransactions}
+          transactionsTotal={transactionsTotal?.count ?? 0}
+        />{" "}
         <b>{transactionsTotal?.count}</b> transactions
         {(transactionsTotal?.income ?? 0) > 0 ||
         (transactionsTotal?.outcome ?? 0) < 0
           ? " for "
           : null}
         {(transactionsTotal?.income ?? 0) > 0 && (
-          <AmountValue
-            amount={transactionsTotal?.income ?? 0}
-            currency={Currency.GBP}
-            size={Size.Small}
-          />
+          <>
+            {selectedIncome > 0 ? (
+              <>
+                <AmountValue
+                  amount={selectedIncome}
+                  currency={Currency.GBP}
+                  size={Size.Small}
+                />
+                {" of "}
+              </>
+            ) : null}
+            <AmountValue
+              amount={transactionsTotal?.income ?? 0}
+              currency={Currency.GBP}
+              size={Size.Small}
+            />
+          </>
         )}
         {(transactionsTotal?.income ?? 0) > 0 &&
         (transactionsTotal?.outcome ?? 0) < 0
           ? " and "
           : null}
         {(transactionsTotal?.outcome ?? 0) < 0 && (
-          <AmountValue
-            amount={transactionsTotal?.outcome ?? 0}
-            currency={Currency.GBP}
-            size={Size.Small}
-          />
+          <>
+            {selectedOutcome < 0 ? (
+              <>
+                <AmountValue
+                  amount={selectedOutcome}
+                  currency={Currency.GBP}
+                  size={Size.Small}
+                />
+                {" of "}
+              </>
+            ) : null}
+            <AmountValue
+              amount={transactionsTotal?.outcome ?? 0}
+              currency={Currency.GBP}
+              size={Size.Small}
+            />
+          </>
         )}
       </div>
     </div>
@@ -73,10 +130,15 @@ export default function TransactionsTotal({
 
 function Content({
   selectedTransactions,
+  transactionsTotal,
 }: {
   selectedTransactions: TransactionsSelection;
+  transactionsTotal: number;
 }) {
-  if (selectedTransactions === "all") {
+  if (
+    selectedTransactions === "all" ||
+    selectedTransactions.size === transactionsTotal
+  ) {
     return "Selected all";
   } else if (selectedTransactions instanceof Set) {
     if (selectedTransactions.size > 0) {
