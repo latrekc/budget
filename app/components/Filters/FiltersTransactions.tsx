@@ -10,6 +10,7 @@ import CategoriesFilter from "./filter/CategoriesFilter";
 import ComplitedFilter from "./filter/ComplitedFilter";
 import DescriptionFilter from "./filter/DescriptionFilter";
 import IncomeFilter from "./filter/IncomeFilter";
+import SortFilter from "./filter/SortFilter";
 
 export default function FiltersTransactions({
   data: data$key,
@@ -44,16 +45,19 @@ export default function FiltersTransactions({
       <div className="m-6 flex flex-row flex-wrap gap-x-3">
         <ComplitedFilter dispatch={dispatch} filters={filters} />
         <IncomeFilter dispatch={dispatch} filters={filters} />
+        <SortFilter dispatch={dispatch} filters={filters} />
+      </div>
+      <div className="m-6 flex flex-row flex-wrap gap-x-3">
+        <TransactionsTotal
+          data={data}
+          filters={filters}
+          selectedTransactions={selectedTransactions}
+        />
         <CategoriesFilter
           categories={data}
           filters={filters}
           selectedTransactions={selectedTransactions}
           setSelectedTransactions={setSelectedTransactions}
-        />
-        <TransactionsTotal
-          data={data}
-          filters={filters}
-          selectedTransactions={selectedTransactions}
         />
       </div>
     </div>

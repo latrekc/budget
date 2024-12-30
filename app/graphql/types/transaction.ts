@@ -5,6 +5,7 @@ import prisma, { parseId, parseIdString } from "../../lib/prisma";
 import {
   AmountRelation,
   Currency,
+  SortBy,
   Source,
   enumFromStringValue,
 } from "../../lib/types";
@@ -16,6 +17,10 @@ builder.enumType(Currency, {
 
 builder.enumType(Source, {
   name: "Source",
+});
+
+builder.enumType(SortBy, {
+  name: "SortBy",
 });
 
 builder.prismaObject("Transaction", {
@@ -58,6 +63,7 @@ export type TransactionFilter = {
   onlyIncome?: boolean | null;
   onlyUncomplited?: boolean | null;
   search?: null | string;
+  sortBy?: SortBy | null;
   sources?: null | string[];
 };
 
@@ -94,6 +100,10 @@ const filterTransactionsInput = builder
       }),
       search: t.string({
         required: false,
+      }),
+      sortBy: t.field({
+        required: false,
+        type: SortBy,
       }),
       sources: t.stringList({
         required: false,
@@ -297,7 +307,10 @@ builder.queryField("transactions", (t) =>
     resolve: async (query, _, args) => {
       return await prisma.transaction.findMany({
         ...query,
-        orderBy: [{ date: "desc" }, { amount: "asc" }],
+        orderBy:
+          args.filters?.sortBy === SortBy.Amount
+            ? [{ amount: "asc" }, { date: "desc" }]
+            : [{ date: "desc" }, { amount: "asc" }],
         where: await filtersToWhere(args.filters),
       });
     },

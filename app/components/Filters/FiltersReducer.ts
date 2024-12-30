@@ -1,4 +1,4 @@
-import { AmountRelation } from "@/lib/types";
+import { AmountRelation, SortBy } from "@/lib/types";
 
 export type FiltersState = {
   amount: null | string;
@@ -9,6 +9,7 @@ export type FiltersState = {
   onlyIncome: boolean;
   onlyUncomplited: boolean;
   search: null | string;
+  sortBy: SortBy | null;
   sources: ReadonlyArray<string> | null;
 };
 
@@ -24,6 +25,7 @@ export enum FiltersReducerActionType {
   SetCategories,
   SetIgnoreCategories,
   SetAmountRelation,
+  ToggleSortBy,
 }
 
 export type FiltersReducerAction =
@@ -68,7 +70,8 @@ export type FiltersReducerAction =
     }
   | {
       type: FiltersReducerActionType.ToggleOnlyUncomplited;
-    };
+    }
+  | { type: FiltersReducerActionType.ToggleSortBy };
 
 export const initialState: FiltersState = {
   amount: null,
@@ -79,6 +82,7 @@ export const initialState: FiltersState = {
   onlyIncome: false,
   onlyUncomplited: false,
   search: null,
+  sortBy: null,
   sources: null,
 };
 
@@ -152,6 +156,11 @@ export default function FiltersReducer(
         categories: state.categories?.includes(action.payload)
           ? state.categories.filter((category) => category !== action.payload)
           : state.categories,
+      };
+    case FiltersReducerActionType.ToggleSortBy:
+      return {
+        ...state,
+        sortBy: state.sortBy != SortBy.Amount ? SortBy.Amount : null,
       };
   }
 }

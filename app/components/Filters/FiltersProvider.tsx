@@ -1,10 +1,10 @@
-import { AmountRelation, enumFromStringValue } from "@/lib/types";
+import { AmountRelation, enumFromStringValue, SortBy } from "@/lib/types";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
+  createContext,
   Dispatch,
   FC,
   ReactNode,
-  createContext,
   useContext,
   useEffect,
   useMemo,
@@ -85,6 +85,13 @@ export const FiltersProvider: FC<FiltersProviderProps> = function (props) {
 
     if (params.has("amount")) {
       state.amount = decodeURIComponent(params.get("amount")!);
+    }
+
+    if (params.has("sortBy")) {
+      state.amount = enumFromStringValue<SortBy>(
+        SortBy,
+        decodeURIComponent(params.get("sortBy")!),
+      );
     }
 
     if (params.has("amountRelation")) {
@@ -178,6 +185,12 @@ export const FiltersProvider: FC<FiltersProviderProps> = function (props) {
       );
     } else {
       params.delete("amountRelation");
+    }
+
+    if (filtersState.sortBy != null) {
+      params.set("sortBy", encodeURIComponent(filtersState.sortBy));
+    } else {
+      params.delete("sortBy");
     }
 
     router.replace(`${pathname}?${params}`);

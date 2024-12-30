@@ -60,3 +60,8 @@ export const monthNames = new Map([
   [11, "November"],
   [12, "December"],
 ]);
+
+export enum SortBy {
+  Amount = "Amount",
+  Date = "Date",
+}
