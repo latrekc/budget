@@ -1,4 +1,4 @@
-import { monthNames } from "@/lib/types";
+import { DEFAULT_CURRENCY, monthNames } from "@/lib/types";
 import {
   ScrollShadow,
   Table,
@@ -63,7 +63,7 @@ export function DashboardTooltip({
         <CategoryChip2
           amount={total}
           categories={[category, parentCategory, grandParentCategory]}
-          currency="GBP"
+          currency={DEFAULT_CURRENCY}
         />
       </div>
       <ScrollShadow className="max-h-[400px]">
@@ -86,7 +86,7 @@ export function DashboardTooltip({
                   {income > 0 ? (
                     <AmountValue
                       amount={income}
-                      currency="GBP"
+                      currency={DEFAULT_CURRENCY}
                       size={Size.Small}
                     />
                   ) : (
@@ -97,7 +97,7 @@ export function DashboardTooltip({
                   {outcome < 0 ? (
                     <AmountValue
                       amount={outcome}
-                      currency="GBP"
+                      currency={DEFAULT_CURRENCY}
                       size={Size.Small}
                     />
                   ) : (
@@ -106,7 +106,10 @@ export function DashboardTooltip({
                 </TableCell>
                 <TableCell className="text-right">
                   {income + outcome != 0 ? (
-                    <AmountValue amount={income + outcome} currency="GBP" />
+                    <AmountValue
+                      amount={income + outcome}
+                      currency={DEFAULT_CURRENCY}
+                    />
                   ) : (
                     "—"
                   )}

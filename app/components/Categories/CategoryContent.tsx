@@ -3,7 +3,7 @@ import { useCallback, useContext, useMemo } from "react";
 import { graphql, useFragment } from "react-relay";
 
 import AmountValue from "@/components/AmountValue";
-import { Currency } from "@/lib/types";
+import { DEFAULT_CURRENCY } from "@/lib/types";
 import { CategoriesContext, CategoryMode } from "../Filters/FiltersCategories";
 import CategoryChip from "./CategoryChip";
 import { CategoryContent$key } from "./__generated__/CategoryContent.graphql";
@@ -109,13 +109,17 @@ export default function CategoryContent({
       <div className="flex gap-2">
         <CategoryChip category={category} onlyLeaf />
         {category.income !== 0 && (
-          <AmountValue amount={category.income} currency={Currency.GBP} round />
+          <AmountValue
+            amount={category.income}
+            currency={DEFAULT_CURRENCY}
+            round
+          />
         )}
         {category.income !== 0 && category.outcome !== 0 && " / "}
         {category.outcome !== 0 && (
           <AmountValue
             amount={category.outcome}
-            currency={Currency.GBP}
+            currency={DEFAULT_CURRENCY}
             round
           />
         )}

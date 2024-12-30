@@ -6,6 +6,7 @@ import { graphql, useFragment } from "react-relay";
 
 import { createRoot, Root } from "react-dom/client";
 
+import { DEFAULT_CURRENCY } from "@/lib/types";
 import { BarSeriesOption, graphic, SunburstSeriesOption } from "echarts";
 import { AmountValueFormat } from "../AmountValue";
 import { CategoryChip$key } from "../Categories/__generated__/CategoryChip.graphql";
@@ -174,7 +175,7 @@ export default function DashboardByTimePeriods({
             return `${category.name}: ${AmountValueFormat({
               abs: true,
               amount: params.value as number,
-              currency: "GBP",
+              currency: DEFAULT_CURRENCY,
               round: true,
             })}`;
           },

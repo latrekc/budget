@@ -14,7 +14,7 @@ import {
 import { Dispatch, useCallback, useMemo, useState } from "react";
 import { graphql, useFragment } from "react-relay";
 
-import { monthNames } from "@/lib/types";
+import { DEFAULT_CURRENCY, monthNames } from "@/lib/types";
 import AmountValue, { Size } from "../AmountValue";
 import {
   FiltersReducerAction,
@@ -198,7 +198,7 @@ export default function FiltersMonths({
                     </Badge>
                     <AmountValue
                       amount={(year.income * 100 + year.outcome * 100) / 100}
-                      currency="GBP"
+                      currency={DEFAULT_CURRENCY}
                       round
                       size={Size.Big}
                     />
@@ -394,7 +394,7 @@ function YearComponent({
               {monthNames.get(month)}
               <AmountValue
                 amount={(income * 100 + outcome * 100) / 100}
-                currency="GBP"
+                currency={DEFAULT_CURRENCY}
                 round
                 size={Size.Big}
               />
@@ -426,12 +426,17 @@ function YearComponent({
 function Balance({ income, outcome }: { income: number; outcome: number }) {
   return (
     <>
-      <AmountValue amount={income} currency="GBP" round size={Size.Small} />
+      <AmountValue
+        amount={income}
+        currency={DEFAULT_CURRENCY}
+        round
+        size={Size.Small}
+      />
       {" - "}
       <AmountValue
         abs
         amount={outcome}
-        currency="GBP"
+        currency={DEFAULT_CURRENCY}
         round
         size={Size.Small}
       />

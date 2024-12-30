@@ -15,6 +15,8 @@ export enum Currency {
   USD = "USD",
 }
 
+export const DEFAULT_CURRENCY = Currency.GBP;
+
 export type Transaction = {
   amount: number;
   currency: Currency;

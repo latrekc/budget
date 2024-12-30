@@ -1,4 +1,4 @@
-import { Currency, PubSubChannels } from "@/lib/types";
+import { DEFAULT_CURRENCY, PubSubChannels } from "@/lib/types";
 import { usePubSub } from "@/lib/usePubSub";
 import { useEffect, useMemo } from "react";
 import { graphql, useRefetchableFragment } from "react-relay";
@@ -87,7 +87,7 @@ export default function TransactionsTotal({
               <>
                 <AmountValue
                   amount={selectedIncome}
-                  currency={Currency.GBP}
+                  currency={DEFAULT_CURRENCY}
                   size={Size.Small}
                 />
                 {" of "}
@@ -95,7 +95,7 @@ export default function TransactionsTotal({
             ) : null}
             <AmountValue
               amount={transactionsTotal?.income ?? 0}
-              currency={Currency.GBP}
+              currency={DEFAULT_CURRENCY}
               size={Size.Small}
             />
           </>
@@ -110,7 +110,7 @@ export default function TransactionsTotal({
               <>
                 <AmountValue
                   amount={selectedOutcome}
-                  currency={Currency.GBP}
+                  currency={DEFAULT_CURRENCY}
                   size={Size.Small}
                 />
                 {" of "}
@@ -118,7 +118,7 @@ export default function TransactionsTotal({
             ) : null}
             <AmountValue
               amount={transactionsTotal?.outcome ?? 0}
-              currency={Currency.GBP}
+              currency={DEFAULT_CURRENCY}
               size={Size.Small}
             />
           </>

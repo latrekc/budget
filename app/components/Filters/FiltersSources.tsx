@@ -1,7 +1,7 @@
 import { Checkbox, CheckboxGroup, Chip } from "@nextui-org/react";
 import { Dispatch, useCallback, useMemo } from "react";
 
-import { Currency } from "@/lib/types";
+import { DEFAULT_CURRENCY } from "@/lib/types";
 import { graphql, useFragment } from "react-relay";
 import AmountValue from "../AmountValue";
 import SourceImage from "../SourceImage";
@@ -97,11 +97,19 @@ export default function FiltersSources({
               <SourceImage source={source} />
               <span>{source}</span>
               {income !== 0 && (
-                <AmountValue amount={income} currency={Currency.GBP} round />
+                <AmountValue
+                  amount={income}
+                  currency={DEFAULT_CURRENCY}
+                  round
+                />
               )}
               {income !== 0 && outcome !== 0 && " / "}
               {outcome !== 0 && (
-                <AmountValue amount={outcome} currency={Currency.GBP} round />
+                <AmountValue
+                  amount={outcome}
+                  currency={DEFAULT_CURRENCY}
+                  round
+                />
               )}
             </div>
           </Checkbox>
