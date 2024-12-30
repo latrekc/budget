@@ -58,6 +58,7 @@ export type TransactionFilter = {
   amount?: null | string;
   amountRelation?: AmountRelation | null;
   categories?: null | string[];
+  currencies?: null | string[];
   ignoreCategories?: null | string[];
   months?: null | string[];
   onlyIncome?: boolean | null;
@@ -82,6 +83,9 @@ const filterTransactionsInput = builder
         type: AmountRelation,
       }),
       categories: t.stringList({
+        required: false,
+      }),
+      currencies: t.stringList({
         required: false,
       }),
       ignoreCategories: t.stringList({
@@ -132,6 +136,12 @@ async function filtersToWhere(filters: TransactionFilter | null | undefined) {
     if ((filters.sources ?? []).length > 0) {
       where.source = {
         in: filters.sources ?? [],
+      };
+    }
+
+    if ((filters.currencies ?? []).length > 0) {
+      where.currency = {
+        in: filters.currencies ?? [],
       };
     }
 

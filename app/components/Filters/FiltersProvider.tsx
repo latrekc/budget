@@ -1,4 +1,9 @@
-import { AmountRelation, enumFromStringValue, SortBy } from "@/lib/types";
+import {
+  AmountRelation,
+  Currency,
+  enumFromStringValue,
+  SortBy,
+} from "@/lib/types";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   createContext,
@@ -70,6 +75,13 @@ export const FiltersProvider: FC<FiltersProviderProps> = function (props) {
         .get("ignoreCategories")!
         .split(",")
         .filter((str) => str.length > 0);
+    }
+    if (params.has("currencies")) {
+      state.currencies = params
+        .get("currencies")!
+        .split(",")
+        .filter((str) => str.length > 0)
+        .map((currency) => enumFromStringValue<Currency>(Currency, currency));
     }
 
     if (params.has("months")) {
@@ -152,6 +164,11 @@ export const FiltersProvider: FC<FiltersProviderProps> = function (props) {
       params.set("categories", filtersState.categories.join(","));
     } else {
       params.delete("categories");
+    }
+    if (filtersState.currencies != null && filtersState.currencies.length > 0) {
+      params.set("currencies", filtersState.currencies.join(","));
+    } else {
+      params.delete("currencies");
     }
     if (
       filtersState.ignoreCategories != null &&

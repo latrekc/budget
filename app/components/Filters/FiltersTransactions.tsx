@@ -8,6 +8,7 @@ import { FiltersTransactions$key } from "./__generated__/FiltersTransactions.gra
 import AmountFilter from "./filter/AmountFilter";
 import CategoriesFilter from "./filter/CategoriesFilter";
 import ComplitedFilter from "./filter/ComplitedFilter";
+import CurrencyFilter from "./filter/CurrencyFilter";
 import DescriptionFilter from "./filter/DescriptionFilter";
 import IncomeFilter from "./filter/IncomeFilter";
 import SortFilter from "./filter/SortFilter";
@@ -46,6 +47,7 @@ export default function FiltersTransactions({
         <ComplitedFilter dispatch={dispatch} filters={filters} />
         <IncomeFilter dispatch={dispatch} filters={filters} />
         <SortFilter dispatch={dispatch} filters={filters} />
+        <CurrencyFilter dispatch={dispatch} filters={filters} />
       </div>
       <div className="m-6 flex flex-row flex-wrap gap-x-3">
         <TransactionsTotal

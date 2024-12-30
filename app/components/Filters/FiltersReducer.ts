@@ -1,9 +1,10 @@
-import { AmountRelation, SortBy } from "@/lib/types";
+import { AmountRelation, Currency, SortBy } from "@/lib/types";
 
 export type FiltersState = {
   amount: null | string;
   amountRelation: AmountRelation | null;
   categories: ReadonlyArray<string> | null;
+  currencies: ReadonlyArray<Currency> | null;
   ignoreCategories: ReadonlyArray<string> | null;
   months: ReadonlyArray<string> | null;
   onlyIncome: boolean;
@@ -16,15 +17,16 @@ export type FiltersState = {
 export enum FiltersReducerActionType {
   AddCategory,
   RemoveCategory,
-  ToggleOnlyIncome,
-  ToggleOnlyUncomplited,
   SetAmount,
-  SetSources,
-  SetMonths,
-  SetSearch,
+  SetAmountRelation,
   SetCategories,
   SetIgnoreCategories,
-  SetAmountRelation,
+  SetMonths,
+  SetSearch,
+  SetSources,
+  ToggleCurrency,
+  ToggleOnlyIncome,
+  ToggleOnlyUncomplited,
   ToggleSortBy,
 }
 
@@ -71,12 +73,14 @@ export type FiltersReducerAction =
   | {
       type: FiltersReducerActionType.ToggleOnlyUncomplited;
     }
+  | { payload: Currency; type: FiltersReducerActionType.ToggleCurrency }
   | { type: FiltersReducerActionType.ToggleSortBy };
 
 export const initialState: FiltersState = {
   amount: null,
   amountRelation: null,
   categories: null,
+  currencies: null,
   ignoreCategories: null,
   months: null,
   onlyIncome: false,
@@ -110,7 +114,8 @@ export default function FiltersReducer(
     case FiltersReducerActionType.SetAmountRelation:
       return {
         ...state,
-        amountRelation: action.payload,
+        amountRelation:
+          action.payload !== AmountRelation.EQUAL ? action.payload : null,
       };
 
     case FiltersReducerActionType.SetSources:
@@ -161,6 +166,26 @@ export default function FiltersReducer(
       return {
         ...state,
         sortBy: state.sortBy != SortBy.Amount ? SortBy.Amount : null,
+      };
+    case FiltersReducerActionType.ToggleCurrency:
+      // eslint-disable-next-line no-case-declarations
+      const currentCurrencies = new Set(
+        state.currencies ?? [...Object.values(Currency)],
+      );
+
+      if (currentCurrencies.has(action.payload)) {
+        currentCurrencies.delete(action.payload);
+      } else {
+        currentCurrencies.add(action.payload);
+      }
+
+      return {
+        ...state,
+        currencies:
+          currentCurrencies.size === 0 ||
+          currentCurrencies.size === Object.values(Currency).length
+            ? null
+            : [...currentCurrencies],
       };
   }
 }

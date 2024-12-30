@@ -45,6 +45,7 @@ input FilterTransactionsInput {
   amount: String
   amountRelation: AmountRelation
   categories: [String!]
+  currencies: [String!]
   ignoreCategories: [String!]
   months: [String!]
   onlyIncome: Boolean = false
