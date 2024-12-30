@@ -1,10 +1,12 @@
 import { Prisma } from "@prisma/client";
 import { parse as parseDate } from "date-format-parse";
 
+import { convertRate } from "../../lib/currencies";
 import prisma, { parseId, parseIdString } from "../../lib/prisma";
 import {
   AmountRelation,
   Currency,
+  DEFAULT_CURRENCY,
   SortBy,
   Source,
   enumFromStringValue,
@@ -26,6 +28,18 @@ builder.enumType(SortBy, {
 builder.prismaObject("Transaction", {
   fields: (t) => ({
     amount: t.exposeInt("amount"),
+    amount_converted: t.field({
+      resolve: ({ amount, currency }) => {
+        return Math.round(
+          amount *
+            convertRate(
+              enumFromStringValue<Currency>(Currency, currency),
+              DEFAULT_CURRENCY,
+            ),
+        );
+      },
+      type: "Int",
+    }),
     categories: t.relation("categories"),
     completed: t.exposeBoolean("completed"),
     currency: t.field({

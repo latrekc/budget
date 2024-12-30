@@ -190,6 +190,7 @@ type StatisticPerSource {
 
 type Transaction {
   amount: Int
+  amount_converted: Int
   categories: [TransactionsOnCategories!]
   completed: Boolean
   currency: Currency

@@ -25,7 +25,6 @@ export default function FiltersSources({
     graphql`
       fragment FiltersSources on Query {
         transactionsStatisticPerSource {
-          id @required(action: THROW)
           income @required(action: THROW)
           outcome @required(action: THROW)
           source @required(action: THROW)
