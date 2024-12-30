@@ -160,7 +160,7 @@ export default function TransactionCellSplitCategoryButton({
                 (record) => record.id === id,
               );
               if (category == null) {
-                throw new Error(`Category {id} is not found`);
+                throw new Error(`Category ${id} is not found`);
               }
 
               return (

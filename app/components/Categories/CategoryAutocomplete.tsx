@@ -96,6 +96,7 @@ export default function CategoryAutocomplete({
       className="max-w-xs"
       errorMessage={error}
       fullWidth={!isSmall}
+      isClearable={false}
       isDisabled={isDisabled}
       isInvalid={error != null}
       items={categories ?? []}
