@@ -105,7 +105,6 @@ program
       Time: string;
       "Transaction ID": string;
     }>(csvFilePath, (record) => ({
-      amount: parseFloat(record.Amount),
       currency: enumFromStringValue(Currency, record.Currency),
       date: parseDate(
         [record.Date, record.Time].join(" "),
@@ -116,6 +115,7 @@ program
         .trim()
         .replace(/\s{2,}/g, " "),
       id: record["Transaction ID"],
+      quantity: Math.round(parseFloat(record.Amount) * 100),
       source: Source.Monzo,
     }));
 
@@ -133,11 +133,11 @@ program
       Description: string;
       "Started Date": string;
     }>(csvFilePath, (record) => ({
-      amount: parseFloat(record.Amount),
       currency: enumFromStringValue(Currency, record.Currency),
       date: parseDate(record["Started Date"], "YYYY-MM-DD HH:mm:ss"),
       description: record.Description,
       id: hash(record),
+      quantity: Math.round(parseFloat(record.Amount) * 100),
       source: Source.Revolut,
     }));
 
@@ -156,11 +156,11 @@ program
       Description: string;
       "TransferWise ID": string;
     }>(csvFilePath, (record) => ({
-      amount: parseFloat(record.Amount),
       currency: enumFromStringValue(Currency, record.Currency),
       date: parseDate(record.Date, "DD-MM-YYYY"),
       description: record.Description,
       id: record["TransferWise ID"],
+      quantity: Math.round(parseFloat(record.Amount) * 100),
       source: Source.Wise,
     }));
 
@@ -207,11 +207,11 @@ program
 
         ofx.transactions?.forEach((transaction) => {
           records.push({
-            amount: transaction.amount ?? 0,
             currency,
             date: transaction.datePosted ?? new Date(),
             description: [transaction.name, transaction.memo].join(" "),
             id: transaction.fitId ?? "",
+            quantity: Math.round((transaction.amount ?? 0) * 100),
             source: Source.HSBC,
           });
         });

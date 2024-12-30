@@ -22,10 +22,10 @@ async function resolveAmount(
   }
 
   const where: Prisma.TransactionsOnCategoriesWhereInput = {
-    amount: {
+    categoryId: { equals: root.id },
+    quantity: {
       [relation === "income" ? "gt" : "lt"]: 0,
     },
-    categoryId: { equals: root.id },
   };
 
   if (filters?.months != null) {
@@ -46,23 +46,23 @@ async function resolveAmount(
   }
 
   const result = await prisma.transactionsOnCategories.aggregate({
-    _sum: { amount: true },
+    _sum: { quantity: true },
     where,
   });
 
-  return result._sum.amount ?? 0;
+  return result._sum.quantity ?? 0;
 }
 
 builder.prismaObject("Category", {
   fields: (t) => ({
     id: t.exposeID("id"),
-    income: t.float({
+    income: t.int({
       nullable: false,
       resolve: async (root, _args, _context, info) =>
         resolveAmount("income", root, info),
     }),
     name: t.exposeString("name"),
-    outcome: t.float({
+    outcome: t.int({
       nullable: false,
       resolve: async (root, _args, _context, info) =>
         resolveAmount("outcome", root, info),

@@ -5,21 +5,21 @@ import CategoryChip2 from "./CategoryChip2";
 import { CategoryChip$key } from "./__generated__/CategoryChip.graphql";
 
 export default function CategoryChip({
-  amount,
   category: category$key,
   currency,
   ignore = false,
   isDisabledDelete = false,
   onDelete,
   onlyLeaf = false,
+  quantity,
 }: {
-  amount?: null | number;
   category: CategoryChip$key;
   currency?: Currency;
   ignore?: boolean;
   isDisabledDelete?: boolean;
   onDelete?: () => void;
   onlyLeaf?: boolean;
+  quantity?: null | number;
 }) {
   const category = useFragment(
     graphql`
@@ -49,7 +49,6 @@ export default function CategoryChip({
 
   return (
     <CategoryChip2
-      amount={amount}
       categories={[
         category,
         category.parentCategory,
@@ -60,6 +59,7 @@ export default function CategoryChip({
       isDisabledDelete={isDisabledDelete}
       onDelete={onDelete}
       onlyLeaf={onlyLeaf}
+      quantity={quantity}
     />
   );
 }

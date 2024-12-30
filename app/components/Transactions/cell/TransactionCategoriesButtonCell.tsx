@@ -20,7 +20,7 @@ export default function TransactionCategoriesButtonCell({
         categories @required(action: THROW) {
           __typename
         }
-        amount
+        quantity
       }
     `,
     transaction$key,
@@ -36,7 +36,7 @@ export default function TransactionCategoriesButtonCell({
     categories$key,
   );
 
-  if (transaction.amount === 0) {
+  if (transaction.quantity === 0) {
     return null;
   }
 

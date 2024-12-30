@@ -25,7 +25,6 @@ export default function FiltersSources({
     graphql`
       fragment FiltersSources on Query {
         transactionsStatisticPerSource {
-          id @required(action: THROW)
           income @required(action: THROW)
           outcome @required(action: THROW)
           source @required(action: THROW)
@@ -97,11 +96,11 @@ export default function FiltersSources({
               <SourceImage source={source} />
               <span>{source}</span>
               {income !== 0 && (
-                <AmountValue amount={income} currency={Currency.GBP} round />
+                <AmountValue currency={Currency.GBP} quantity={income} round />
               )}
               {income !== 0 && outcome !== 0 && " / "}
               {outcome !== 0 && (
-                <AmountValue amount={outcome} currency={Currency.GBP} round />
+                <AmountValue currency={Currency.GBP} quantity={outcome} round />
               )}
             </div>
           </Checkbox>

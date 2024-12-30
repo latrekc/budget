@@ -21,16 +21,16 @@ function getTextSize(size: Size) {
 
 export function AmountValueFormat({
   abs = false,
-  amount,
   currency,
+  quantity,
   round = false,
 }: {
   abs?: boolean;
-  amount: number;
   currency: Currency;
+  quantity: number;
   round?: boolean;
 }) {
-  let displayAmount = amount;
+  let displayAmount = quantity / 100;
 
   if (round) {
     displayAmount = Math.round(displayAmount);
@@ -49,24 +49,24 @@ export function AmountValueFormat({
 
 export default function AmountValue({
   abs,
-  amount,
   currency,
+  quantity,
   round,
   size = Size.Normal,
 }: {
   abs?: boolean;
-  amount: number;
   currency: Currency;
+  quantity: number;
   round?: boolean;
   size?: Size;
 }) {
   return (
     <span
       className={`${
-        amount > 0 ? "text-green-900" : "text-red-900"
+        quantity > 0 ? "text-green-900" : "text-red-900"
       } text-mono whitespace-nowrap ${getTextSize(size)}`}
     >
-      {AmountValueFormat({ abs, amount, currency, round })}
+      {AmountValueFormat({ abs, currency, quantity, round })}
     </span>
   );
 }

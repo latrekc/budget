@@ -8,15 +8,17 @@ export default function TransactionAmountCell({
 }: {
   transaction: TransactionAmountCell$key;
 }) {
-  const { amount, currency } = useFragment(
+  const { currency, quantity } = useFragment(
     graphql`
       fragment TransactionAmountCell on Transaction {
         currency @required(action: THROW)
-        amount @required(action: THROW)
+        quantity @required(action: THROW)
       }
     `,
     transaction$key,
   );
 
-  return <AmountValue amount={amount} currency={currency} size={Size.Big} />;
+  return (
+    <AmountValue currency={currency} quantity={quantity} size={Size.Big} />
+  );
 }

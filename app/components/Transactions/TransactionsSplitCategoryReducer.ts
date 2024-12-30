@@ -1,8 +1,8 @@
 type CategoryID = string;
 
 type SplitCategory = {
-  amounts: number[];
   id: CategoryID;
+  quantities: number[];
 };
 
 export type SplitCategoryState = {
@@ -20,12 +20,12 @@ export enum SplitCategoryReducerActionType {
 
 export type SplitCategoryReducerAction =
   | {
-      payload: { amounts: number[]; id: CategoryID };
-      type: SplitCategoryReducerActionType.AddCategory;
-    }
-  | {
       payload: { id: CategoryID };
       type: SplitCategoryReducerActionType.RemoveCategory;
+    }
+  | {
+      payload: { id: CategoryID; quantities: number[] };
+      type: SplitCategoryReducerActionType.AddCategory;
     }
   | {
       payload: SplitCategory;
@@ -43,19 +43,17 @@ export default function SplitCategoryReducer(
   function countRest(newCategories: Array<SplitCategory>) {
     const newCategoriesTotal = newCategories.reduce((sum, category) => {
       return (
-        (sum * 100 +
-          Math.abs(
-            category.amounts.reduce(
-              (sum, amount) => sum + (isNaN(amount) ? 0 : amount),
-              0,
-            ),
-          ) *
-            100) /
-        100
+        sum +
+        Math.abs(
+          category.quantities.reduce(
+            (sum, quantity) => sum + (isNaN(quantity) ? 0 : quantity),
+            0,
+          ),
+        )
       );
     }, 0);
 
-    return (state.total * 100 - newCategoriesTotal * 100) / 100;
+    return state.total - newCategoriesTotal;
   }
 
   switch (action.type) {
@@ -67,8 +65,8 @@ export default function SplitCategoryReducer(
       const newCategories = [
         ...state.categories,
         {
-          amounts: action.payload.amounts,
           id: action.payload.id,
+          quantities: action.payload.quantities,
         },
       ];
 
@@ -102,8 +100,8 @@ export default function SplitCategoryReducer(
             return category;
           }
           return {
-            amounts: action.payload.amounts,
             id: category.id,
+            quantities: action.payload.quantities,
           };
         },
       );
@@ -113,13 +111,13 @@ export default function SplitCategoryReducer(
       if (rest < 0) {
         return SplitCategoryReducer(state, {
           payload: {
-            amounts: [
-              (action.payload.amounts.reduce((sum, amount) => sum + amount, 0) *
-                100 +
-                rest * 100) /
-                100,
-            ],
             id: action.payload.id,
+            quantities: [
+              action.payload.quantities.reduce(
+                (sum, quantity) => sum + quantity,
+                0,
+              ) + rest,
+            ],
           },
           type: SplitCategoryReducerActionType.UpdateCategory,
         });

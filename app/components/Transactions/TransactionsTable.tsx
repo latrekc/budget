@@ -43,7 +43,7 @@ export const PER_PAGE = 20;
 export type TransactionsSelection =
   | "all"
   | Set<{
-      amount: number;
+      quantity: number;
       transaction: string;
     }>;
 
@@ -80,7 +80,7 @@ export default function TransactionsTable({
             node {
               id
               completed
-              amount
+              quantity
               ...TransactionsTable_RenderCell
             }
           }
@@ -125,10 +125,10 @@ export default function TransactionsTable({
 
   const transactionAmounts: Map<string, number> = useMemo(
     () =>
-      (transactions?.edges || []).reduce((amounts, edge) => {
-        amounts.set(edge?.node.id, edge?.node.amount);
+      (transactions?.edges || []).reduce((quantities, edge) => {
+        quantities.set(edge?.node.id, edge?.node.quantity);
 
-        return amounts;
+        return quantities;
       }, new Map()),
     [transactions],
   );
@@ -143,7 +143,7 @@ export default function TransactionsTable({
         setSelectedTransactions(
           new Set(
             [...selected.values()].map((select) => ({
-              amount: transactionAmounts.get(select.toString()) ?? 0,
+              quantity: transactionAmounts.get(select.toString()) ?? 0,
               transaction: select.toString(),
             })),
           ),

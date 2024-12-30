@@ -44,9 +44,9 @@ export default function TransactionsTotal({
       selectedTransactions === "all" ||
       selectedTransactions.size === transactionsTotal?.count
         ? 0
-        : [...selectedTransactions].reduce((sum, { amount }) => {
-            if (amount > 0) {
-              sum += amount;
+        : [...selectedTransactions].reduce((sum, { quantity }) => {
+            if (quantity > 0) {
+              sum += quantity;
             }
 
             return sum;
@@ -59,9 +59,9 @@ export default function TransactionsTotal({
       selectedTransactions === "all" ||
       selectedTransactions.size === transactionsTotal?.count
         ? 0
-        : [...selectedTransactions].reduce((sum, { amount }) => {
-            if (amount < 0) {
-              sum += amount;
+        : [...selectedTransactions].reduce((sum, { quantity }) => {
+            if (quantity < 0) {
+              sum += quantity;
             }
 
             return sum;
@@ -86,16 +86,16 @@ export default function TransactionsTotal({
             {selectedIncome > 0 ? (
               <>
                 <AmountValue
-                  amount={selectedIncome}
                   currency={Currency.GBP}
+                  quantity={selectedIncome}
                   size={Size.Small}
                 />
                 {" of "}
               </>
             ) : null}
             <AmountValue
-              amount={transactionsTotal?.income ?? 0}
               currency={Currency.GBP}
+              quantity={transactionsTotal?.income ?? 0}
               size={Size.Small}
             />
           </>
@@ -109,16 +109,16 @@ export default function TransactionsTotal({
             {selectedOutcome < 0 ? (
               <>
                 <AmountValue
-                  amount={selectedOutcome}
                   currency={Currency.GBP}
+                  quantity={selectedOutcome}
                   size={Size.Small}
                 />
                 {" of "}
               </>
             ) : null}
             <AmountValue
-              amount={transactionsTotal?.outcome ?? 0}
               currency={Currency.GBP}
+              quantity={transactionsTotal?.outcome ?? 0}
               size={Size.Small}
             />
           </>

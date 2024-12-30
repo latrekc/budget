@@ -10,22 +10,22 @@ FROM
   (
     SELECT
       t.source AS source,
-      SUM(amount * 100) / 100 AS sum
+      SUM(quantity) AS sum
     FROM
       transactions t
     WHERE
-      amount > 0
+      quantity > 0
     GROUP BY
       source
   ) AS income
   FULL OUTER JOIN (
     SELECT
       t.source AS source,
-      SUM(amount * 100) / 100 AS sum
+      SUM(quantity) AS sum
     FROM
       transactions t
     WHERE
-      amount < 0
+      quantity < 0
     GROUP BY
       source
   ) AS outcome ON income.source = outcome.source

@@ -17,14 +17,14 @@ export default function TransactionCategoriesCell({
     graphql`
       fragment TransactionCategoriesCell on Transaction {
         completed @required(action: THROW)
-        amount @required(action: THROW)
+        quantity @required(action: THROW)
         currency @required(action: THROW)
         categories @required(action: THROW) {
           category {
             id
           }
           ...TransactionCategoriesCell_Category
-          amount @required(action: THROW)
+          quantity @required(action: THROW)
         }
       }
     `,
@@ -36,8 +36,10 @@ export default function TransactionCategoriesCell({
       {categories?.map((record) => (
         <div className="p-1" key={record?.category?.id}>
           <Category
-            amount={categories.length > 1 || !completed ? record.amount : null}
             currency={currency}
+            quantity={
+              categories.length > 1 || !completed ? record.quantity : null
+            }
             record={record}
           />
         </div>
@@ -46,12 +48,12 @@ export default function TransactionCategoriesCell({
   );
 }
 function Category({
-  amount,
   currency,
+  quantity,
   record: record$key,
 }: {
-  amount: null | number;
   currency: Currency;
+  quantity: null | number;
   record: TransactionCategoriesCell_Category$key;
 }) {
   const record = useFragment(
@@ -71,11 +73,11 @@ function Category({
 
   return (
     <CategoryChip
-      amount={amount}
       category={record.category}
       currency={currency}
       isDisabledDelete={isDisabledDelete}
       onDelete={onDelete}
+      quantity={quantity}
     />
   );
 }

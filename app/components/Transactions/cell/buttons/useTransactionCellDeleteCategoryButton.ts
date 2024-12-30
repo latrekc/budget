@@ -35,7 +35,7 @@ export default function useTransactionCellDeleteCategoryButton(
               id
               completed
               categories {
-                amount
+                quantity
                 category {
                   id
                 }
@@ -54,8 +54,8 @@ export default function useTransactionCellDeleteCategoryButton(
       variables: {
         transactions: [
           {
-            amount: 0,
             category: record.category.id,
+            quantity: 0,
             transaction: record.transaction.id,
           },
         ],

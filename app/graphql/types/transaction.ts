@@ -25,7 +25,6 @@ builder.enumType(SortBy, {
 
 builder.prismaObject("Transaction", {
   fields: (t) => ({
-    amount: t.exposeFloat("amount"),
     categories: t.relation("categories"),
     completed: t.exposeBoolean("completed"),
     currency: t.field({
@@ -39,6 +38,7 @@ builder.prismaObject("Transaction", {
     }),
     description: t.exposeString("description"),
     id: t.exposeID("id"),
+    quantity: t.exposeInt("quantity"),
     source: t.field({
       resolve: (transaction) => enumFromStringValue(Source, transaction.source),
       type: Source,
@@ -48,20 +48,20 @@ builder.prismaObject("Transaction", {
 
 builder.prismaObject("TransactionsOnCategories", {
   fields: (t) => ({
-    amount: t.exposeFloat("amount"),
     category: t.relation("category"),
+    quantity: t.exposeInt("quantity"),
     transaction: t.relation("transaction"),
   }),
 });
 
 export type TransactionFilter = {
-  amount?: null | string;
   amountRelation?: AmountRelation | null;
   categories?: null | string[];
   ignoreCategories?: null | string[];
   months?: null | string[];
   onlyIncome?: boolean | null;
   onlyUncomplited?: boolean | null;
+  quantity?: null | string;
   search?: null | string;
   sortBy?: SortBy | null;
   sources?: null | string[];
@@ -74,9 +74,6 @@ const filterTransactionsInput = builder
   .inputRef<TransactionFilter>("FilterTransactionsInput")
   .implement({
     fields: (t) => ({
-      amount: t.string({
-        required: false,
-      }),
       amountRelation: t.field({
         required: false,
         type: AmountRelation,
@@ -96,6 +93,9 @@ const filterTransactionsInput = builder
       }),
       onlyUncomplited: t.boolean({
         defaultValue: false,
+        required: false,
+      }),
+      quantity: t.string({
         required: false,
       }),
       search: t.string({
@@ -124,7 +124,7 @@ async function filtersToWhere(filters: TransactionFilter | null | undefined) {
     }
 
     if (filters.onlyIncome) {
-      where.amount = {
+      where.quantity = {
         gt: 0,
       };
     }
@@ -135,35 +135,35 @@ async function filtersToWhere(filters: TransactionFilter | null | undefined) {
       };
     }
 
-    if ((filters.amount ?? "").trim().length > 0) {
-      const amount = Math.abs(parseFloat((filters.amount ?? "").trim()));
+    if ((filters.quantity ?? "").trim().length > 0) {
+      const quantity = Math.abs(parseInt((filters.quantity ?? "").trim()));
       switch (filters.amountRelation) {
         case AmountRelation.GREATER:
           OR.push([
             {
-              amount: {
-                gt: amount,
+              quantity: {
+                gt: quantity,
               },
             },
             {
-              amount: {
-                lt: -amount,
+              quantity: {
+                lt: -quantity,
               },
             },
           ]);
           break;
 
         case AmountRelation.LESS:
-          where.amount = {
-            gt: -amount,
-            lt: amount,
+          where.quantity = {
+            gt: -quantity,
+            lt: quantity,
           };
           break;
 
         case AmountRelation.EQUAL:
         default:
-          where.amount = {
-            in: [amount, -amount],
+          where.quantity = {
+            in: [quantity, -quantity],
           };
           break;
       }
@@ -309,8 +309,8 @@ builder.queryField("transactions", (t) =>
         ...query,
         orderBy:
           args.filters?.sortBy === SortBy.Amount
-            ? [{ amount: "asc" }, { date: "desc" }]
-            : [{ date: "desc" }, { amount: "asc" }],
+            ? [{ quantity: "asc" }, { date: "desc" }]
+            : [{ date: "desc" }, { quantity: "asc" }],
         where: await filtersToWhere(args.filters),
       });
     },
@@ -323,10 +323,10 @@ const transactionTotal = builder.simpleObject("TransactionTotal", {
     count: t.int({
       nullable: false,
     }),
-    income: t.float({
+    income: t.int({
       nullable: true,
     }),
-    outcome: t.float({
+    outcome: t.int({
       nullable: true,
     }),
   }),
@@ -347,19 +347,19 @@ builder.queryField("transactionsTotal", (t) =>
       });
 
       const gt = {
-        amount: {
+        quantity: {
           gt: 0,
         },
       };
       const lt = {
-        amount: {
+        quantity: {
           lt: 0,
         },
       };
 
       const income = await prisma.transaction.aggregate({
         _sum: {
-          amount: true,
+          quantity: true,
         },
         where:
           filters != undefined
@@ -370,7 +370,7 @@ builder.queryField("transactionsTotal", (t) =>
       });
       const outcome = await prisma.transaction.aggregate({
         _sum: {
-          amount: true,
+          quantity: true,
         },
         where:
           filters != undefined
@@ -382,8 +382,8 @@ builder.queryField("transactionsTotal", (t) =>
 
       return {
         count,
-        income: income._sum.amount,
-        outcome: outcome._sum.amount,
+        income: income._sum.quantity,
+        outcome: outcome._sum.quantity,
       };
     },
     type: transactionTotal,
@@ -392,14 +392,14 @@ builder.queryField("transactionsTotal", (t) =>
 
 const updateCategoriesForTransactionsInput = builder
   .inputRef<{
-    amount: number;
     category: number | string;
+    quantity: number;
     transaction: number | string;
   }>("UpdateCategoriesForTransactionsInput")
   .implement({
     fields: (t) => ({
-      amount: t.float({ required: true }),
       category: t.id({ required: true }),
+      quantity: t.int({ required: true }),
       transaction: t.id({
         required: true,
       }),
@@ -499,11 +499,11 @@ builder.mutationFields((t) => ({
 
       const categoryId = parseId(args.category)!;
 
-      const inserts = transactions.map(({ amount, id: transactionId }) =>
+      const inserts = transactions.map(({ id: transactionId, quantity }) =>
         prisma.transactionsOnCategories.create({
           data: {
-            amount,
             categoryId,
+            quantity,
             transactionId,
           },
         }),
@@ -547,22 +547,21 @@ builder.mutationFields((t) => ({
       });
 
       const transactionAmounts = args.transactions.reduce(
-        (amounts, { amount, transaction }) => {
-          amounts.set(
+        (quantities, { quantity, transaction }) => {
+          quantities.set(
             transaction,
-            ((amounts.get(transaction) ?? 0) * 100 + Math.abs(amount) * 100) /
-              100,
+            (quantities.get(transaction) ?? 0) + Math.abs(quantity),
           );
 
-          return amounts;
+          return quantities;
         },
         new Map<number | string, number>(),
       );
 
-      const updates = transactions.map(({ amount, id }) =>
+      const updates = transactions.map(({ id, quantity }) =>
         prisma.transaction.update({
           data: {
-            completed: Math.abs(amount) <= transactionAmounts.get(id)!,
+            completed: Math.abs(quantity) <= transactionAmounts.get(id)!,
           },
           where: {
             id: id,
@@ -571,11 +570,11 @@ builder.mutationFields((t) => ({
       );
 
       const inserts = args.transactions.map(
-        ({ amount, category, transaction }) =>
+        ({ category, quantity, transaction }) =>
           prisma.transactionsOnCategories.create({
             data: {
-              amount,
               categoryId: parseId(category)!,
+              quantity,
               transactionId: parseIdString(transaction)!,
             },
           }),

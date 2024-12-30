@@ -15,7 +15,7 @@ export default function useTransactionSetCategory({
   onCompleted: () => void;
   transactions:
     | "all"
-    | { amount: number; category?: string; transaction: string }[];
+    | { category?: string; quantity: number; transaction: string }[];
 }) {
   const { publish } = usePubSub();
   const [error, setError] = useState<null | string>(null);
@@ -31,7 +31,7 @@ export default function useTransactionSetCategory({
               id
               completed
               categories {
-                amount
+                quantity
                 category {
                   id
                 }

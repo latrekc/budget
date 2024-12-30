@@ -26,16 +26,21 @@ export default function AmountFilter({
   dispatch: Dispatch<FiltersReducerAction>;
   filters: FiltersState;
 }) {
-  const [amountValue, setAmountValue] = useState<string>(filters.amount ?? "");
-  const debouncedAmount = useDebounce<string>(amountValue, 500);
+  const [quantityValue, setQuantityValue] = useState<string>(
+    filters.quantity ?? "",
+  );
+  const debouncedAmount = useDebounce<string>(quantityValue, 500);
 
-  const onSearch = useCallback((amount: string) => setAmountValue(amount), []);
+  const onSearch = useCallback(
+    (quantity: string) => setQuantityValue(quantity),
+    [],
+  );
 
   useEffect(() => {
     dispatch({
       payload:
         debouncedAmount.trim().length > 0 ? debouncedAmount.trim() : null,
-      type: FiltersReducerActionType.SetAmount,
+      type: FiltersReducerActionType.SetQuantity,
     });
   }, [debouncedAmount, dispatch]);
 
@@ -99,7 +104,7 @@ export default function AmountFilter({
         </Dropdown>
       }
       type="number"
-      value={amountValue}
+      value={quantityValue}
     />
   );
 }

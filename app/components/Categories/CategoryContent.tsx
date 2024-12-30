@@ -109,13 +109,17 @@ export default function CategoryContent({
       <div className="flex gap-2">
         <CategoryChip category={category} onlyLeaf />
         {category.income !== 0 && (
-          <AmountValue amount={category.income} currency={Currency.GBP} round />
+          <AmountValue
+            currency={Currency.GBP}
+            quantity={category.income}
+            round
+          />
         )}
         {category.income !== 0 && category.outcome !== 0 && " / "}
         {category.outcome !== 0 && (
           <AmountValue
-            amount={category.outcome}
             currency={Currency.GBP}
+            quantity={category.outcome}
             round
           />
         )}

@@ -21,11 +21,11 @@ export default function TransactionCellAddCategoryButton({
 }) {
   const [isOpen, setIsOpen] = useState(false);
 
-  const { amount, id } = useFragment(
+  const { id, quantity } = useFragment(
     graphql`
       fragment TransactionCellAddCategoryButton on Transaction {
         id @required(action: THROW)
-        amount @required(action: THROW)
+        quantity @required(action: THROW)
       }
     `,
     transaction$key,
@@ -66,7 +66,7 @@ export default function TransactionCellAddCategoryButton({
             <TransactionSetCategoryButton
               categories={categories}
               onCompleted={() => setIsOpen(false)}
-              transactions={[{ amount, transaction: id }]}
+              transactions={[{ quantity, transaction: id }]}
             />
           </div>
         )}

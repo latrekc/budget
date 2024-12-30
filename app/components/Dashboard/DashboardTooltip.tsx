@@ -30,18 +30,18 @@ export function DashboardTooltip({
       ...data
         .reduce<
           Map<string, { income: number; month: string; outcome: number }>
-        >((all, [month, amount]) => {
+        >((all, [month, quantity]) => {
           if (!all.has(month)) {
             all.set(month, { income: 0, month, outcome: 0 });
           }
           const row = all.get(month)!;
 
-          if (amount != null) {
-            if (amount > 0) {
-              row.income = amount;
+          if (quantity != null) {
+            if (quantity > 0) {
+              row.income = quantity;
             }
-            if (amount < 0) {
-              row.outcome = amount;
+            if (quantity < 0) {
+              row.outcome = quantity;
             }
           }
 
@@ -53,7 +53,7 @@ export function DashboardTooltip({
   );
 
   const total = useMemo(
-    () => data.reduce<number>((all, [_, amount]) => all + (amount ?? 0), 0),
+    () => data.reduce<number>((all, [_, quantity]) => all + (quantity ?? 0), 0),
     [data],
   );
 
@@ -61,9 +61,9 @@ export function DashboardTooltip({
     <>
       <div className="mb-4 flex shrink flex-row flex-wrap">
         <CategoryChip2
-          amount={total}
           categories={[category, parentCategory, grandParentCategory]}
           currency="GBP"
+          quantity={total}
         />
       </div>
       <ScrollShadow className="max-h-[400px]">
@@ -85,8 +85,8 @@ export function DashboardTooltip({
                 <TableCell className="text-right">
                   {income > 0 ? (
                     <AmountValue
-                      amount={income}
                       currency="GBP"
+                      quantity={income}
                       size={Size.Small}
                     />
                   ) : (
@@ -96,8 +96,8 @@ export function DashboardTooltip({
                 <TableCell className="text-right">
                   {outcome < 0 ? (
                     <AmountValue
-                      amount={outcome}
                       currency="GBP"
+                      quantity={outcome}
                       size={Size.Small}
                     />
                   ) : (
@@ -106,7 +106,7 @@ export function DashboardTooltip({
                 </TableCell>
                 <TableCell className="text-right">
                   {income + outcome != 0 ? (
-                    <AmountValue amount={income + outcome} currency="GBP" />
+                    <AmountValue currency="GBP" quantity={income + outcome} />
                   ) : (
                     "—"
                   )}

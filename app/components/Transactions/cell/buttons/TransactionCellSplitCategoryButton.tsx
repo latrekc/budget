@@ -56,21 +56,21 @@ export default function TransactionCellSplitCategoryButton({
   }, [refetch, subscribe]);
 
   const {
-    amount,
     categories,
     currency,
     id: transaction,
+    quantity,
   } = useFragment(
     graphql`
       fragment TransactionCellSplitCategoryButton on Transaction {
         id @required(action: THROW)
-        amount @required(action: THROW)
+        quantity @required(action: THROW)
         currency @required(action: THROW)
         categories @required(action: THROW) {
           category @required(action: THROW) {
             id @required(action: THROW)
           }
-          amount @required(action: THROW)
+          quantity @required(action: THROW)
         }
       }
     `,
@@ -79,25 +79,23 @@ export default function TransactionCellSplitCategoryButton({
 
   const rest = useMemo(() => {
     return (
-      (Math.abs(amount) * 100 -
-        categories.reduce((sum, category) => {
-          return (sum * 100 + Math.abs(category.amount) * 100) / 100;
-        }, 0) *
-          100) /
-      100
+      Math.abs(quantity) -
+      categories.reduce((sum, category) => {
+        return sum + Math.abs(category.quantity);
+      }, 0)
     );
-  }, [amount, categories]);
+  }, [quantity, categories]);
 
   const initialState = useMemo(
     () => ({
-      categories: categories.map(({ amount, category: { id } }) => ({
-        amounts: [amount],
+      categories: categories.map(({ category: { id }, quantity }) => ({
         id,
+        quantities: [quantity],
       })),
       rest,
-      total: Math.abs(amount),
+      total: Math.abs(quantity),
     }),
-    [amount, categories, rest],
+    [quantity, categories, rest],
   );
 
   const [split, dispatch] = useReducer(SplitCategoryReducer, initialState);
@@ -105,7 +103,7 @@ export default function TransactionCellSplitCategoryButton({
   const onSelect = useCallback(
     (key: React.Key | null) =>
       dispatch({
-        payload: { amounts: [split.rest], id: (key ?? "").toString() },
+        payload: { id: (key ?? "").toString(), quantities: [split.rest] },
         type: SplitCategoryReducerActionType.AddCategory,
       }),
     [split.rest],
@@ -113,9 +111,9 @@ export default function TransactionCellSplitCategoryButton({
   const [isOpen, setIsOpen] = useState(false);
   const transactions = useMemo(
     () =>
-      split.categories.map(({ amounts, id }) => ({
-        amount: amounts.reduce((sum, amount) => sum + amount, 0),
+      split.categories.map(({ id, quantities }) => ({
         category: id,
+        quantity: quantities.reduce((sum, quantity) => sum + quantity, 0),
         transaction,
       })),
     [split.categories, transaction],
@@ -155,7 +153,7 @@ export default function TransactionCellSplitCategoryButton({
       <PopoverContent className="w-[550px]">
         {() => (
           <div className="w-full p-4">
-            {split.categories.map(({ amounts, id }) => {
+            {split.categories.map(({ id, quantities }) => {
               const category = allCategories?.find(
                 (record) => record.id === id,
               );
@@ -181,7 +179,7 @@ export default function TransactionCellSplitCategoryButton({
                       />
                     </div>
                   </div>
-                  {amounts.map((amount, index) => (
+                  {quantities.map((quantity, index) => (
                     <>
                       {index > 0 ? (
                         <div className="self-center">
@@ -196,38 +194,39 @@ export default function TransactionCellSplitCategoryButton({
                         onChange={(e) =>
                           dispatch({
                             payload: {
-                              amounts: [...amounts.keys()]
+                              id,
+                              quantities: [...quantities.keys()]
                                 .filter(
                                   (origIndex) =>
                                     origIndex !== index ||
                                     e.currentTarget.value.length > 0 ||
-                                    amounts.length === 1,
+                                    quantities.length === 1,
                                 )
                                 .map((origIndex) =>
                                   origIndex === index
                                     ? parseFloat(e.currentTarget.value)
-                                    : amounts[origIndex],
+                                    : quantities[origIndex],
                                 ),
-                              id,
                             },
                             type: SplitCategoryReducerActionType.UpdateCategory,
                           })
                         }
                         type="number"
-                        value={Math.abs(amount)}
+                        value={Math.abs(quantity)}
                       />
                     </>
                   ))}
                   {split.rest !== 0 &&
-                  amounts.filter((amount) => isNaN(amount)).length < 1 ? (
+                  quantities.filter((quantity) => isNaN(quantity)).length <
+                    1 ? (
                     <Button
                       className="p-0"
                       isIconOnly
                       onClick={() => {
                         dispatch({
                           payload: {
-                            amounts: amounts.concat(NaN),
                             id,
+                            quantities: quantities.concat(NaN),
                           },
                           type: SplitCategoryReducerActionType.UpdateCategory,
                         });
@@ -252,7 +251,7 @@ export default function TransactionCellSplitCategoryButton({
                 onSelect={onSelect}
               />
               {split.rest !== 0 ? (
-                <AmountValue abs amount={split.rest} currency={currency} />
+                <AmountValue abs currency={currency} quantity={split.rest} />
               ) : null}
             </div>
             <div className="text-end">

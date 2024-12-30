@@ -197,8 +197,8 @@ export default function FiltersMonths({
                       </span>
                     </Badge>
                     <AmountValue
-                      amount={(year.income * 100 + year.outcome * 100) / 100}
                       currency="GBP"
+                      quantity={year.income + year.outcome}
                       round
                       size={Size.Big}
                     />
@@ -393,8 +393,8 @@ function YearComponent({
             <div className="flex justify-between text-xl">
               {monthNames.get(month)}
               <AmountValue
-                amount={(income * 100 + outcome * 100) / 100}
                 currency="GBP"
+                quantity={income + outcome}
                 round
                 size={Size.Big}
               />
@@ -426,12 +426,12 @@ function YearComponent({
 function Balance({ income, outcome }: { income: number; outcome: number }) {
   return (
     <>
-      <AmountValue amount={income} currency="GBP" round size={Size.Small} />
+      <AmountValue currency="GBP" quantity={income} round size={Size.Small} />
       {" - "}
       <AmountValue
         abs
-        amount={outcome}
         currency="GBP"
+        quantity={outcome}
         round
         size={Size.Small}
       />

@@ -1,13 +1,13 @@
 import { AmountRelation, SortBy } from "@/lib/types";
 
 export type FiltersState = {
-  amount: null | string;
   amountRelation: AmountRelation | null;
   categories: ReadonlyArray<string> | null;
   ignoreCategories: ReadonlyArray<string> | null;
   months: ReadonlyArray<string> | null;
   onlyIncome: boolean;
   onlyUncomplited: boolean;
+  quantity: null | string;
   search: null | string;
   sortBy: SortBy | null;
   sources: ReadonlyArray<string> | null;
@@ -18,7 +18,7 @@ export enum FiltersReducerActionType {
   RemoveCategory,
   ToggleOnlyIncome,
   ToggleOnlyUncomplited,
-  SetAmount,
+  SetQuantity,
   SetSources,
   SetMonths,
   SetSearch,
@@ -29,10 +29,6 @@ export enum FiltersReducerActionType {
 }
 
 export type FiltersReducerAction =
-  | {
-      payload: FiltersState["amount"];
-      type: FiltersReducerActionType.SetAmount;
-    }
   | {
       payload: FiltersState["amountRelation"];
       type: FiltersReducerActionType.SetAmountRelation;
@@ -48,6 +44,10 @@ export type FiltersReducerAction =
   | {
       payload: FiltersState["months"];
       type: FiltersReducerActionType.SetMonths;
+    }
+  | {
+      payload: FiltersState["quantity"];
+      type: FiltersReducerActionType.SetQuantity;
     }
   | {
       payload: FiltersState["search"];
@@ -74,13 +74,13 @@ export type FiltersReducerAction =
   | { type: FiltersReducerActionType.ToggleSortBy };
 
 export const initialState: FiltersState = {
-  amount: null,
   amountRelation: null,
   categories: null,
   ignoreCategories: null,
   months: null,
   onlyIncome: false,
   onlyUncomplited: false,
+  quantity: null,
   search: null,
   sortBy: null,
   sources: null,
@@ -102,10 +102,10 @@ export default function FiltersReducer(
         onlyUncomplited: !state.onlyUncomplited,
       };
 
-    case FiltersReducerActionType.SetAmount:
+    case FiltersReducerActionType.SetQuantity:
       return {
         ...state,
-        amount: action.payload,
+        quantity: action.payload,
       };
     case FiltersReducerActionType.SetAmountRelation:
       return {

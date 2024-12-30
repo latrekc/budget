@@ -83,12 +83,12 @@ export const FiltersProvider: FC<FiltersProviderProps> = function (props) {
       state.search = decodeURIComponent(params.get("search")!);
     }
 
-    if (params.has("amount")) {
-      state.amount = decodeURIComponent(params.get("amount")!);
+    if (params.has("quantity")) {
+      state.quantity = decodeURIComponent(params.get("quantity")!);
     }
 
     if (params.has("sortBy")) {
-      state.amount = enumFromStringValue<SortBy>(
+      state.sortBy = enumFromStringValue<SortBy>(
         SortBy,
         decodeURIComponent(params.get("sortBy")!),
       );
@@ -173,10 +173,10 @@ export const FiltersProvider: FC<FiltersProviderProps> = function (props) {
     } else {
       params.delete("search");
     }
-    if (filtersState.amount != null) {
-      params.set("amount", encodeURIComponent(filtersState.amount));
+    if (filtersState.quantity != null) {
+      params.set("quantity", encodeURIComponent(filtersState.quantity));
     } else {
-      params.delete("amount");
+      params.delete("quantity");
     }
     if (filtersState.amountRelation != null) {
       params.set(

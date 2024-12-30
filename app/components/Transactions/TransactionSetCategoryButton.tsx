@@ -13,7 +13,7 @@ export default function TransactionSetCategoryButton({
   categories: TransactionSetCategoryButton_Categories$key;
   filters?: FiltersState;
   onCompleted: () => void;
-  transactions: "all" | { amount: number; transaction: string }[];
+  transactions: "all" | { quantity: number; transaction: string }[];
 }) {
   const { error, isMutationInFlight, onSave } = useTransactionSetCategory({
     filters,

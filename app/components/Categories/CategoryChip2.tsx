@@ -8,21 +8,21 @@ import { TiDelete } from "react-icons/ti";
 import { Currency } from "../Transactions/cell/__generated__/TransactionAmountCell.graphql";
 
 export default function CategoryChip2({
-  amount,
   categories,
   currency,
   ignore = false,
   isDisabledDelete = false,
   onDelete,
   onlyLeaf = false,
+  quantity,
 }: {
-  amount?: null | number;
   categories: ({ color: string; name: string } | null | undefined)[];
   currency?: Currency;
   ignore?: boolean;
   isDisabledDelete?: boolean;
   onDelete?: () => void;
   onlyLeaf?: boolean;
+  quantity?: null | number;
 }) {
   const button =
     onDelete != null ? (
@@ -38,12 +38,12 @@ export default function CategoryChip2({
   if (parentCategory == null || onlyLeaf) {
     return (
       <Chip
-        amount={amount}
         button={button}
         color={category.color}
         currency={currency}
         ignore={ignore}
         name={category.name}
+        quantity={quantity}
       />
     );
   } else if (grandParentCategory == null) {
@@ -54,11 +54,11 @@ export default function CategoryChip2({
         name={parentCategory.name}
       >
         <Chip
-          amount={amount}
           button={button}
           color={category.color}
           currency={currency}
           name={category.name}
+          quantity={quantity}
         />
       </Chip>
     );
@@ -71,11 +71,11 @@ export default function CategoryChip2({
       >
         <Chip color={parentCategory.color} name={parentCategory.name}>
           <Chip
-            amount={amount}
             button={button}
             color={category.color}
             currency={currency}
             name={category.name}
+            quantity={quantity}
           />
         </Chip>
       </Chip>
@@ -84,21 +84,21 @@ export default function CategoryChip2({
 }
 
 function Chip({
-  amount,
   button,
   children,
   color,
   currency,
   ignore,
   name,
+  quantity,
 }: {
-  amount?: null | number;
   button?: React.ReactNode;
   children?: React.ReactNode;
   color?: null | string;
   currency?: Currency;
   ignore?: boolean;
   name: null | string;
+  quantity?: null | number;
 }) {
   const luminance = chroma(color!).luminance();
 
@@ -118,9 +118,13 @@ function Chip({
         </span>
       )}
       <span className="whitespace-nowrap px-2 text-small">{name}</span>
-      {amount != null && currency != null ? (
+      {quantity != null && currency != null ? (
         <div className="rounded-full bg-white px-2">
-          <AmountValue amount={amount} currency={currency} size={Size.Small} />
+          <AmountValue
+            currency={currency}
+            quantity={quantity}
+            size={Size.Small}
+          />
         </div>
       ) : null}
       {button}

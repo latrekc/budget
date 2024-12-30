@@ -16,11 +16,11 @@ export enum Currency {
 }
 
 export type Transaction = {
-  amount: number;
   currency: Currency;
   date: Date;
   description: string;
   id: string;
+  quantity: number;
   source: Source;
 };
 

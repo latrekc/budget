@@ -173,8 +173,8 @@ export default function DashboardByTimePeriods({
           formatter(params) {
             return `${category.name}: ${AmountValueFormat({
               abs: true,
-              amount: params.value as number,
               currency: "GBP",
+              quantity: params.value as number,
               round: true,
             })}`;
           },
@@ -323,7 +323,7 @@ export default function DashboardByTimePeriods({
               : category.color,
         data: monthsStatistic.map(({ month }) => {
           const value = categoryA.data.find((i) => i[0] === month);
-          return [month, value != undefined ? value[1] : null];
+          return [month, value != undefined ? (value[1] ?? 0) / 100 : null];
         }),
         emphasis: {
           focus: "series",
@@ -436,7 +436,7 @@ export default function DashboardByTimePeriods({
           color: "#7bc043",
           data: monthsStatistic
             .filter(({ income }) => income > 0)
-            .map(({ income, month }) => [month, Math.round(income)]),
+            .map(({ income, month }) => [month, Math.round(income) / 100]),
           lineStyle: {
             opacity: 0,
           },
@@ -455,7 +455,7 @@ export default function DashboardByTimePeriods({
           color: "#ee4035",
           data: monthsStatistic
             .filter(({ outcome }) => outcome < 0)
-            .map(({ month, outcome }) => [month, Math.round(outcome)]),
+            .map(({ month, outcome }) => [month, Math.round(outcome) / 100]),
           lineStyle: {
             opacity: 0,
           },
@@ -471,7 +471,7 @@ export default function DashboardByTimePeriods({
             .filter(({ income, outcome }) => income + outcome != 0)
             .map(({ income, month, outcome }) => [
               month,
-              Math.round(income + outcome),
+              Math.round(income + outcome) / 100,
             ]),
           name: "Saldo",
           step: "middle",
