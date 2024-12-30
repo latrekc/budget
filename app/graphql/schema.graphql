@@ -6,9 +6,9 @@ enum AmountRelation {
 
 type Category {
   id: ID
-  income: Float!
+  income: Int!
   name: String
-  outcome: Float!
+  outcome: Int!
   parentCategory: Category
   subCategories: [Category!]
 }
@@ -50,6 +50,7 @@ input FilterTransactionsInput {
   onlyIncome: Boolean = false
   onlyUncomplited: Boolean = false
   search: String
+  sortBy: SortBy
   sources: [String!]
 }
 
@@ -148,6 +149,11 @@ type QueryTransactionsConnectionEdge {
   node: Transaction!
 }
 
+enum SortBy {
+  Amount
+  Date
+}
+
 enum Source {
   HSBC
   Monzo
@@ -161,28 +167,28 @@ enum Source {
 type Statistic {
   category: Category
   id: ID
-  income: Float
+  income: Int
   monthId: String
-  outcome: Float
+  outcome: Int
 }
 
 type StatisticPerMonths {
   id: ID
-  income: Float
+  income: Int
   month: Int
-  outcome: Float
+  outcome: Int
   year: Int
 }
 
 type StatisticPerSource {
   id: ID
-  income: Float
-  outcome: Float
+  income: Int
+  outcome: Int
   source: Source
 }
 
 type Transaction {
-  amount: Float
+  amount: Int
   categories: [TransactionsOnCategories!]
   completed: Boolean
   currency: Currency
@@ -194,18 +200,18 @@ type Transaction {
 
 type TransactionTotal {
   count: Int!
-  income: Float
-  outcome: Float
+  income: Int
+  outcome: Int
 }
 
 type TransactionsOnCategories {
-  amount: Float
+  amount: Int
   category: Category
   transaction: Transaction
 }
 
 input UpdateCategoriesForTransactionsInput {
-  amount: Float!
+  amount: Int!
   category: ID!
   transaction: ID!
 }

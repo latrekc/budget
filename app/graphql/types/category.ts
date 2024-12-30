@@ -56,13 +56,13 @@ async function resolveAmount(
 builder.prismaObject("Category", {
   fields: (t) => ({
     id: t.exposeID("id"),
-    income: t.float({
+    income: t.int({
       nullable: false,
       resolve: async (root, _args, _context, info) =>
         resolveAmount("income", root, info),
     }),
     name: t.exposeString("name"),
-    outcome: t.float({
+    outcome: t.int({
       nullable: false,
       resolve: async (root, _args, _context, info) =>
         resolveAmount("outcome", root, info),

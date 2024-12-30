@@ -30,7 +30,7 @@ export function AmountValueFormat({
   currency: Currency;
   round?: boolean;
 }) {
-  let displayAmount = amount;
+  let displayAmount = amount / 100;
 
   if (round) {
     displayAmount = Math.round(displayAmount);

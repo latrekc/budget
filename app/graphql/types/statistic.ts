@@ -8,9 +8,9 @@ builder.prismaObject("Statistic", {
   fields: (t) => ({
     category: t.relation("category"),
     id: t.exposeID("id"),
-    income: t.exposeFloat("income"),
+    income: t.exposeInt("income"),
     monthId: t.exposeString("monthId"),
-    outcome: t.exposeFloat("outcome"),
+    outcome: t.exposeInt("outcome"),
   }),
 });
 
@@ -146,9 +146,9 @@ builder.queryField("transactionsStatistic", (t) =>
 builder.prismaObject("StatisticPerMonths", {
   fields: (t) => ({
     id: t.exposeID("id"),
-    income: t.exposeFloat("income"),
+    income: t.exposeInt("income"),
     month: t.exposeInt("month"),
-    outcome: t.exposeFloat("outcome"),
+    outcome: t.exposeInt("outcome"),
     year: t.exposeInt("year"),
   }),
 });
@@ -166,8 +166,8 @@ builder.queryField("transactionsStatisticPerMonths", (t) =>
 builder.prismaObject("StatisticPerSource", {
   fields: (t) => ({
     id: t.exposeID("id"),
-    income: t.exposeFloat("income"),
-    outcome: t.exposeFloat("outcome"),
+    income: t.exposeInt("income"),
+    outcome: t.exposeInt("outcome"),
     source: t.field({
       resolve: (transaction) => enumFromStringValue(Source, transaction.source),
       type: Source,

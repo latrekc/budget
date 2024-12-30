@@ -105,7 +105,7 @@ program
       Time: string;
       "Transaction ID": string;
     }>(csvFilePath, (record) => ({
-      amount: parseFloat(record.Amount),
+      amount: Math.round(parseFloat(record.Amount) * 100),
       currency: enumFromStringValue(Currency, record.Currency),
       date: parseDate(
         [record.Date, record.Time].join(" "),
@@ -133,7 +133,7 @@ program
       Description: string;
       "Started Date": string;
     }>(csvFilePath, (record) => ({
-      amount: parseFloat(record.Amount),
+      amount: Math.round(parseFloat(record.Amount) * 100),
       currency: enumFromStringValue(Currency, record.Currency),
       date: parseDate(record["Started Date"], "YYYY-MM-DD HH:mm:ss"),
       description: record.Description,
@@ -156,7 +156,7 @@ program
       Description: string;
       "TransferWise ID": string;
     }>(csvFilePath, (record) => ({
-      amount: parseFloat(record.Amount),
+      amount: Math.round(parseFloat(record.Amount) * 100),
       currency: enumFromStringValue(Currency, record.Currency),
       date: parseDate(record.Date, "DD-MM-YYYY"),
       description: record.Description,
@@ -207,7 +207,7 @@ program
 
         ofx.transactions?.forEach((transaction) => {
           records.push({
-            amount: transaction.amount ?? 0,
+            amount: Math.round((transaction.amount ?? 0) * 100),
             currency,
             date: transaction.datePosted ?? new Date(),
             description: [transaction.name, transaction.memo].join(" "),

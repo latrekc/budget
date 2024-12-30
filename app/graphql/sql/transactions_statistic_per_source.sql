@@ -10,7 +10,7 @@ FROM
   (
     SELECT
       t.source AS source,
-      SUM(amount * 100) / 100 AS sum
+      SUM(amount) AS sum
     FROM
       transactions t
     WHERE
@@ -21,7 +21,7 @@ FROM
   FULL OUTER JOIN (
     SELECT
       t.source AS source,
-      SUM(amount * 100) / 100 AS sum
+      SUM(amount) AS sum
     FROM
       transactions t
     WHERE
