@@ -40,7 +40,7 @@ export function AmountValueFormat({
     displayAmount = Math.abs(displayAmount);
   }
 
-  return new Intl.NumberFormat("en-GB", {
+  return new Intl.NumberFormat("en-US", {
     currency: currency,
     maximumFractionDigits: round ? 0 : 2,
     style: "currency",
