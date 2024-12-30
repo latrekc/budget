@@ -43,19 +43,17 @@ export default function SplitCategoryReducer(
   function countRest(newCategories: Array<SplitCategory>) {
     const newCategoriesTotal = newCategories.reduce((sum, category) => {
       return (
-        (sum * 100 +
-          Math.abs(
-            category.amounts.reduce(
-              (sum, amount) => sum + (isNaN(amount) ? 0 : amount),
-              0,
-            ),
-          ) *
-            100) /
-        100
+        sum +
+        Math.abs(
+          category.amounts.reduce(
+            (sum, amount) => sum + (isNaN(amount) ? 0 : amount),
+            0,
+          ),
+        )
       );
     }, 0);
 
-    return (state.total * 100 - newCategoriesTotal * 100) / 100;
+    return state.total - newCategoriesTotal;
   }
 
   switch (action.type) {
@@ -114,10 +112,8 @@ export default function SplitCategoryReducer(
         return SplitCategoryReducer(state, {
           payload: {
             amounts: [
-              (action.payload.amounts.reduce((sum, amount) => sum + amount, 0) *
-                100 +
-                rest * 100) /
-                100,
+              action.payload.amounts.reduce((sum, amount) => sum + amount, 0) +
+                rest,
             ],
             id: action.payload.id,
           },

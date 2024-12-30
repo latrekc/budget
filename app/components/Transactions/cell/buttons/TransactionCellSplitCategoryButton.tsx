@@ -79,12 +79,10 @@ export default function TransactionCellSplitCategoryButton({
 
   const rest = useMemo(() => {
     return (
-      (Math.abs(amount) * 100 -
-        categories.reduce((sum, category) => {
-          return (sum * 100 + Math.abs(category.amount) * 100) / 100;
-        }, 0) *
-          100) /
-      100
+      Math.abs(amount) -
+      categories.reduce((sum, category) => {
+        return sum + Math.abs(category.amount);
+      }, 0)
     );
   }, [amount, categories]);
 
@@ -205,7 +203,9 @@ export default function TransactionCellSplitCategoryButton({
                                 )
                                 .map((origIndex) =>
                                   origIndex === index
-                                    ? parseFloat(e.currentTarget.value)
+                                    ? Math.round(
+                                        parseFloat(e.currentTarget.value) * 100,
+                                      )
                                     : amounts[origIndex],
                                 ),
                               id,
@@ -214,7 +214,7 @@ export default function TransactionCellSplitCategoryButton({
                           })
                         }
                         type="number"
-                        value={Math.abs(amount)}
+                        value={Math.abs(amount / 100)}
                       />
                     </>
                   ))}

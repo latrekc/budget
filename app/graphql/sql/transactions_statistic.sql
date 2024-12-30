@@ -17,7 +17,7 @@ FROM
         "%Y-%m",
         datetime (t.date / 1000, 'unixepoch', 'localtime')
       ) AS monthId,
-      SUM(t2c.amount * 100) / 100 AS sum,
+      SUM(t2c.amount) AS sum,
       t2c.categoryId
     FROM
       transactions t
@@ -34,7 +34,7 @@ FROM
         "%Y-%m",
         datetime (t.date / 1000, 'unixepoch', 'localtime')
       ) AS monthId,
-      SUM(t2c.amount * 100) / 100 AS sum,
+      SUM(t2c.amount) AS sum,
       t2c.categoryId
     FROM
       transactions t

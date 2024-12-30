@@ -19,7 +19,7 @@ model Transaction {
   source      String
   date        DateTime
   description String
-  amount      Float
+  amount      Int
   currency    String
   categories  TransactionsOnCategories[]
   completed   Boolean                    @default(false)
@@ -47,7 +47,7 @@ model TransactionsOnCategories {
   category   Category @relation(fields: [categoryId], references: [id])
   categoryId Int
 
-  amount Float
+  amount Int
 
   @@id([transactionId, categoryId])
   @@map("transactions2categories")
@@ -57,16 +57,16 @@ view StatisticPerMonths {
   id      String @id @unique
   year    Int
   month   Int
-  income  Float
-  outcome Float
+  income  Int
+  outcome Int
 
   @@map("transactions_statistic_per_months")
 }
 
 view StatisticPerSource {
   id      String @id @unique
-  income  Float
-  outcome Float
+  income  Int
+  outcome Int
   source  String
 
   @@map("transactions_statistic_per_source")
@@ -75,8 +75,8 @@ view StatisticPerSource {
 view Statistic {
   id      String @id @unique
   monthId String
-  income  Float
-  outcome Float
+  income  Int
+  outcome Int
 
   category   Category @relation(fields: [categoryId], references: [id])
   categoryId Int

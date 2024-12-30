@@ -22,7 +22,7 @@ FROM
         "%Y-%m",
         datetime (t.date / 1000, 'unixepoch', 'localtime')
       ) AS monthId,
-      SUM(amount * 100) / 100 AS sum
+      SUM(amount) AS sum
     FROM
       transactions t
     WHERE
@@ -46,7 +46,7 @@ FROM
         "%Y-%m",
         datetime (t.date / 1000, 'unixepoch', 'localtime')
       ) AS monthId,
-      SUM(amount * 100) / 100 AS sum
+      SUM(amount) AS sum
     FROM
       transactions t
     WHERE

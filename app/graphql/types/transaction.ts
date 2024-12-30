@@ -25,7 +25,7 @@ builder.enumType(SortBy, {
 
 builder.prismaObject("Transaction", {
   fields: (t) => ({
-    amount: t.exposeFloat("amount"),
+    amount: t.exposeInt("amount"),
     categories: t.relation("categories"),
     completed: t.exposeBoolean("completed"),
     currency: t.field({
@@ -48,7 +48,7 @@ builder.prismaObject("Transaction", {
 
 builder.prismaObject("TransactionsOnCategories", {
   fields: (t) => ({
-    amount: t.exposeFloat("amount"),
+    amount: t.exposeInt("amount"),
     category: t.relation("category"),
     transaction: t.relation("transaction"),
   }),
@@ -136,7 +136,10 @@ async function filtersToWhere(filters: TransactionFilter | null | undefined) {
     }
 
     if ((filters.amount ?? "").trim().length > 0) {
-      const amount = Math.abs(parseFloat((filters.amount ?? "").trim()));
+      const amount = Math.round(
+        Math.abs(parseFloat((filters.amount ?? "").trim()) * 100),
+      );
+
       switch (filters.amountRelation) {
         case AmountRelation.GREATER:
           OR.push([
@@ -323,10 +326,10 @@ const transactionTotal = builder.simpleObject("TransactionTotal", {
     count: t.int({
       nullable: false,
     }),
-    income: t.float({
+    income: t.int({
       nullable: true,
     }),
-    outcome: t.float({
+    outcome: t.int({
       nullable: true,
     }),
   }),
@@ -398,7 +401,7 @@ const updateCategoriesForTransactionsInput = builder
   }>("UpdateCategoriesForTransactionsInput")
   .implement({
     fields: (t) => ({
-      amount: t.float({ required: true }),
+      amount: t.int({ required: true }),
       category: t.id({ required: true }),
       transaction: t.id({
         required: true,
