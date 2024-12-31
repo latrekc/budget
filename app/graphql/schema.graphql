@@ -20,6 +20,20 @@ enum Currency {
   USD
 }
 
+type CurrencyExchangeRate {
+  base: Currency
+  date: Date
+  id: ID
+  rate: Float
+  target: Currency
+}
+
+type CurrencyExchangeRateClaim {
+  currency: Currency
+  date: Date
+  id: ID
+}
+
 """
 A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
 """
@@ -32,6 +46,15 @@ type Error {
 input FilterCategoryInput {
   months: [String!]
   onlyIncome: Boolean = false
+}
+
+input FilterRateClaimsInput {
+  currency: String!
+}
+
+input FilterRatesInput {
+  base: [String!]
+  target: [String!]
 }
 
 input FilterStatisticInput {
@@ -57,10 +80,19 @@ input FilterTransactionsInput {
 
 type Mutation {
   createCategory(name: String!, parent: ID): MutationCreateCategoryResult
+  createCurrencyExhangeRate(
+    base: String!
+    date: String!
+    target: String!
+    value: Float!
+  ): MutationCreateCurrencyExhangeRateResult
   deleteCategoriesForTransactions(
     transactions: [UpdateCategoriesForTransactionsInput!]!
   ): MutationDeleteCategoriesForTransactionsResult
   deleteCategory(id: ID!): MutationDeleteCategoryResult
+  deleteCurrencyExhangeRate(
+    id: String!
+  ): MutationDeleteCurrencyExhangeRateResult
   updateCategoriesForAllTransactions(
     category: String!
     filters: FilterTransactionsInput!
@@ -81,6 +113,14 @@ type MutationCreateCategorySuccess {
   data: Category!
 }
 
+union MutationCreateCurrencyExhangeRateResult =
+  | Error
+  | MutationCreateCurrencyExhangeRateSuccess
+
+type MutationCreateCurrencyExhangeRateSuccess {
+  data: CurrencyExchangeRate!
+}
+
 union MutationDeleteCategoriesForTransactionsResult =
   | Error
   | MutationDeleteCategoriesForTransactionsSuccess
@@ -93,6 +133,14 @@ union MutationDeleteCategoryResult = Error | MutationDeleteCategorySuccess
 
 type MutationDeleteCategorySuccess {
   data: Category!
+}
+
+union MutationDeleteCurrencyExhangeRateResult =
+  | Error
+  | MutationDeleteCurrencyExhangeRateSuccess
+
+type MutationDeleteCurrencyExhangeRateSuccess {
+  data: CurrencyExchangeRate!
 }
 
 union MutationUpdateCategoriesForAllTransactionsResult =
@@ -127,6 +175,20 @@ type PageInfo {
 type Query {
   categories(filters: FilterCategoryInput): [Category!]
   ok: Boolean
+  rate_claims(
+    after: ID
+    before: ID
+    filters: FilterRateClaimsInput!
+    first: Int
+    last: Int
+  ): QueryRate_claimsConnection
+  rates(
+    after: ID
+    before: ID
+    filters: FilterRatesInput
+    first: Int
+    last: Int
+  ): QueryRatesConnection
   transactions(
     after: ID
     before: ID
@@ -138,6 +200,26 @@ type Query {
   transactionsStatisticPerMonths: [StatisticPerMonths!]
   transactionsStatisticPerSource: [StatisticPerSource!]
   transactionsTotal(filters: FilterTransactionsInput): TransactionTotal
+}
+
+type QueryRate_claimsConnection {
+  edges: [QueryRate_claimsConnectionEdge]!
+  pageInfo: PageInfo!
+}
+
+type QueryRate_claimsConnectionEdge {
+  cursor: String!
+  node: CurrencyExchangeRateClaim!
+}
+
+type QueryRatesConnection {
+  edges: [QueryRatesConnectionEdge]!
+  pageInfo: PageInfo!
+}
+
+type QueryRatesConnectionEdge {
+  cursor: String!
+  node: CurrencyExchangeRate!
 }
 
 type QueryTransactionsConnection {

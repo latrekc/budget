@@ -45,6 +45,7 @@ export function enumFromStringValue<T>(
 
 export enum PubSubChannels {
   Categories = "Categories",
+  CurrencyExchangeRates = "CurrencyExchangeRates",
   Transactions = "Transactions",
 }
 

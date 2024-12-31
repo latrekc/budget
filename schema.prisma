@@ -40,6 +40,25 @@ model Category {
   @@map("categories")
 }
 
+model CurrencyExchangeRate {
+  id     String   @id @unique
+  date   DateTime
+  base   String
+  target String
+  rate   Float
+
+  @@unique([date, base, target])
+  @@map("currency_exchange_rates")
+}
+
+view CurrencyExchangeRateClaim {
+  id       String   @id @unique
+  date     DateTime
+  currency String
+
+  @@map("currency_exchange_rate_clames")
+}
+
 model TransactionsOnCategories {
   transaction   Transaction @relation(fields: [transactionId], references: [id])
   transactionId String
