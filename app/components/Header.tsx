@@ -2,8 +2,8 @@ import { Link, Navbar, NavbarContent, NavbarItem } from "@nextui-org/react";
 
 export enum PageType {
   Balances = "Balances",
+  Currencies = "Currencies",
   Dashboard = "Dashboard",
-  Rates = "Rates",
   Shares = "Shares",
   Transactions = "Transactions",
 }
@@ -14,7 +14,7 @@ export default function Header({ active }: { active: PageType }) {
     { disabled: true, id: PageType.Balances },
     { disabled: true, id: PageType.Shares },
     { id: PageType.Dashboard },
-    { id: PageType.Rates },
+    { id: PageType.Currencies },
   ];
 
   return (

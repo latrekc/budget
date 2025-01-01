@@ -1,10 +1,10 @@
 import { graphql, PreloadedQuery, usePreloadedQuery } from "react-relay";
-import { RatesQuery as RatesQueryType } from "./__generated__/RatesQuery.graphql";
+import { CurrenciesQuery as CurrenciesQueryType } from "./__generated__/CurrenciesQuery.graphql";
 import RateClaimsTable from "./RateClaimsTable";
 import RatesTable from "./RatesTable";
 
-export const RatesQuery = graphql`
-  query RatesQuery(
+export const CurrenciesQuery = graphql`
+  query CurrenciesQuery(
     $first: Int
     $after: ID
     $filters: FilterRatesInput!
@@ -18,9 +18,12 @@ export const RatesQuery = graphql`
 export default function Rates({
   preloadedQuery,
 }: {
-  preloadedQuery: PreloadedQuery<RatesQueryType>;
+  preloadedQuery: PreloadedQuery<CurrenciesQueryType>;
 }) {
-  const data = usePreloadedQuery<RatesQueryType>(RatesQuery, preloadedQuery);
+  const data = usePreloadedQuery<CurrenciesQueryType>(
+    CurrenciesQuery,
+    preloadedQuery,
+  );
 
   return (
     <div className="flex flex-row">

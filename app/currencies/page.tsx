@@ -1,22 +1,22 @@
 "use client";
 import dynamic from "next/dynamic";
 
+import { CurrenciesQuery } from "@/components/Currencies";
+import { CurrenciesQuery as CurrenciesQueryType } from "@/components/Currencies/__generated__/CurrenciesQuery.graphql";
+import { CLAIMS_FILTERS } from "@/components/Currencies/RateClaimsTable";
+import { PER_PAGE, RATES_FILTERS } from "@/components/Currencies/RatesTable";
 import Header, { PageType } from "@/components/Header";
 import Loading from "@/components/Loading";
-import { RatesQuery } from "@/components/Rates";
-import { RatesQuery as RatesQueryType } from "@/components/Rates/__generated__/RatesQuery.graphql";
-import { CLAIMS_FILTERS } from "@/components/Rates/RateClaimsTable";
-import { PER_PAGE, RATES_FILTERS } from "@/components/Rates/RatesTable";
 import { Suspense, useDeferredValue, useEffect } from "react";
 import { useQueryLoader } from "react-relay";
 
-const Rates = dynamic(() => import("@/components/Rates"), {
+const Rates = dynamic(() => import("@/components/Currencies"), {
   ssr: false,
 });
 
 export default function Page() {
   const [preloadedQuery, loadQuery] =
-    useQueryLoader<RatesQueryType>(RatesQuery);
+    useQueryLoader<CurrenciesQueryType>(CurrenciesQuery);
 
   useEffect(() => {
     loadQuery(
@@ -33,7 +33,7 @@ export default function Page() {
 
   return (
     <>
-      <Header active={PageType.Rates} />
+      <Header active={PageType.Currencies} />
       <div suppressHydrationWarning>
         {deferredQuery != null ? (
           <Suspense fallback={<Loading />}>
