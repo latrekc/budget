@@ -1,6 +1,6 @@
 "use client";
 
-import { DEFAULT_CURRENCY, PubSubChannels } from "@/lib/types";
+import { Currency, DEFAULT_CURRENCY, PubSubChannels } from "@/lib/types";
 import { usePubSub } from "@/lib/usePubSub";
 import {
   Spinner,
@@ -16,27 +16,22 @@ import { useCallback, useEffect, useMemo } from "react";
 import { graphql, useFragment, usePaginationFragment } from "react-relay";
 import { RateClaimsTable$key } from "./__generated__/RateClaimsTable.graphql";
 import { RateClaimsTable_RenderCell$key } from "./__generated__/RateClaimsTable_RenderCell.graphql";
-import RateClaimCurrencyCell from "./cell/RateClaimCurrencyCell";
 import RateClaimDateCell from "./cell/RateClaimDateCell";
 import RateClaimValueCell from "./cell/RateClaimValueCell";
 
 export const PER_PAGE = 20;
 
-export const CLAIMS_FILTERS = {
-  currency: DEFAULT_CURRENCY,
-};
-
 enum Colunms {
   "Date" = "Date",
-  // eslint-disable-next-line perfectionist/sort-enums
-  "Currency" = "Currency",
   "Value" = "Value",
 }
 
 export default function RateClaimsTable({
   claims: claims$key,
+  currency,
 }: {
   claims: RateClaimsTable$key;
+  currency: Currency;
 }) {
   const {
     data: { rate_claims: claims },
@@ -48,7 +43,7 @@ export default function RateClaimsTable({
     graphql`
       fragment RateClaimsTable on Query
       @refetchable(queryName: "RateClaimsPaginationQuery") {
-        rate_claims(first: $first, after: $after, filters: $claimFilters)
+        rate_claims(first: $first, after: $after, currency: $currency)
           @connection(key: "RateClaimsTable_rate_claims") {
           pageInfo {
             endCursor
@@ -79,12 +74,9 @@ export default function RateClaimsTable({
 
   useEffect(() => {
     return subscribe(PubSubChannels.CurrencyExchangeRates, () => {
-      refetch(
-        { claimFilters: CLAIMS_FILTERS },
-        { fetchPolicy: "network-only" },
-      );
+      refetch({ currency }, { fetchPolicy: "network-only" });
     });
-  }, [refetch, subscribe]);
+  }, [currency, refetch, subscribe]);
 
   const columns = useMemo(
     () =>
@@ -124,7 +116,11 @@ export default function RateClaimsTable({
       isHeaderSticky
       radius="none"
       shadow="none"
-      topContent={<h2>Claims for currency rates for {DEFAULT_CURRENCY}</h2>}
+      topContent={
+        <h2>
+          Claims for currency rates for {currency} to {DEFAULT_CURRENCY}
+        </h2>
+      }
     >
       <TableHeader columns={columns}>
         {(column) => (
@@ -176,7 +172,6 @@ function RenderCell({
     graphql`
       fragment RateClaimsTable_RenderCell on CurrencyExchangeRateClaim {
         ...RateClaimDateCell
-        ...RateClaimCurrencyCell
         ...RateClaimValueCell
       }
     `,
@@ -186,9 +181,6 @@ function RenderCell({
   switch (columnKey) {
     case Colunms.Date:
       return <RateClaimDateCell claim={claim} />;
-
-    case Colunms.Currency:
-      return <RateClaimCurrencyCell claim={claim} />;
 
     case Colunms.Value:
       return <RateClaimValueCell claim={claim} />;

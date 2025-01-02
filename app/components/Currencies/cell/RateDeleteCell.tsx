@@ -36,7 +36,7 @@ export default function RateDeleteCell({
 
   const [commitDeleteMutation, isDeleteMutationInFlight] =
     useMutation<RateDeleteCellMutation>(graphql`
-      mutation RateDeleteCellMutation($id: String!) {
+      mutation RateDeleteCellMutation($id: ID!) {
         deleteCurrencyExhangeRate(id: $id) {
           ... on Error {
             error: message

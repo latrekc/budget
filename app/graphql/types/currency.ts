@@ -1,5 +1,4 @@
-import { Prisma } from "@prisma/client";
-import prisma from "../../lib/prisma";
+import prisma, { parseIdString } from "../../lib/prisma";
 import { Currency, enumFromStringValue } from "../../lib/types";
 import { builder } from "../builder";
 
@@ -22,51 +21,16 @@ builder.prismaObject("CurrencyExchangeRate", {
   }),
 });
 
-export type RatesFilter = {
-  base?: null | string[];
-  target?: null | string[];
-};
-const filterRatesInput = builder
-  .inputRef<RatesFilter>("FilterRatesInput")
-  .implement({
-    fields: (t) => ({
-      base: t.stringList({
-        required: false,
-      }),
-      target: t.stringList({
-        required: false,
-      }),
-    }),
-  });
-
-async function filtersToWhere(filters: RatesFilter | null | undefined) {
-  let where: Prisma.CurrencyExchangeRateWhereInput | undefined = undefined;
-
-  if (filters != null) {
-    where = {};
-
-    if ((filters.base ?? []).length > 0) {
-      where.base = {
-        in: filters.base ?? [],
-      };
-    }
-
-    if ((filters.target ?? []).length > 0) {
-      where.target = {
-        in: filters.target ?? [],
-      };
-    }
-  }
-
-  return where;
-}
-
 builder.queryField("rates", (t) =>
   t.prismaConnection({
     args: {
-      filters: t.arg({
-        required: false,
-        type: filterRatesInput,
+      base: t.arg({
+        required: true,
+        type: Currency,
+      }),
+      target: t.arg({
+        required: true,
+        type: Currency,
       }),
     },
     cursor: "id",
@@ -74,7 +38,10 @@ builder.queryField("rates", (t) =>
       return await prisma.currencyExchangeRate.findMany({
         ...query,
         orderBy: [{ date: "desc" }, { base: "asc" }, { target: "asc" }],
-        where: await filtersToWhere(args.filters),
+        where: {
+          base: args.base,
+          target: args.target,
+        },
       });
     },
     type: "CurrencyExchangeRate",
@@ -95,25 +62,12 @@ builder.prismaObject("CurrencyExchangeRateClaim", {
   }),
 });
 
-export type RateClaimsFilter = {
-  currency: string;
-};
-const filterRateClaimsInput = builder
-  .inputRef<RateClaimsFilter>("FilterRateClaimsInput")
-  .implement({
-    fields: (t) => ({
-      currency: t.string({
-        required: true,
-      }),
-    }),
-  });
-
 builder.queryField("rate_claims", (t) =>
   t.prismaConnection({
     args: {
-      filters: t.arg({
+      currency: t.arg({
         required: true,
-        type: filterRateClaimsInput,
+        type: Currency,
       }),
     },
     cursor: "id",
@@ -122,9 +76,7 @@ builder.queryField("rate_claims", (t) =>
         ...query,
         orderBy: [{ currency: "asc" }, { date: "desc" }],
         where: {
-          currency: {
-            not: args.filters.currency,
-          },
+          currency: args.currency,
         },
       });
     },
@@ -135,9 +87,9 @@ builder.queryField("rate_claims", (t) =>
 builder.mutationFields((t) => ({
   createCurrencyExhangeRate: t.prismaField({
     args: {
-      base: t.arg.string({ required: true }),
+      base: t.arg({ required: true, type: Currency }),
       date: t.arg.string({ required: true }),
-      target: t.arg.string({ required: true }),
+      target: t.arg({ required: true, type: Currency }),
       value: t.arg.float({ required: true }),
     },
     errors: {
@@ -161,7 +113,7 @@ builder.mutationFields((t) => ({
   }),
   deleteCurrencyExhangeRate: t.prismaField({
     args: {
-      id: t.arg.string({ required: true }),
+      id: t.arg.id({ required: true }),
     },
     errors: {
       types: [Error],
@@ -169,7 +121,7 @@ builder.mutationFields((t) => ({
     resolve: async (query, _root, args) => {
       const rate = await prisma.currencyExchangeRate.findFirst({
         where: {
-          id: args.id,
+          id: parseIdString(args.id)!,
         },
       });
 
@@ -180,7 +132,7 @@ builder.mutationFields((t) => ({
       await prisma.currencyExchangeRate.delete({
         ...query,
         where: {
-          id: args.id,
+          id: parseIdString(args.id)!,
         },
       });
 
@@ -189,3 +141,61 @@ builder.mutationFields((t) => ({
     type: "CurrencyExchangeRate",
   }),
 }));
+
+interface CurrenciesStatistic {
+  currency: Currency;
+  rateClaims: number;
+  rates: number;
+}
+const CurrenciesStatisticRef = builder.objectRef<CurrenciesStatistic>(
+  "CurrenciesStatistic",
+);
+
+CurrenciesStatisticRef.implement({
+  fields: (t) => ({
+    currency: t.field({
+      resolve: (rate) => enumFromStringValue(Currency, rate.currency),
+      type: Currency,
+    }),
+    rateClaims: t.exposeInt("rateClaims"),
+    rates: t.exposeInt("rates"),
+  }),
+});
+
+builder.queryField("currencies", (t) =>
+  t.field({
+    args: {
+      base: t.arg({
+        required: true,
+        type: Currency,
+      }),
+    },
+    resolve: async (_root, args) => {
+      return await Promise.all(
+        Object.values(Currency)
+          .filter((currency) => currency != args.base)
+          .map(async (currency) => {
+            const rates = await prisma.currencyExchangeRate.count({
+              where: {
+                base: args.base,
+                target: currency,
+              },
+            });
+
+            const rateClaims = await prisma.currencyExchangeRateClaim.count({
+              where: {
+                currency: currency,
+              },
+            });
+
+            return {
+              currency,
+              rateClaims,
+              rates,
+            };
+          }),
+      );
+    },
+    type: [CurrenciesStatisticRef],
+  }),
+);

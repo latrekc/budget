@@ -3,10 +3,9 @@ import dynamic from "next/dynamic";
 
 import { CurrenciesQuery } from "@/components/Currencies";
 import { CurrenciesQuery as CurrenciesQueryType } from "@/components/Currencies/__generated__/CurrenciesQuery.graphql";
-import { CLAIMS_FILTERS } from "@/components/Currencies/RateClaimsTable";
-import { PER_PAGE, RATES_FILTERS } from "@/components/Currencies/RatesTable";
 import Header, { PageType } from "@/components/Header";
 import Loading from "@/components/Loading";
+import { DEFAULT_CURRENCY } from "@/lib/types";
 import { Suspense, useDeferredValue, useEffect } from "react";
 import { useQueryLoader } from "react-relay";
 
@@ -21,9 +20,7 @@ export default function Page() {
   useEffect(() => {
     loadQuery(
       {
-        claimFilters: CLAIMS_FILTERS,
-        filters: RATES_FILTERS,
-        first: PER_PAGE,
+        base: DEFAULT_CURRENCY,
       },
       { fetchPolicy: "store-and-network" },
     );

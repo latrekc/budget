@@ -25,9 +25,9 @@ export default function RateClaimValueCell({
   const [commitMutation, isMutationInFlight] =
     useMutation<RateClaimValueCellMutation>(graphql`
       mutation RateClaimValueCellMutation(
-        $base: String!
+        $base: Currency!
         $date: String!
-        $target: String!
+        $target: Currency!
         $value: Float!
       ) {
         createCurrencyExhangeRate(

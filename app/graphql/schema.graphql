@@ -13,6 +13,12 @@ type Category {
   subCategories: [Category!]
 }
 
+type CurrenciesStatistic {
+  currency: Currency
+  rateClaims: Int
+  rates: Int
+}
+
 enum Currency {
   EUR
   GBP
@@ -48,15 +54,6 @@ input FilterCategoryInput {
   onlyIncome: Boolean = false
 }
 
-input FilterRateClaimsInput {
-  currency: String!
-}
-
-input FilterRatesInput {
-  base: [String!]
-  target: [String!]
-}
-
 input FilterStatisticInput {
   categories: [String!]
   ignoreCategories: [String!]
@@ -81,18 +78,16 @@ input FilterTransactionsInput {
 type Mutation {
   createCategory(name: String!, parent: ID): MutationCreateCategoryResult
   createCurrencyExhangeRate(
-    base: String!
+    base: Currency!
     date: String!
-    target: String!
+    target: Currency!
     value: Float!
   ): MutationCreateCurrencyExhangeRateResult
   deleteCategoriesForTransactions(
     transactions: [UpdateCategoriesForTransactionsInput!]!
   ): MutationDeleteCategoriesForTransactionsResult
   deleteCategory(id: ID!): MutationDeleteCategoryResult
-  deleteCurrencyExhangeRate(
-    id: String!
-  ): MutationDeleteCurrencyExhangeRateResult
+  deleteCurrencyExhangeRate(id: ID!): MutationDeleteCurrencyExhangeRateResult
   updateCategoriesForAllTransactions(
     category: String!
     filters: FilterTransactionsInput!
@@ -174,20 +169,22 @@ type PageInfo {
 
 type Query {
   categories(filters: FilterCategoryInput): [Category!]
+  currencies(base: Currency!): [CurrenciesStatistic!]
   ok: Boolean
   rate_claims(
     after: ID
     before: ID
-    filters: FilterRateClaimsInput!
+    currency: Currency!
     first: Int
     last: Int
   ): QueryRate_claimsConnection
   rates(
     after: ID
+    base: Currency!
     before: ID
-    filters: FilterRatesInput
     first: Int
     last: Int
+    target: Currency!
   ): QueryRatesConnection
   transactions(
     after: ID

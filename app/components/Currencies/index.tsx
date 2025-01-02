@@ -1,21 +1,25 @@
-import { graphql, PreloadedQuery, usePreloadedQuery } from "react-relay";
+import { Currency, DEFAULT_CURRENCY, PubSubChannels } from "@/lib/types";
+import { usePubSub } from "@/lib/usePubSub";
+import { Chip, Tab, Tabs } from "@nextui-org/react";
+import { useEffect, useMemo } from "react";
+import {
+  graphql,
+  PreloadedQuery,
+  usePreloadedQuery,
+  useRefetchableFragment,
+} from "react-relay";
+import CurrencyIcon from "../CurrencyIcon";
+import { Currencies$key } from "./__generated__/Currencies.graphql";
 import { CurrenciesQuery as CurrenciesQueryType } from "./__generated__/CurrenciesQuery.graphql";
-import RateClaimsTable from "./RateClaimsTable";
-import RatesTable from "./RatesTable";
+import CurrencyRates from "./CurrencyRates";
 
 export const CurrenciesQuery = graphql`
-  query CurrenciesQuery(
-    $first: Int
-    $after: ID
-    $filters: FilterRatesInput!
-    $claimFilters: FilterRateClaimsInput!
-  ) {
-    ...RatesTable
-    ...RateClaimsTable
+  query CurrenciesQuery($base: Currency!) {
+    ...Currencies
   }
 `;
 
-export default function Rates({
+export default function Currencies({
   preloadedQuery,
 }: {
   preloadedQuery: PreloadedQuery<CurrenciesQueryType>;
@@ -25,14 +29,56 @@ export default function Rates({
     preloadedQuery,
   );
 
+  const [{ currencies }, refetch] = useRefetchableFragment(
+    graphql`
+      fragment Currencies on Query
+      @refetchable(queryName: "CurrenciesRefetchQuery") {
+        currencies(base: $base) {
+          currency @required(action: THROW)
+          rateClaims @required(action: THROW)
+          rates @required(action: THROW)
+        }
+      }
+    `,
+    data as Currencies$key,
+  );
+
+  const { subscribe } = usePubSub();
+
+  useEffect(() => {
+    return subscribe(PubSubChannels.CurrencyExchangeRates, () => {
+      refetch({ base: DEFAULT_CURRENCY }, { fetchPolicy: "network-only" });
+    });
+  }, [refetch, subscribe]);
+
+  const items = useMemo(
+    () =>
+      currencies
+        ? [...currencies].filter(
+            ({ rateClaims, rates }) => rates > 0 || rateClaims > 0,
+          )
+        : [],
+    [currencies],
+  );
+
   return (
-    <div className="flex flex-row">
-      <div className="basis-1/2 py-3">
-        <RateClaimsTable claims={data} />
-      </div>
-      <div className="basis-1/2 py-3">
-        <RatesTable rates={data} />
-      </div>
+    <div className="p-3">
+      <Tabs items={items}>
+        {({ currency, rateClaims }) => (
+          <Tab
+            key={currency}
+            title={
+              <div className="flex items-center space-x-2">
+                <CurrencyIcon currency={currency as Currency} />
+                <span>{currency}</span>
+                {rateClaims > 0 ? <Chip size="sm">{rateClaims}</Chip> : null}
+              </div>
+            }
+          >
+            <CurrencyRates currency={currency as Currency} />
+          </Tab>
+        )}
+      </Tabs>
     </div>
   );
 }

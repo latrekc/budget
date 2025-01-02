@@ -1,6 +1,6 @@
 "use client";
 
-import { DEFAULT_CURRENCY, PubSubChannels } from "@/lib/types";
+import { Currency, DEFAULT_CURRENCY, PubSubChannels } from "@/lib/types";
 import { usePubSub } from "@/lib/usePubSub";
 import {
   Spinner,
@@ -16,21 +16,14 @@ import { useCallback, useEffect, useMemo } from "react";
 import { graphql, useFragment, usePaginationFragment } from "react-relay";
 import { RatesTable$key } from "./__generated__/RatesTable.graphql";
 import { RatesTable_RenderCell$key } from "./__generated__/RatesTable_RenderCell.graphql";
-import RateCurrencyCell from "./cell/RateCurrencyCell";
 import RateDateCell from "./cell/RateDateCell";
 import RateDeleteCell from "./cell/RateDeleteCell";
 import RateValueCell from "./cell/RateValueCell";
 
 export const PER_PAGE = 20;
 
-export const RATES_FILTERS = {
-  base: [DEFAULT_CURRENCY],
-};
-
 enum Colunms {
   "Date" = "Date",
-  // eslint-disable-next-line perfectionist/sort-enums
-  "Currency" = "Currency",
   // eslint-disable-next-line perfectionist/sort-enums
   "Value" = "Value",
   // eslint-disable-next-line perfectionist/sort-enums
@@ -38,8 +31,10 @@ enum Colunms {
 }
 
 export default function RatesTable({
+  currency,
   rates: rates$key,
 }: {
+  currency: Currency;
   rates: RatesTable$key;
 }) {
   const {
@@ -52,7 +47,7 @@ export default function RatesTable({
     graphql`
       fragment RatesTable on Query
       @refetchable(queryName: "RatesPaginationQuery") {
-        rates(first: $first, after: $after, filters: $filters)
+        rates(first: $first, after: $after, base: $base, target: $target)
           @connection(key: "RatesTable_rates") {
           pageInfo {
             endCursor
@@ -83,9 +78,12 @@ export default function RatesTable({
 
   useEffect(() => {
     return subscribe(PubSubChannels.CurrencyExchangeRates, () => {
-      refetch({ claimFilters: RATES_FILTERS }, { fetchPolicy: "network-only" });
+      refetch(
+        { base: DEFAULT_CURRENCY, target: currency },
+        { fetchPolicy: "network-only" },
+      );
     });
-  }, [refetch, subscribe]);
+  }, [currency, refetch, subscribe]);
 
   const columns = useMemo(
     () =>
@@ -125,7 +123,11 @@ export default function RatesTable({
       isHeaderSticky
       radius="none"
       shadow="none"
-      topContent={<h2>Currency rates for {DEFAULT_CURRENCY}</h2>}
+      topContent={
+        <h2>
+          Currency rates for {currency} to {DEFAULT_CURRENCY}
+        </h2>
+      }
     >
       <TableHeader columns={columns}>
         {(column) => (
@@ -177,7 +179,6 @@ function RenderCell({
     graphql`
       fragment RatesTable_RenderCell on CurrencyExchangeRate {
         ...RateDateCell
-        ...RateCurrencyCell
         ...RateValueCell
         ...RateDeleteCell
       }
@@ -188,8 +189,6 @@ function RenderCell({
   switch (columnKey) {
     case Colunms.Date:
       return <RateDateCell rate={rate} />;
-    case Colunms.Currency:
-      return <RateCurrencyCell rate={rate} />;
     case Colunms.Value:
       return <RateValueCell rate={rate} />;
     case Colunms.Delete:
