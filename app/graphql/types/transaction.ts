@@ -29,14 +29,13 @@ builder.prismaObject("Transaction", {
   fields: (t) => ({
     amount: t.exposeInt("amount"),
     amount_converted: t.field({
-      resolve: ({ amount, currency }) => {
-        return Math.round(
-          amount *
-            convertRate(
-              enumFromStringValue<Currency>(Currency, currency),
-              DEFAULT_CURRENCY,
-            ),
+      resolve: async ({ amount, currency, date }) => {
+        const rate = await convertRate(
+          enumFromStringValue<Currency>(Currency, currency),
+          DEFAULT_CURRENCY,
+          date,
         );
+        return Math.round(amount * rate);
       },
       type: "Int",
     }),

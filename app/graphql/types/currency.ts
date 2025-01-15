@@ -1,5 +1,9 @@
 import prisma, { parseIdString } from "../../lib/prisma";
-import { Currency, enumFromStringValue } from "../../lib/types";
+import {
+  Currency,
+  enumFromStringValue,
+  getUTCStartOfDate,
+} from "../../lib/types";
 import { builder } from "../builder";
 
 builder.prismaObject("CurrencyExchangeRate", {
@@ -96,12 +100,13 @@ builder.mutationFields((t) => ({
       types: [Error],
     },
     resolve: async (query, _root, args) => {
+      const correctDate = getUTCStartOfDate(new Date(args.date));
       const rate = await prisma.currencyExchangeRate.create({
         ...query,
         data: {
           base: args.base,
-          date: args.date,
-          id: `${args.base}-${args.target}-${args.date}`,
+          date: correctDate.toISOString(),
+          id: `${args.base}-${args.target}-${correctDate.toISOString()}`,
           rate: args.value,
           target: args.target,
         },

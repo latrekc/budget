@@ -18,7 +18,7 @@ export default function TransactionAmountCell({
       fragment TransactionAmountCell on Transaction {
         currency @required(action: THROW)
         amount @required(action: THROW)
-        amount_converted @required(action: THROW)
+        amount_converted
       }
     `,
     transaction$key,
@@ -29,12 +29,18 @@ export default function TransactionAmountCell({
       <AmountValue amount={amount} currency={currency} size={Size.Big} />
       {currency !== DEFAULT_CURRENCY ? (
         <div>
-          <AmountValue
-            amount={amountConverted}
-            currency={DEFAULT_CURRENCY}
-            secondary
-            size={Size.Small}
-          />
+          {amountConverted == null ? (
+            <span className="font-bold text-red-900">
+              Exchange rate is not defined
+            </span>
+          ) : (
+            <AmountValue
+              amount={amountConverted}
+              currency={DEFAULT_CURRENCY}
+              secondary
+              size={Size.Small}
+            />
+          )}
         </div>
       ) : null}
     </>

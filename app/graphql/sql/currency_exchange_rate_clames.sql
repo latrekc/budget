@@ -20,17 +20,15 @@ SELECT
 FROM
   transactions t
   LEFT OUTER JOIN currency_exchange_rates c ON t.currency = c.target
-  AND unixepoch (
-    t.date / 1000,
-    'unixepoch',
-    'localtime',
-    'start of day'
-  ) = unixepoch (
-    c.date / 1000,
-    'unixepoch',
-    'localtime',
-    'start of day'
-  )
+  AND strftime (
+      "%Y-%m-%d",
+      datetime (t.date / 1000, 'unixepoch', 'localtime')
+    
+  ) = strftime (
+      "%Y-%m-%d",
+      datetime (c.date / 1000, 'unixepoch', 'localtime')
+    )
+  
 WHERE
   c.id IS NULL
 GROUP BY

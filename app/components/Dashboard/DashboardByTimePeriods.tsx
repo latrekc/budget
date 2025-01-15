@@ -179,7 +179,7 @@ export default function DashboardByTimePeriods({
               round: true,
             })}`;
           },
-          minAngle: 10,
+          minAngle: 3,
         },
         name: category.name,
         tooltip: {
@@ -565,7 +565,7 @@ export default function DashboardByTimePeriods({
       ],
       radius: [0, "75%"],
       sort: undefined,
-      startAngle: 25,
+      startAngle: 0,
       type: "sunburst",
     }),
     [],
@@ -580,8 +580,8 @@ export default function DashboardByTimePeriods({
         show: false,
       },
       series: [
-        sunburstToSeries(sunburstIncomeStatistic, ["25%", "25%"]),
-        sunburstToSeries(sunburstOutcomeStatistic, ["60%", "60%"]),
+        sunburstToSeries(sunburstIncomeStatistic, ["50%", "25%"]),
+        sunburstToSeries(sunburstOutcomeStatistic, ["50%", "75%"]),
       ],
       tooltip: {
         alwaysShowContent: true,
@@ -618,7 +618,7 @@ export default function DashboardByTimePeriods({
         onEvents={onEvents}
         option={barChart}
       />
-      <ReactECharts className="min-h-[1000px] bg-white" option={sunburst} />
+      <ReactECharts className="min-h-[2000px] bg-white" option={sunburst} />
     </>
   );
 }
