@@ -44,6 +44,7 @@ export type TransactionsSelection =
   | "all"
   | Set<{
       amount: number;
+      amount_converted: null | number;
       transaction: string;
     }>;
 
@@ -144,6 +145,7 @@ export default function TransactionsTable({
           new Set(
             [...selected.values()].map((select) => ({
               amount: transactionAmounts.get(select.toString()) ?? 0,
+              amount_converted: null,
               transaction: select.toString(),
             })),
           ),
