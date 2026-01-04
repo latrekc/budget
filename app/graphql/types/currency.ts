@@ -2,6 +2,7 @@ import prisma, { parseIdString } from "../../lib/prisma";
 import {
   Currency,
   enumFromStringValue,
+  getUTCDateString,
   getUTCStartOfDate,
 } from "../../lib/types";
 import { builder } from "../builder";
@@ -106,7 +107,7 @@ builder.mutationFields((t) => ({
         data: {
           base: args.base,
           date: correctDate.toISOString(),
-          id: `${args.base}-${args.target}-${correctDate.toISOString()}`,
+          id: `${args.base}-${args.target}-${getUTCDateString(correctDate)}`,
           rate: args.value,
           target: args.target,
         },

@@ -74,3 +74,7 @@ export function getUTCStartOfDate(date: Date): Date {
     Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0),
   );
 }
+
+export function getUTCDateString(date: Date): string {
+  return date.toUTCString().split('T')[0];
+}

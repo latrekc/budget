@@ -1,5 +1,5 @@
 import prisma from "./prisma";
-import { Currency, getUTCStartOfDate } from "./types";
+import { Currency, getUTCDateString, getUTCStartOfDate } from "./types";
 
 export async function convertRate(
   from: Currency,
@@ -12,7 +12,7 @@ export async function convertRate(
 
   const correctDate = getUTCStartOfDate(date);
 
-  const id = `${to}-${from}-${correctDate.toISOString()}`;
+  const id = `${to}-${from}-${getUTCDateString(correctDate)}`;
 
   const result = await prisma.currencyExchangeRate.findFirst({
     select: {
