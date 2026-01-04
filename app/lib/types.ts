@@ -17,6 +17,8 @@ export enum Currency {
 
 export const DEFAULT_CURRENCY = Currency.GBP;
 
+export type NonDefaultCurrency = Exclude<Currency, Currency.GBP>;
+
 export type Transaction = {
   amount: number;
   currency: Currency;
@@ -76,5 +78,5 @@ export function getUTCStartOfDate(date: Date): Date {
 }
 
 export function getUTCDateString(date: Date): string {
-  return date.toUTCString().split('T')[0];
+  return date.toISOString().split("T")[0];
 }

@@ -6,6 +6,7 @@
     "relay": "relay-compiler && npm run lint",
     "schema": "npx ts-node ./app/scripts/schema.ts && npx prettier app/graphql/schema.graphql --write",
     "import": "npx ts-node ./app/scripts/import.ts",
+    "currencies": "npx ts-node ./app/scripts/currencies.ts",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
