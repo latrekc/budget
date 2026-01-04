@@ -93,14 +93,14 @@ importers:
         specifier: ^4.12.0
         version: 4.12.0(react@18.3.1)
       react-relay:
-        specifier: ^18.2.0
-        version: 18.2.0(react@18.3.1)
+        specifier: ^20.1.1
+        version: 20.1.1(react@18.3.1)
       relay-nextjs:
         specifier: ^3.0.1
         version: 3.0.1
       relay-runtime:
-        specifier: ^18.2.0
-        version: 18.2.0
+        specifier: ^20.1.1
+        version: 20.1.1
       usehooks-ts:
         specifier: ^2.16.0
         version: 2.16.0(react@18.3.1)
@@ -124,11 +124,11 @@ importers:
         specifier: ^18.3.12
         version: 18.3.12
       '@types/react-relay':
-        specifier: ^16.0.6
-        version: 16.0.6
+        specifier: ^18.2.1
+        version: 18.2.1
       '@types/relay-runtime':
-        specifier: ^18.2.0
-        version: 18.2.0
+        specifier: ^20.1.0
+        version: 20.1.0
       '@typescript-eslint/eslint-plugin':
         specifier: ^6.21.0
         version: 6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.7.2))(eslint@8.57.1)(typescript@5.7.2)
@@ -145,8 +145,8 @@ importers:
         specifier: ^6.23.0
         version: 6.23.0
       babel-plugin-relay:
-        specifier: ^18.2.0
-        version: 18.2.0
+        specifier: ^20.1.1
+        version: 20.1.1
       eslint:
         specifier: ^8.57.1
         version: 8.57.1
@@ -178,8 +178,8 @@ importers:
         specifier: ^4.6.2
         version: 4.6.2(eslint@8.57.1)
       eslint-plugin-relay:
-        specifier: ^1.8.3
-        version: 1.8.3
+        specifier: ^2.0.0
+        version: 2.0.0
       graphql:
         specifier: ^16.9.0
         version: 16.9.0
@@ -205,8 +205,8 @@ importers:
         specifier: ^5.22.0
         version: 5.22.0
       relay-compiler:
-        specifier: ^18.2.0
-        version: 18.2.0
+        specifier: ^20.1.1
+        version: 20.1.1
       tailwindcss:
         specifier: ^3.4.15
         version: 3.4.15(ts-node@10.9.2(@types/node@18.19.67)(typescript@5.7.2))
@@ -1674,14 +1674,14 @@ packages:
   '@types/react-dom@18.3.1':
     resolution: {integrity: sha512-qW1Mfv8taImTthu4KoXgDfLuk4bydU6Q/TkADnDWWHwi4NX4BR+LWfTp2sVmTqRrsHvyDDTelgelxJ+SsejKKQ==}
 
-  '@types/react-relay@16.0.6':
-    resolution: {integrity: sha512-VTntVQJhlwQYNUlbNgGf8RYy7EtQPRZqsD/w2Si0ygZspJXuNlVdRkklWMFN99EMRhHDpqlNHD8i3wIs7QRz9g==}
+  '@types/react-relay@18.2.1':
+    resolution: {integrity: sha512-KgmFapsxAylhxcFfaAv5GZZJhTHnDvV8IDZVsUm5afpJUvgZC1Y68ssfOGsFfiFY/2EhxHM/YPfpdKbfmF3Ecg==}
 
   '@types/react@18.3.12':
     resolution: {integrity: sha512-D2wOSq/d6Agt28q7rSI3jhU7G6aiuzljDGZ2hTZHIkrTLUI+AF3WMeKkEZ9nN2fkBAlcktT6vcZjDFiIhMYEQw==}
 
-  '@types/relay-runtime@18.2.0':
-    resolution: {integrity: sha512-BJ5N39QadH/mRQqytPlqcZSxq4E68oyrghMwy91ySHi2LAhD/CfnR3EjRjJ0QeYqma7pfKP1bGratLUefLzZvA==}
+  '@types/relay-runtime@20.1.0':
+    resolution: {integrity: sha512-KujDVDPWjvRxd4YBTp0ppYqOCrJhsVwH8v18vicUBFRfgG/mqEPfK1rpI2Bz7vL08/CUiyHv7CR3CnqE4PUpbA==}
 
   '@types/semver@7.5.8':
     resolution: {integrity: sha512-I8EUhyrgfLrcTkzV3TSsGyl1tSuPrEDzr0yd5m90UgNxQkyDXULk3b6MlQqTCpZpNtWe1K0hzclnZkTcLBe2UQ==}
@@ -1926,8 +1926,8 @@ packages:
   babel-plugin-macros@2.8.0:
     resolution: {integrity: sha512-SEP5kJpfGYqYKpBrj5XU3ahw5p5GOHJ0U5ssOSQ/WBVdwkD2Dzlce95exQTs3jOVWPPKLBN2rlEWkCK7dSmLvg==}
 
-  babel-plugin-relay@18.2.0:
-    resolution: {integrity: sha512-icTICGxKvlmhOvw+MESI/xBsY3J+vsNzgyq6/FL2c/hMnsYJ10IIM6Nps4M3cdUxQfS9CCUTXsbz2/kfmYLzhQ==}
+  babel-plugin-relay@20.1.1:
+    resolution: {integrity: sha512-BWlqLPiHbxZTxlyng2rVgsZCwztHNje7H8FR4c+UKy3ErQJBG6BKLr9vUdeR7mAZCH2v0sOAxNhG6zR1FrWjAg==}
 
   babel@6.23.0:
     resolution: {integrity: sha512-ZDcCaI8Vlct8PJ3DvmyqUz+5X2Ylz3ZuuItBe/74yXosk2dwyVo/aN7MCJ8HJzhnnJ+6yP4o+lDgG9MBe91DLA==}
@@ -2374,8 +2374,8 @@ packages:
     peerDependencies:
       eslint: ^3 || ^4 || ^5 || ^6 || ^7 || ^8 || ^9.7
 
-  eslint-plugin-relay@1.8.3:
-    resolution: {integrity: sha512-awyrwntUTZ7Z+lJUnniTCnJdZYr1dY2djQDARMx1P1y2BFMsBjtTljBK0lBEM7yiTHPBwVnE2OSnXxcD4yMb0A==}
+  eslint-plugin-relay@2.0.0:
+    resolution: {integrity: sha512-H52u+YM72VhBwhKrGSSdsjbeAWbLIgmph3z4Hgfyqm8Jt5pP5g9PbFmBp8kk10D4vZldrbNwa0esHxDRoczprg==}
 
   eslint-scope@7.2.2:
     resolution: {integrity: sha512-dOt21O7lTMhDM+X9mB4GX+DZrZtCUJPL/wlcTqxyrx5IvO0IYtILdtrQGQp+8n5S0gwSVmOf9NQrjMOgfQZlIg==}
@@ -2591,10 +2591,6 @@ packages:
 
   graphql@15.3.0:
     resolution: {integrity: sha512-GTCJtzJmkFLWRfFJuoo9RWWa/FfamUHgiFosxi/X1Ani4AVWbeyBenZTNX6dM+7WSbbFfTo/25eh0LLkwHMw2w==}
-    engines: {node: '>= 10.x'}
-
-  graphql@15.9.0:
-    resolution: {integrity: sha512-GCOQdvm7XxV1S4U4CGrsdlEN37245eC8P9zaYCMr6K1BG0IPGy5lUwmJsEOGyl1GD6HXjOtl2keCP9asRBwNvA==}
     engines: {node: '>= 10.x'}
 
   graphql@16.9.0:
@@ -3299,10 +3295,10 @@ packages:
   react-is@16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
 
-  react-relay@18.2.0:
-    resolution: {integrity: sha512-/yHlv4pj3IQQPtDzYLfVk6P4wrOSvYPu/5ySPcRp4xV3pn9xoVOHVczSLcZkRVf72lJu8CIjoT8rn3roaGoFyQ==}
+  react-relay@20.1.1:
+    resolution: {integrity: sha512-pwl7wHHXCOx32dOg4TVNkhVojgGVvOBMo9pcMGeM1BIFYvmwGauKTtBB+qr5buXHGooCL8TXjMVg+ZLizIsbeQ==}
     peerDependencies:
-      react: ^16.9.0 || ^17 || ^18
+      react: ^16.9.0 || ^17 || ^18 || ^19
 
   react-remove-scroll-bar@2.3.6:
     resolution: {integrity: sha512-DtSYaao4mBmX+HDo5YWYdBWQwYIQQshUV/dVxFxK+KM26Wjwp1gZ6rv6OC3oujI6Bfu6Xyg3TwK533AQutsn/g==}
@@ -3362,15 +3358,15 @@ packages:
     resolution: {integrity: sha512-vqlC04+RQoFalODCbCumG2xIOvapzVMHwsyIGM/SIE8fRhFFsXeH8/QQ+s0T0kDAhKc4k30s73/0ydkHQz6HlQ==}
     engines: {node: '>= 0.4'}
 
-  relay-compiler@18.2.0:
-    resolution: {integrity: sha512-P3o5/Gv/oLC9hckUaz/a+KvDgbFERpjtz5lgsJSIQILg9paaF3k1yaX9qSxErGuU4icZvjoK5G82a/bfPgGZpA==}
+  relay-compiler@20.1.1:
+    resolution: {integrity: sha512-J/FFFLS/3vnbDkyQMw8l3Ev7dNHXMgC1RAs0fITz4Q63TFPOw142knKxY1Mm5ZZBABkAs9g2JghXaqM+phwTxw==}
     hasBin: true
 
   relay-nextjs@3.0.1:
     resolution: {integrity: sha512-FQaQ59kQaDGchjXY5MYMsS0RXFPemXeqbT2CDZ07Jd7rM4lsTrItKTr1GZlJLomrlpvIN9ijNfokXR2ykBPWLA==}
 
-  relay-runtime@18.2.0:
-    resolution: {integrity: sha512-r4FYWlx1dPwFW+KQnuF1ugwVKR4toIFduCGheEf2paRc6nEEcCIgd2p2Jx2gRF+4niO3mCbRZvqdCoKaznUDzg==}
+  relay-runtime@20.1.1:
+    resolution: {integrity: sha512-N98ZkkyuIHdXmHaPuljihM1QbFYXATF0gxA0CESFphszsQzXs9A/zZloVfzdOI/xg3B3CfM/5nozvIoeTDIcfw==}
 
   resolve-from@3.0.0:
     resolution: {integrity: sha512-GnlH6vxLymXJNMBo7XP1fJIzBFbdYt49CuTwmB/6N53t+kMPRMFKz783LlQ4tv28XoQfMWinAJX6WCGf2IlaIw==}
@@ -6185,17 +6181,17 @@ snapshots:
     dependencies:
       '@types/react': 18.3.12
 
-  '@types/react-relay@16.0.6':
+  '@types/react-relay@18.2.1':
     dependencies:
       '@types/react': 18.3.12
-      '@types/relay-runtime': 18.2.0
+      '@types/relay-runtime': 20.1.0
 
   '@types/react@18.3.12':
     dependencies:
       '@types/prop-types': 15.7.13
       csstype: 3.1.3
 
-  '@types/relay-runtime@18.2.0': {}
+  '@types/relay-runtime@20.1.0': {}
 
   '@types/semver@7.5.8': {}
 
@@ -6506,7 +6502,7 @@ snapshots:
       cosmiconfig: 6.0.0
       resolve: 1.22.8
 
-  babel-plugin-relay@18.2.0:
+  babel-plugin-relay@20.1.1:
     dependencies:
       babel-plugin-macros: 2.8.0
       cosmiconfig: 5.2.1
@@ -7037,9 +7033,9 @@ snapshots:
       string.prototype.matchall: 4.0.11
       string.prototype.repeat: 1.0.0
 
-  eslint-plugin-relay@1.8.3:
+  eslint-plugin-relay@2.0.0:
     dependencies:
-      graphql: 15.9.0
+      graphql: 16.9.0
 
   eslint-scope@7.2.2:
     dependencies:
@@ -7319,8 +7315,6 @@ snapshots:
       tslib: 2.8.1
 
   graphql@15.3.0: {}
-
-  graphql@15.9.0: {}
 
   graphql@16.9.0: {}
 
@@ -7927,14 +7921,14 @@ snapshots:
 
   react-is@16.13.1: {}
 
-  react-relay@18.2.0(react@18.3.1):
+  react-relay@20.1.1(react@18.3.1):
     dependencies:
       '@babel/runtime': 7.26.0
       fbjs: 3.0.5
       invariant: 2.2.4
       nullthrows: 1.1.1
       react: 18.3.1
-      relay-runtime: 18.2.0
+      relay-runtime: 20.1.1
     transitivePeerDependencies:
       - encoding
 
@@ -8006,14 +8000,14 @@ snapshots:
       es-errors: 1.3.0
       set-function-name: 2.0.2
 
-  relay-compiler@18.2.0: {}
+  relay-compiler@20.1.1: {}
 
   relay-nextjs@3.0.1:
     dependencies:
       lodash.isequal: 4.5.0
       serialize-javascript: 5.0.1
 
-  relay-runtime@18.2.0:
+  relay-runtime@20.1.1:
     dependencies:
       '@babel/runtime': 7.26.0
       fbjs: 3.0.5

@@ -1,4 +1,5 @@
 module.exports = {
+  endOfLine: "auto",
   plugins: [
     "prettier-plugin-sql",
     "prettier-plugin-prisma",
