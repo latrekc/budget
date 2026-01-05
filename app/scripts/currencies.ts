@@ -92,4 +92,54 @@ program
     });
   });
 
+program
+  .command("convert-transactions")
+  .description(
+    "Calculate amount_converted for all non default currency transactions",
+  )
+  .action(async () => {
+    await prisma.$transaction(async (tx) => {
+      const transactions = await tx.transaction.findMany({
+        where: {
+          currency: {
+            not: DEFAULT_CURRENCY,
+          },
+        },
+      });
+
+      const converted = await Promise.all(
+        transactions
+          .map(async (transaction) => {
+            const rate = await tx.currencyExchangeRate.findFirst({
+              where: {
+                target: transaction.currency,
+                date: getUTCStartOfDate(transaction.date),
+              },
+              select: {
+                rate: true,
+              },
+            });
+
+            if (rate == null) {
+              return null;
+            }
+
+            return tx.transaction.update({
+              where: {
+                id: transaction.id,
+              },
+              data: {
+                amount_converted: Math.round(rate.rate * transaction.amount),
+              },
+            });
+          })
+          .filter((item) => item != null),
+      );
+
+      console.log(
+        `Converted ${converted.length} out of ${transactions.length} transactions`,
+      );
+    });
+  });
+
 program.parse();

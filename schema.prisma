@@ -15,14 +15,15 @@ datasource db {
 }
 
 model Transaction {
-  id          String                     @id @unique
-  source      String
-  date        DateTime
-  description String
-  amount      Int
-  currency    String
-  categories  TransactionsOnCategories[]
-  completed   Boolean                    @default(false)
+  id               String                     @id @unique
+  source           String
+  date             DateTime
+  description      String
+  amount           Int
+  amount_converted Int?
+  currency         String
+  categories       TransactionsOnCategories[]
+  completed        Boolean                    @default(false)
 
   @@map("transactions")
 }

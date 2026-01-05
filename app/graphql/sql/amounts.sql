@@ -25,3 +25,6 @@ SET
 
 ALTER TABLE transactions2categories
 DROP COLUMN old_amount;
+
+ALTER TABLE transactions
+ADD COLUMN amount_converted INT;
