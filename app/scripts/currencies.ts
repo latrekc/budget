@@ -51,15 +51,15 @@ program
       delimiter: ",",
       onRecord: (record: {
         Date: string;
-        USD: string;
         EUR: string;
         RUB: string;
+        USD: string;
       }): ExchangeRateRecord => ({
         date: getUTCStartOfDate(parseDate(record.Date, "DD/MM/YYYY")),
         rates: {
-          USD: parseFloat(record.USD),
           EUR: parseFloat(record.EUR),
           RUB: parseFloat(record.EUR),
+          USD: parseFloat(record.USD),
         },
       }),
       trim: true,
@@ -111,12 +111,12 @@ program
         transactions
           .map(async (transaction) => {
             const rate = await tx.currencyExchangeRate.findFirst({
-              where: {
-                target: transaction.currency,
-                date: getUTCStartOfDate(transaction.date),
-              },
               select: {
                 rate: true,
+              },
+              where: {
+                date: getUTCStartOfDate(transaction.date),
+                target: transaction.currency,
               },
             });
 
@@ -125,11 +125,11 @@ program
             }
 
             return tx.transaction.update({
-              where: {
-                id: transaction.id,
-              },
               data: {
                 amount_converted: Math.round(rate.rate * transaction.amount),
+              },
+              where: {
+                id: transaction.id,
               },
             });
           })
