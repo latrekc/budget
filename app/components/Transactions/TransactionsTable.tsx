@@ -82,6 +82,7 @@ export default function TransactionsTable({
               id
               completed
               amount
+              amount_converted
               ...TransactionsTable_RenderCell
             }
           }
@@ -124,10 +125,13 @@ export default function TransactionsTable({
     return new Set(ids);
   }, [selectedTransactions]);
 
-  const transactionAmounts: Map<string, number> = useMemo(
+  const transactionAmounts: Map<string, [number, number]> = useMemo(
     () =>
       (transactions?.edges || []).reduce((amounts, edge) => {
-        amounts.set(edge?.node.id, edge?.node.amount);
+        amounts.set(edge?.node.id, [
+          edge?.node.amount,
+          edge?.node.amount_converted,
+        ]);
 
         return amounts;
       }, new Map()),
@@ -143,11 +147,16 @@ export default function TransactionsTable({
       if (selected instanceof Set) {
         setSelectedTransactions(
           new Set(
-            [...selected.values()].map((select) => ({
-              amount: transactionAmounts.get(select.toString()) ?? 0,
-              amount_converted: null,
-              transaction: select.toString(),
-            })),
+            [...selected.values()].map((select) => {
+              const selectedAmount = transactionAmounts.get(
+                select.toString(),
+              ) ?? [0, null];
+              return {
+                amount: selectedAmount[0],
+                amount_converted: selectedAmount[1],
+                transaction: select.toString(),
+              };
+            }),
           ),
         );
       }

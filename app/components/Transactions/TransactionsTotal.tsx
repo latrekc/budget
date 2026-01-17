@@ -44,13 +44,18 @@ export default function TransactionsTotal({
       selectedTransactions === "all" ||
       selectedTransactions.size === transactionsTotal?.count
         ? 0
-        : [...selectedTransactions].reduce((sum, { amount }) => {
-            if (amount > 0) {
-              sum += amount;
-            }
+        : [...selectedTransactions].reduce(
+            (sum, { amount, amount_converted: amountConverted }) => {
+              const baseAmount = amountConverted ?? amount;
+              console.log(amount, amountConverted, baseAmount);
+              if (baseAmount > 0) {
+                sum += baseAmount;
+              }
 
-            return sum;
-          }, 0),
+              return sum;
+            },
+            0,
+          ),
     [selectedTransactions, transactionsTotal?.count],
   );
 
@@ -59,13 +64,17 @@ export default function TransactionsTotal({
       selectedTransactions === "all" ||
       selectedTransactions.size === transactionsTotal?.count
         ? 0
-        : [...selectedTransactions].reduce((sum, { amount }) => {
-            if (amount < 0) {
-              sum += amount;
-            }
+        : [...selectedTransactions].reduce(
+            (sum, { amount, amount_converted: amountConverted }) => {
+              const baseAmount = amountConverted ?? amount;
+              if (baseAmount < 0) {
+                sum += baseAmount;
+              }
 
-            return sum;
-          }, 0),
+              return sum;
+            },
+            0,
+          ),
     [selectedTransactions, transactionsTotal?.count],
   );
 
