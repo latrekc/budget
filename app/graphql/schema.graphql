@@ -281,8 +281,8 @@ type Transaction {
 
 type TransactionTotal {
   count: Int!
-  income_converted: Int!
-  outcome_converted: Int!
+  income: Int!
+  outcome: Int!
 }
 
 type TransactionsOnCategories {

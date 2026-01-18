@@ -337,10 +337,10 @@ const transactionTotal = builder.simpleObject("TransactionTotal", {
     count: t.int({
       nullable: false,
     }),
-    income_converted: t.int({
+    income: t.int({
       nullable: false,
     }),
-    outcome_converted: t.int({
+    outcome: t.int({
       nullable: false,
     }),
   }),
@@ -393,8 +393,8 @@ builder.queryField("transactionsTotal", (t) =>
 
       return {
         count,
-        income_converted: income._sum.amount_converted ?? 0,
-        outcome_converted: outcome._sum.amount_converted ?? 0,
+        income: income._sum.amount_converted ?? 0,
+        outcome: outcome._sum.amount_converted ?? 0,
       };
     },
     type: transactionTotal,

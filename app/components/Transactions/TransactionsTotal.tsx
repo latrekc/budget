@@ -23,8 +23,8 @@ export default function TransactionsTotal({
       @refetchable(queryName: "TransactionsTotalQuery") {
         transactionsTotal(filters: $filters) {
           count
-          income_converted
-          outcome_converted
+          income
+          outcome
         }
       }
     `,
@@ -32,8 +32,8 @@ export default function TransactionsTotal({
   );
   const transactionsTotal = data.transactionsTotal ?? {
     count: 0,
-    income_converted: 0,
-    outcome_converted: 0,
+    income: 0,
+    outcome: 0,
   };
 
   const { subscribe } = usePubSub();
@@ -94,14 +94,12 @@ export default function TransactionsTotal({
           transactionsTotal={transactionsTotal.count}
         />{" "}
         <b>{transactionsTotal.count}</b> transactions
-        {transactionsTotal.income_converted > 0 ||
-        transactionsTotal.outcome_converted < 0
+        {transactionsTotal.income > 0 || transactionsTotal.outcome < 0
           ? " for "
           : null}
-        {transactionsTotal.income_converted > 0 && (
+        {transactionsTotal.income > 0 && (
           <>
-            {selectedSome &&
-            transactionsTotal.income_converted != selectedIncome ? (
+            {selectedSome && transactionsTotal.income != selectedIncome ? (
               <>
                 <AmountValue
                   amount={selectedIncome}
@@ -112,20 +110,18 @@ export default function TransactionsTotal({
               </>
             ) : null}
             <AmountValue
-              amount={transactionsTotal.income_converted}
+              amount={transactionsTotal.income}
               currency={DEFAULT_CURRENCY}
               size={Size.Small}
             />
           </>
         )}
-        {transactionsTotal.income_converted > 0 &&
-        transactionsTotal.outcome_converted < 0
+        {transactionsTotal.income > 0 && transactionsTotal.outcome < 0
           ? " and "
           : null}
-        {transactionsTotal.outcome_converted < 0 && (
+        {transactionsTotal.outcome < 0 && (
           <>
-            {selectedSome &&
-            transactionsTotal.outcome_converted != selectedOutcome ? (
+            {selectedSome && transactionsTotal.outcome != selectedOutcome ? (
               <>
                 <AmountValue
                   amount={selectedOutcome}
@@ -136,7 +132,7 @@ export default function TransactionsTotal({
               </>
             ) : null}
             <AmountValue
-              amount={transactionsTotal.outcome_converted}
+              amount={transactionsTotal.outcome}
               currency={DEFAULT_CURRENCY}
               size={Size.Small}
             />
