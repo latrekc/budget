@@ -5,7 +5,6 @@ import prisma, { parseId, parseIdString } from "../../lib/prisma";
 import {
   AmountRelation,
   Currency,
-  DEFAULT_CURRENCY,
   SortBy,
   Source,
   enumFromStringValue,
@@ -371,55 +370,31 @@ builder.queryField("transactionsTotal", (t) =>
           lt: 0,
         },
       };
-      const base: Prisma.TransactionWhereInput = {
-        currency: DEFAULT_CURRENCY,
-      };
-      const notBase: Prisma.TransactionWhereInput = {
-        currency: {
-          not: DEFAULT_CURRENCY,
-        },
-      };
+      const andFilters = (where: Prisma.TransactionWhereInput) =>
+        filters != undefined
+          ? {
+              AND: [filters, where],
+            }
+          : where;
 
-      const andFilters = (
-        filters: Array<Prisma.TransactionWhereInput | undefined>,
-      ) => ({
-        AND: filters.filter((filter) => filter != undefined),
-      });
-
-      const incomeBase = await prisma.transaction.aggregate({
-        _sum: {
-          amount: true,
-        },
-        where: andFilters([filters, gt, base]),
-      });
-      const incomeConverted = await prisma.transaction.aggregate({
+      const income = await prisma.transaction.aggregate({
         _sum: {
           amount_converted: true,
         },
-        where: andFilters([filters, gt, notBase]),
+        where: andFilters(gt),
       });
 
       const outcome = await prisma.transaction.aggregate({
         _sum: {
-          amount: true,
-        },
-        where: andFilters([filters, lt, base]),
-      });
-      const outcomeConverted = await prisma.transaction.aggregate({
-        _sum: {
           amount_converted: true,
         },
-        where: andFilters([filters, lt, notBase]),
+        where: andFilters(lt),
       });
 
       return {
         count,
-        income_converted:
-          (incomeBase._sum.amount ?? 0) +
-          (incomeConverted._sum.amount_converted ?? 0),
-        outcome_converted:
-          (outcome._sum.amount ?? 0) +
-          (outcomeConverted._sum.amount_converted ?? 0),
+        income_converted: income._sum.amount_converted ?? 0,
+        outcome_converted: outcome._sum.amount_converted ?? 0,
       };
     },
     type: transactionTotal,
