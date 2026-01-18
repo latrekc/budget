@@ -10,22 +10,22 @@ FROM
   (
     SELECT
       t.source AS source,
-      SUM(amount) AS sum
+      SUM(amount_converted) AS sum
     FROM
       transactions t
     WHERE
-      amount > 0
+      amount_converted > 0
     GROUP BY
       source
   ) AS income
   FULL OUTER JOIN (
     SELECT
       t.source AS source,
-      SUM(amount) AS sum
+      SUM(amount_converted) AS sum
     FROM
       transactions t
     WHERE
-      amount < 0
+      amount_converted < 0
     GROUP BY
       source
   ) AS outcome ON income.source = outcome.source
