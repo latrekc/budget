@@ -5,6 +5,7 @@ import prisma, { parseId, parseIdString } from "../../lib/prisma";
 import {
   AmountRelation,
   Currency,
+  DEFAULT_CURRENCY,
   SortBy,
   Source,
   enumFromStringValue,
@@ -337,11 +338,11 @@ const transactionTotal = builder.simpleObject("TransactionTotal", {
     count: t.int({
       nullable: false,
     }),
-    income: t.int({
-      nullable: true,
+    income_converted: t.int({
+      nullable: false,
     }),
-    outcome: t.int({
-      nullable: true,
+    outcome_converted: t.int({
+      nullable: false,
     }),
   }),
 });
@@ -360,44 +361,65 @@ builder.queryField("transactionsTotal", (t) =>
         where: filters,
       });
 
-      const gt = {
+      const gt: Prisma.TransactionWhereInput = {
         amount: {
           gt: 0,
         },
       };
-      const lt = {
+      const lt: Prisma.TransactionWhereInput = {
         amount: {
           lt: 0,
         },
       };
+      const base: Prisma.TransactionWhereInput = {
+        currency: DEFAULT_CURRENCY,
+      };
+      const notBase: Prisma.TransactionWhereInput = {
+        currency: {
+          not: DEFAULT_CURRENCY,
+        },
+      };
 
-      const income = await prisma.transaction.aggregate({
+      const andFilters = (
+        filters: Array<Prisma.TransactionWhereInput | undefined>,
+      ) => ({
+        AND: filters.filter((filter) => filter != undefined),
+      });
+
+      const incomeBase = await prisma.transaction.aggregate({
         _sum: {
           amount: true,
         },
-        where:
-          filters != undefined
-            ? {
-                AND: [filters, gt],
-              }
-            : gt,
+        where: andFilters([filters, gt, base]),
       });
+      const incomeConverted = await prisma.transaction.aggregate({
+        _sum: {
+          amount_converted: true,
+        },
+        where: andFilters([filters, gt, notBase]),
+      });
+
       const outcome = await prisma.transaction.aggregate({
         _sum: {
           amount: true,
         },
-        where:
-          filters != undefined
-            ? {
-                AND: [filters, lt],
-              }
-            : lt,
+        where: andFilters([filters, lt, base]),
+      });
+      const outcomeConverted = await prisma.transaction.aggregate({
+        _sum: {
+          amount_converted: true,
+        },
+        where: andFilters([filters, lt, notBase]),
       });
 
       return {
         count,
-        income: income._sum.amount,
-        outcome: outcome._sum.amount,
+        income_converted:
+          (incomeBase._sum.amount ?? 0) +
+          (incomeConverted._sum.amount_converted ?? 0),
+        outcome_converted:
+          (outcome._sum.amount ?? 0) +
+          (outcomeConverted._sum.amount_converted ?? 0),
       };
     },
     type: transactionTotal,

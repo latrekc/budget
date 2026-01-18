@@ -65,7 +65,7 @@ export default function AmountValue({
   return (
     <span
       className={`${
-        secondary
+        secondary || amount === 0
           ? "text-default-500"
           : amount > 0
             ? "text-green-900"
