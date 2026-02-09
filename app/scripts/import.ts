@@ -170,7 +170,7 @@ program
       currency: enumFromStringValue(Currency, record.Currency),
       date: parseDate(record.Date, "DD-MM-YYYY"),
       description: record.Description,
-      id: record["TransferWise ID"],
+      id: record["TransferWise ID"] + "-" + record.Currency,
       source: Source.Wise,
     }));
 
