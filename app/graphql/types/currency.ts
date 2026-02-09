@@ -1,10 +1,6 @@
+import { getUTCStartOfDate, getUTCStartOfDateString } from "../../lib/dates";
 import prisma, { parseIdString } from "../../lib/prisma";
-import {
-  Currency,
-  enumFromStringValue,
-  getUTCStartOfDate,
-  getUTCStartOfDateString,
-} from "../../lib/types";
+import { Currency, enumFromStringValue } from "../../lib/types";
 import { builder } from "../builder";
 
 builder.prismaObject("CurrencyExchangeRate", {

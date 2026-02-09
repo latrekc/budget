@@ -4,13 +4,9 @@ import { parse } from "csv-parse/sync";
 import { parse as parseDate } from "date-format-parse";
 import * as fs from "fs";
 import * as path from "path";
+import { getUTCStartOfDate, getUTCStartOfDateString } from "../lib/dates";
 import prisma from "../lib/prisma";
-import {
-  DEFAULT_CURRENCY,
-  getUTCStartOfDate,
-  getUTCStartOfDateString,
-  NonDefaultCurrency,
-} from "../lib/types";
+import { DEFAULT_CURRENCY, NonDefaultCurrency } from "../lib/types";
 const program = new Command();
 
 type ExchangeRateRecord = {

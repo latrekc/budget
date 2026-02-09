@@ -7,11 +7,12 @@ import * as fs from "fs";
 import hash from "object-hash";
 import * as path from "path";
 
+import { getTransactionsCurrencyRates } from "../lib/currency_rates";
 import prisma from "../lib/prisma";
 import {
   Currency,
   Source,
-  Transaction,
+  TransactionWithoutAmountConverted,
   enumFromStringValue,
 } from "../lib/types";
 
@@ -55,12 +56,21 @@ function parsePathToOFXDirectory(filepath: string): string {
   return directoryPath;
 }
 
-async function upsertTransactions(type: Source, records: Transaction[]) {
+async function upsertTransactions(
+  type: Source,
+  records: TransactionWithoutAmountConverted[],
+) {
   const countBefore = await prisma.transaction.count();
+  const currencyRates = await getTransactionsCurrencyRates(records);
 
   const inserts = records.map((record) =>
     prisma.transaction.upsert({
-      create: { ...record },
+      create: {
+        ...record,
+        amount_converted: Math.round(
+          record.amount * currencyRates.get(record.id)!,
+        ),
+      },
       select: { id: true },
       update: {},
       where: { id: record.id },
@@ -79,8 +89,8 @@ async function upsertTransactions(type: Source, records: Transaction[]) {
 
 function parseTransactionsFile<T>(
   csvFilePath: string,
-  onRecord: (record: T) => Transaction,
-): Transaction[] {
+  onRecord: (record: T) => TransactionWithoutAmountConverted,
+): TransactionWithoutAmountConverted[] {
   const fileContent = fs.readFileSync(csvFilePath, { encoding: "utf-8" });
 
   return parse(fileContent, {
@@ -176,7 +186,7 @@ program
     parsePathToOFXDirectory,
   )
   .action(async (directoryPath: string) => {
-    const records: Transaction[] = [];
+    const records: TransactionWithoutAmountConverted[] = [];
     const ofxParser = new OfxParser();
 
     const accountCurrencies = new Map([

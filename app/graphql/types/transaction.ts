@@ -1,16 +1,17 @@
 import { Prisma } from "@prisma/client";
 import { parse as parseDate } from "date-format-parse";
 
+import {
+  getTransactionCurrencyRate,
+  getTransactionsCurrencyRates,
+} from "../../lib/currency_rates";
 import prisma, { parseId, parseIdString } from "../../lib/prisma";
 import {
   AmountRelation,
   Currency,
-  DEFAULT_CURRENCY,
   SortBy,
   Source,
   enumFromStringValue,
-  getUTCStartOfDate,
-  getUTCStartOfDateString,
 } from "../../lib/types";
 import { builder } from "../builder";
 
@@ -72,9 +73,6 @@ export type TransactionFilter = {
   sortBy?: SortBy | null;
   sources?: null | string[];
 };
-
-type TransactionsCurrencyRates = Map<number | string, number>;
-type Transaction = Prisma.TransactionGetPayload<Prisma.TransactionDefaultArgs>;
 
 builder.enumType(AmountRelation, {
   name: "AmountRelation",
@@ -623,72 +621,3 @@ builder.mutationFields((t) => ({
     type: ["Transaction"],
   }),
 }));
-
-function getTransactionCurrencyRate(
-  currencyRates: TransactionsCurrencyRates,
-  transactionId: number | string,
-): number {
-  const rate = currencyRates.get(transactionId);
-
-  if (rate == null) {
-    throw new Error(`Unknown rate of ${transactionId}`);
-  }
-
-  return rate;
-}
-
-async function getTransactionsCurrencyRates(
-  transactions: Array<Transaction>,
-): Promise<TransactionsCurrencyRates> {
-  const transactionDates = Array.from(
-    new Set(
-      transactions.map((transaction) => getUTCStartOfDate(transaction.date)),
-    ),
-  );
-
-  console.log(
-    "dates",
-    transactionDates,
-    transactionDates.map((date) => getUTCStartOfDateString(date)),
-  );
-
-  const exchangeRatesData = await prisma.currencyExchangeRate.findMany({
-    where: {
-      base: DEFAULT_CURRENCY,
-      date: {
-        in: transactionDates,
-      },
-    },
-  });
-
-  const exchangeRatesPerDate = exchangeRatesData.reduce(
-    (rates, { date, rate, target }) => {
-      const key = target + getUTCStartOfDateString(date);
-      console.log("SET", target + getUTCStartOfDateString(date), rates);
-
-      return rates.set(key, rate);
-    },
-    new Map<string, number>(),
-  );
-
-  return transactions.reduce((result, { currency, date, id }) => {
-    if (currency === DEFAULT_CURRENCY) {
-      return result.set(id, 1);
-    }
-
-    console.log(
-      "GET",
-      currency + getUTCStartOfDateString(date),
-      exchangeRatesPerDate,
-    );
-
-    const key = currency + getUTCStartOfDateString(date);
-    const rate = exchangeRatesPerDate.get(key);
-    if (rate == null) {
-      throw new Error(
-        `Can't find exchange rate for ${currency} on ${getUTCStartOfDateString(date)}`,
-      );
-    }
-    return result.set(id, rate);
-  }, new Map<number | string, number>());
-}

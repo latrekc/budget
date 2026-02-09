@@ -14,7 +14,8 @@ import {
 import { Dispatch, useCallback, useMemo, useState } from "react";
 import { graphql, useFragment } from "react-relay";
 
-import { DEFAULT_CURRENCY, monthNames } from "@/lib/types";
+import { monthNames } from "@/lib/dates";
+import { DEFAULT_CURRENCY } from "@/lib/types";
 import AmountValue, { Size } from "../AmountValue";
 import {
   FiltersReducerAction,
