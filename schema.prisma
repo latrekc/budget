@@ -67,7 +67,8 @@ model TransactionsOnCategories {
   category   Category @relation(fields: [categoryId], references: [id])
   categoryId Int
 
-  amount Int
+  amount           Int
+  amount_converted Int
 
   @@id([transactionId, categoryId])
   @@map("transactions2categories")

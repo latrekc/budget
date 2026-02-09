@@ -77,6 +77,10 @@ export function getUTCStartOfDate(date: Date): Date {
   );
 }
 
-export function getUTCDateString(date: Date): string {
+function getUTCDateString(date: Date): string {
   return date.toISOString().split("T")[0];
+}
+
+export function getUTCStartOfDateString(date: Date): string {
+  return getUTCDateString(getUTCStartOfDate(date));
 }

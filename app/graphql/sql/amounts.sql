@@ -34,3 +34,6 @@ SET
   amount_converted = amount
 WHERE
   currency = "GBP";
+
+ALTER TABLE transactions2categories
+ADD COLUMN amount_converted INT;

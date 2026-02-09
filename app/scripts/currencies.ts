@@ -7,8 +7,8 @@ import * as path from "path";
 import prisma from "../lib/prisma";
 import {
   DEFAULT_CURRENCY,
-  getUTCDateString,
   getUTCStartOfDate,
+  getUTCStartOfDateString,
   NonDefaultCurrency,
 } from "../lib/types";
 const program = new Command();
@@ -81,7 +81,7 @@ program
           Object.entries(rates).map(([currency, rate]) => ({
             base: DEFAULT_CURRENCY,
             date: date.toISOString(),
-            id: `${DEFAULT_CURRENCY}-${currency}-${getUTCDateString(date)}`,
+            id: `${DEFAULT_CURRENCY}-${currency}-${getUTCStartOfDateString(date)}`,
             rate,
             target: currency,
           })),

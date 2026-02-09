@@ -17,13 +17,13 @@ FROM
         "%Y-%m",
         datetime (t.date / 1000, 'unixepoch', 'localtime')
       ) AS monthId,
-      SUM(t2c.amount) AS sum,
+      SUM(t2c.amount_converted) AS sum,
       t2c.categoryId
     FROM
       transactions t
       JOIN transactions2categories t2c ON t2c.transactionId = t.id
     WHERE
-      t2c.amount > 0
+      t2c.amount_converted > 0
     GROUP BY
       monthId,
       categoryId
@@ -34,13 +34,13 @@ FROM
         "%Y-%m",
         datetime (t.date / 1000, 'unixepoch', 'localtime')
       ) AS monthId,
-      SUM(t2c.amount) AS sum,
+      SUM(t2c.amount_converted) AS sum,
       t2c.categoryId
     FROM
       transactions t
       JOIN transactions2categories t2c ON t2c.transactionId = t.id
     WHERE
-      t2c.amount < 0
+      t2c.amount_converted < 0
     GROUP BY
       monthId,
       categoryId
