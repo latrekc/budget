@@ -4,6 +4,10 @@ import { parse } from "csv-parse/sync";
 import { parse as parseDate } from "date-format-parse";
 import * as fs from "fs";
 import * as path from "path";
+import {
+  getTransactionCurrencyRate,
+  getTransactionsCurrencyRates,
+} from "../lib/currency_rates";
 import { getUTCStartOfDate, getUTCStartOfDateString } from "../lib/dates";
 import prisma from "../lib/prisma";
 import { DEFAULT_CURRENCY, NonDefaultCurrency } from "../lib/types";
@@ -102,38 +106,57 @@ program
           },
         },
       });
+      const transactionOnCategories =
+        await tx.transactionsOnCategories.findMany({
+          where: {
+            transactionId: {
+              in: transactions.map(({ id }) => id),
+            },
+          },
+        });
 
-      const converted = await Promise.all(
+      const currencyRates = await getTransactionsCurrencyRates(transactions);
+
+      const convertedTransactions = await Promise.all(
         transactions
-          .map(async (transaction) => {
-            const rate = await tx.currencyExchangeRate.findFirst({
-              select: {
-                rate: true,
-              },
-              where: {
-                date: getUTCStartOfDate(transaction.date),
-                target: transaction.currency,
-              },
-            });
-
-            if (rate == null) {
-              return null;
-            }
-
-            return tx.transaction.update({
+          .map(async ({ amount, id }) =>
+            tx.transaction.update({
               data: {
-                amount_converted: Math.round(rate.rate * transaction.amount),
+                amount_converted: Math.round(
+                  amount * getTransactionCurrencyRate(currencyRates, id),
+                ),
               },
               where: {
-                id: transaction.id,
+                id,
               },
-            });
-          })
+            }),
+          )
+          .filter((item) => item != null),
+      );
+
+      const convertedTransactionsOnCategories = await Promise.all(
+        transactionOnCategories
+          .map(async ({ amount, categoryId, transactionId }) =>
+            tx.transactionsOnCategories.update({
+              data: {
+                amount_converted: Math.round(
+                  amount *
+                    getTransactionCurrencyRate(currencyRates, transactionId),
+                ),
+              },
+              where: {
+                transactionId_categoryId: {
+                  categoryId,
+                  transactionId,
+                },
+              },
+            }),
+          )
           .filter((item) => item != null),
       );
 
       console.log(
-        `Converted ${converted.length} out of ${transactions.length} transactions`,
+        `Converted ${convertedTransactions.length} out of ${transactions.length} transactions, and ${convertedTransactionsOnCategories.length} out of ${transactionOnCategories.length} transactions on categories  `,
       );
     });
   });
