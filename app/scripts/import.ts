@@ -48,6 +48,19 @@ function parsePathToOfxFile(filepath: string): string {
   return ofxFilePath;
 }
 
+function parsePathToJSONFile(filepath: string): string {
+  if (!filepath.endsWith(".json")) {
+    throw new InvalidArgumentError("Not a JSON file.");
+  }
+  const jsonFilePath = path.resolve(__dirname, filepath);
+
+  if (!fs.existsSync(jsonFilePath)) {
+    throw new InvalidArgumentError(`File doesn't exist`);
+  }
+
+  return jsonFilePath;
+}
+
 function parsePathToOFXDirectory(filepath: string): string {
   const directoryPath = path.resolve(__dirname, filepath);
 
@@ -270,6 +283,79 @@ program
         source: Source.Barclays,
       });
     });
+
+    await upsertTransactions(Source.Barclays, records);
+  });
+
+program
+  .command("barclays-amazon")
+  .description("Import Barclays Amazon transactions (JSON export format)")
+  .argument("<path>", "path to Barclays export file", parsePathToJSONFile)
+  .action(async (jsonFilePath: string) => {
+    const content = fs.readFileSync(jsonFilePath, "utf-8");
+    const response: {
+      error: boolean;
+      httpStatus: number;
+      responseBody: {
+        data: {
+          attributes: {
+            declinedBanner: boolean;
+            moreTxnsInTheLastGroup: boolean;
+            pagination: {
+              next: null | string;
+            };
+            transactionGroups: {
+              labelShort: string;
+              totalAmount: {
+                currency: string;
+                value: string;
+              };
+              transactions: {
+                amount: {
+                  currency: string;
+                  value: string;
+                };
+                category: null;
+                dateTime: string;
+                heading: string;
+                id: null | string;
+                logo: null | string;
+                status: string;
+                subheading: string;
+                supplementaryInfo: null;
+                transactionDate: null | string;
+              }[];
+            }[];
+          };
+          id: string;
+          type: string;
+        };
+      };
+    } = JSON.parse(content);
+
+    const records: TransactionWithoutAmountConverted[] =
+      response.responseBody.data.attributes.transactionGroups.flatMap((group) =>
+        group.transactions
+          .filter(
+            (transaction) =>
+              transaction.status !== "PERNDING" &&
+              transaction.dateTime != null &&
+              transaction.id != null,
+          )
+          .map((transaction) => ({
+            amount: Math.round(
+              (parseFloat(transaction.amount.value) ?? 0) * 100,
+            ),
+            currency: enumFromStringValue(
+              Currency,
+              transaction.amount.currency,
+            ),
+            date: new Date(transaction.dateTime),
+            description: transaction.heading,
+            id: transaction.id!,
+            source: Source.Barclays,
+          })),
+      );
 
     await upsertTransactions(Source.Barclays, records);
   });
