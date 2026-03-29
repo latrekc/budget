@@ -343,7 +343,7 @@ program
               transaction.id != null,
           )
           .map((transaction) => ({
-            amount: Math.round(
+            amount: -Math.round(
               (parseFloat(transaction.amount.value) ?? 0) * 100,
             ),
             currency: enumFromStringValue(
