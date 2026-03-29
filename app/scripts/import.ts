@@ -35,6 +35,19 @@ function parsePathToCsvFile(filepath: string): string {
   return csvFilePath;
 }
 
+function parsePathToOfxFile(filepath: string): string {
+  if (!filepath.endsWith(".ofx")) {
+    throw new InvalidArgumentError("Not an OFX file.");
+  }
+  const ofxFilePath = path.resolve(__dirname, filepath);
+
+  if (!fs.existsSync(ofxFilePath)) {
+    throw new InvalidArgumentError(`File doesn't exist`);
+  }
+
+  return ofxFilePath;
+}
+
 function parsePathToOFXDirectory(filepath: string): string {
   const directoryPath = path.resolve(__dirname, filepath);
 
@@ -91,7 +104,9 @@ function parseTransactionsFile<T>(
   csvFilePath: string,
   onRecord: (record: T) => TransactionWithoutAmountConverted,
 ): TransactionWithoutAmountConverted[] {
-  const fileContent = fs.readFileSync(csvFilePath, { encoding: "utf-8" });
+  const fileContent = fs
+    .readFileSync(csvFilePath, { encoding: "utf-8" })
+    .trim();
 
   return parse(fileContent, {
     columns: true,
@@ -228,6 +243,35 @@ program
       });
 
     await upsertTransactions(Source.HSBC, records);
+  });
+
+program
+  .command("barclays-current")
+  .description("Import Barclays transactions (OFX export format)")
+  .argument("<path>", "path to Barclays export file", parsePathToOfxFile)
+  .action(async (ofxFilePath: string) => {
+    const records: TransactionWithoutAmountConverted[] = [];
+    const ofxParser = new OfxParser();
+    const content = fs.readFileSync(ofxFilePath, "utf-8");
+    const ofx = await ofxParser.parseStatement(content);
+
+    const currencyMatch = content.match(/<CURDEF>([A-Z]+)/);
+    const currency = currencyMatch
+      ? enumFromStringValue(Currency, currencyMatch[1])
+      : Currency.GBP;
+
+    ofx.transactions?.forEach((transaction) => {
+      records.push({
+        amount: Math.round((transaction.amount ?? 0) * 100),
+        currency,
+        date: transaction.datePosted ?? new Date(),
+        description: [transaction.name, transaction.memo].join(" "),
+        id: transaction.fitId ?? "",
+        source: Source.Barclays,
+      });
+    });
+
+    await upsertTransactions(Source.Barclays, records);
   });
 
 program.parse();

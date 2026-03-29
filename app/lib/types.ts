@@ -1,4 +1,5 @@
 export enum Source {
+  Barclays = "Barclays",
   HSBC = "HSBC",
   Monzo = "Monzo",
   Raiffeisen = "Raiffeisen",
