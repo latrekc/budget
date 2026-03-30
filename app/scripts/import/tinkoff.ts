@@ -1,5 +1,6 @@
 import { Command } from "commander";
 import { parse as parseDate } from "date-format-parse";
+import hash from "object-hash";
 import { Currency, enumFromStringValue, Source } from "../../lib/types";
 import {
   parsePathToCsvFile,
@@ -14,19 +15,33 @@ export const parseTinkoff = (program: Command) =>
     .argument("<path>", "path to Tinkoff export file", parsePathToCsvFile)
     .action(async (csvFilePath: string) => {
       const records = parseTransactionsFile<{
-        Amount: string;
-        Currency: string;
-        Date: string;
-        Description: string;
-        "TransferWise ID": string;
-      }>(csvFilePath, (record) => ({
-        amount: Math.round(parseFloat(record.Amount) * 100),
-        currency: enumFromStringValue(Currency, record.Currency),
-        date: parseDate(record.Date, "DD-MM-YYYY"),
-        description: record.Description,
-        id: record["TransferWise ID"] + "-" + record.Currency,
-        source: Source.Wise,
-      }));
+        MCC: string;
+        "Бонусы (включая кэшбэк)": string;
+        "Валюта операции": string;
+        "Валюта платежа": string;
+        "Дата операции": string;
+        "Дата платежа": string;
+        Категория: string;
+        Кэшбэк: string;
+        "Номер карты": string;
+        "Округление на инвесткопилку": string;
+        Описание: string;
+        Статус: string;
+        "Сумма операции": string;
+        "Сумма операции с округлением": string;
+        "Сумма платежа": string;
+      }>(
+        csvFilePath,
+        (record) => ({
+          amount: Math.round(parseFloat(record["Сумма операции"]) * 100),
+          currency: enumFromStringValue(Currency, record["Валюта операции"]),
+          date: parseDate(record["Дата операции"], "DD.MM.YYYY"),
+          description: record["Описание"],
+          id: hash(record),
+          source: Source.Tinkoff,
+        }),
+        { customEncoding: "cp1251", delimiter: ";" },
+      );
 
-      await upsertTransactions(Source.Wise, records);
+      await upsertTransactions(Source.Tinkoff, records);
     });

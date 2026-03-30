@@ -8,6 +8,8 @@ import * as path from "path";
 import { getTransactionsCurrencyRates } from "../../lib/currency_rates";
 import prisma from "../../lib/prisma";
 
+import { decode } from "iconv-lite";
+
 export function parsePathToCsvFile(filepath: string): string {
   if (!filepath.endsWith(".csv")) {
     throw new InvalidArgumentError("Not a CSV file.");
@@ -102,14 +104,20 @@ export async function upsertTransactions(
 export function parseTransactionsFile<T>(
   csvFilePath: string,
   onRecord: (record: T) => TransactionWithoutAmountConverted,
+  options?: { customEncoding?: string; delimiter?: string },
 ): TransactionWithoutAmountConverted[] {
-  const fileContent = fs
-    .readFileSync(csvFilePath, { encoding: "utf-8" })
-    .trim();
+  let fileContent: string;
 
-  return parse(fileContent, {
+  if (options?.customEncoding != null) {
+    const encoded = fs.readFileSync(csvFilePath, { encoding: null });
+    fileContent = decode(encoded, options.customEncoding);
+  } else {
+    fileContent = fs.readFileSync(csvFilePath, { encoding: "utf-8" });
+  }
+
+  return parse(fileContent.trim(), {
     columns: true,
-    delimiter: ",",
+    delimiter: options?.delimiter ?? ",",
     onRecord,
     trim: true,
   });
