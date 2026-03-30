@@ -22,7 +22,10 @@ type CurrenciesStatistic {
 enum Currency {
   EUR
   GBP
+  HUF
+  JPY
   RUB
+  TRY
   USD
 }
 
@@ -235,6 +238,7 @@ enum SortBy {
 }
 
 enum Source {
+  Barclays
   HSBC
   Monzo
   Raiffeisen
@@ -287,6 +291,7 @@ type TransactionTotal {
 
 type TransactionsOnCategories {
   amount: Int
+  amount_converted: Int
   category: Category
   transaction: Transaction
 }

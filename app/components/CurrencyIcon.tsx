@@ -3,6 +3,7 @@ import {
   PiCurrencyDollarBold,
   PiCurrencyEurBold,
   PiCurrencyGbpBold,
+  PiCurrencyJpyBold,
   PiCurrencyRubBold,
 } from "react-icons/pi";
 
@@ -16,5 +17,9 @@ export default function CurrencyIcon({ currency }: { currency: Currency }) {
       return <PiCurrencyRubBold />;
     case Currency.USD:
       return <PiCurrencyDollarBold />;
+    case Currency.JPY:
+      return <PiCurrencyJpyBold />;
+    default:
+      return Currency[currency];
   }
 }

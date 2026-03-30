@@ -52,13 +52,19 @@ program
       onRecord: (record: {
         Date: string;
         EUR: string;
+        HUF?: string;
+        JPY?: string;
         RUB: string;
+        TRY?: string;
         USD: string;
       }): ExchangeRateRecord => ({
         date: getUTCStartOfDate(parseDate(record.Date, "DD/MM/YYYY")),
         rates: {
           EUR: parseFloat(record.EUR),
-          RUB: parseFloat(record.EUR),
+          HUF: parseFloat(record.HUF ?? "0"),
+          JPY: parseFloat(record.JPY ?? "0"),
+          RUB: parseFloat(record.RUB),
+          TRY: parseFloat(record.TRY ?? "0"),
           USD: parseFloat(record.USD),
         },
       }),
@@ -78,13 +84,15 @@ program
 
       const imported = await tx.currencyExchangeRate.createMany({
         data: data.flatMap(({ date, rates }) =>
-          Object.entries(rates).map(([currency, rate]) => ({
-            base: DEFAULT_CURRENCY,
-            date: date.toISOString(),
-            id: `${DEFAULT_CURRENCY}-${currency}-${getUTCStartOfDateString(date)}`,
-            rate,
-            target: currency,
-          })),
+          Object.entries(rates)
+            .filter(([, rate]) => rate != 0 && isNaN(rate) === false)
+            .map(([currency, rate]) => ({
+              base: DEFAULT_CURRENCY,
+              date: date.toISOString(),
+              id: `${DEFAULT_CURRENCY}-${currency}-${getUTCStartOfDateString(date)}`,
+              rate,
+              target: currency,
+            })),
         ),
       });
 

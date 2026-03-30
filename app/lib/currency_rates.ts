@@ -46,17 +46,29 @@ export async function getTransactionsCurrencyRates(
     new Map<string, number>(),
   );
 
-  return transactions.reduce((result, { currency, date, id }) => {
-    if (currency === DEFAULT_CURRENCY) {
-      return result.set(id, 1);
-    }
-    const key = currency + getUTCStartOfDateString(date);
-    const rate = exchangeRatesPerDate.get(key);
-    if (rate == null) {
-      throw new Error(
-        `Can't find exchange rate for ${currency} on ${getUTCStartOfDateString(date)}`,
-      );
-    }
-    return result.set(id, rate);
-  }, new Map<number | string, number>());
+  const result = transactions.reduce(
+    (result, { currency, date, id }) => {
+      if (currency === DEFAULT_CURRENCY) {
+        result.rates.set(id, 1);
+        return result;
+      }
+      const key = currency + getUTCStartOfDateString(date);
+      const rate = exchangeRatesPerDate.get(key);
+      if (rate == null) {
+        result.errors.add(`${currency} on ${getUTCStartOfDateString(date)}`);
+        return result;
+      }
+      result.rates.set(id, rate);
+      return result;
+    },
+    { errors: new Set<string>(), rates: new Map<number | string, number>() },
+  );
+
+  if (result.errors != null && result.errors.size > 0) {
+    throw new Error(
+      `Can't find exchange rate for: ${Array.from(result.errors).sort().join("\n")}`,
+    );
+  }
+
+  return result.rates;
 }

@@ -12,7 +12,10 @@ export enum Source {
 export enum Currency {
   EUR = "EUR",
   GBP = "GBP",
+  HUF = "HUF",
+  JPY = "JPY",
   RUB = "RUB",
+  TRY = "TRY",
   USD = "USD",
 }
 
