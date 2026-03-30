@@ -6,6 +6,7 @@ import { parseBarclaysAmazon } from "./import/barclays-amazon";
 import { parseHsbc } from "./import/hsbc";
 import { parseMonzo } from "./import/monzo";
 import { parseRevolut } from "./import/revolut";
+import { parseSberbank } from "./import/sberbank";
 import { parseTinkoff } from "./import/tinkoff";
 import { parseWise } from "./import/wise";
 
@@ -23,6 +24,7 @@ program
   parseHsbc,
   parseBarclays,
   parseBarclaysAmazon,
+  parseSberbank,
 ].forEach((parser) => parser(program));
 
 program.parse();

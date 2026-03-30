@@ -10,9 +10,9 @@ import prisma from "../../lib/prisma";
 
 import { decode } from "iconv-lite";
 
-export function parsePathToCsvFile(filepath: string): string {
-  if (!filepath.endsWith(".csv")) {
-    throw new InvalidArgumentError("Not a CSV file.");
+function parsePathToFile(filepath: string, extension: string): string {
+  if (!filepath.endsWith(`.${extension}`)) {
+    throw new InvalidArgumentError(`Not a ${extension.toUpperCase()} file.`);
   }
   const csvFilePath = path.resolve(__dirname, filepath);
 
@@ -23,33 +23,19 @@ export function parsePathToCsvFile(filepath: string): string {
   return csvFilePath;
 }
 
+export function parsePathToCsvFile(filepath: string): string {
+  return parsePathToFile(filepath, "csv");
+}
+
 export function parsePathToOfxFile(filepath: string): string {
-  if (!filepath.endsWith(".ofx")) {
-    throw new InvalidArgumentError("Not an OFX file.");
-  }
-  const ofxFilePath = path.resolve(__dirname, filepath);
-
-  if (!fs.existsSync(ofxFilePath)) {
-    throw new InvalidArgumentError(`File doesn't exist`);
-  }
-
-  return ofxFilePath;
+  return parsePathToFile(filepath, "ofx");
 }
 
 export function parsePathToJSONFile(filepath: string): string {
-  if (!filepath.endsWith(".json")) {
-    throw new InvalidArgumentError("Not a JSON file.");
-  }
-  const jsonFilePath = path.resolve(__dirname, filepath);
-
-  if (!fs.existsSync(jsonFilePath)) {
-    throw new InvalidArgumentError(`File doesn't exist`);
-  }
-
-  return jsonFilePath;
+  return parsePathToFile(filepath, "json");
 }
 
-export function parsePathToOFXDirectory(filepath: string): string {
+function parsePathToDirectory(filepath: string, extension: string): string {
   const directoryPath = path.resolve(__dirname, filepath);
 
   if (!fs.existsSync(directoryPath)) {
@@ -61,13 +47,24 @@ export function parsePathToOFXDirectory(filepath: string): string {
   }
 
   if (
-    fs.readdirSync(directoryPath).filter((value) => value.endsWith(".ofx"))
-      .length === 0
+    fs
+      .readdirSync(directoryPath)
+      .filter((value) => value.endsWith(`.${extension}`)).length === 0
   ) {
-    throw new InvalidArgumentError(`Directory doesn't contain OFX files`);
+    throw new InvalidArgumentError(
+      `Directory doesn't contain ${extension.toUpperCase()} files`,
+    );
   }
 
   return directoryPath;
+}
+
+export function parsePathToOFXDirectory(filepath: string): string {
+  return parsePathToDirectory(filepath, "ofx");
+}
+
+export function parsePathToCSVDirectory(filepath: string): string {
+  return parsePathToDirectory(filepath, "csv");
 }
 
 export async function upsertTransactions(
