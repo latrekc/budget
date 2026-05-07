@@ -1,10 +1,10 @@
 # Budget
 
 
-## Update schemas
+## Install
 
-```bash
+```
 npx prisma generate
 pnpm run schema
-pnpm run relay
+pnpm run relay     
 ```
