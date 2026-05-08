@@ -11,7 +11,7 @@ export default function CurrencyRates({ currency }: { currency: Currency }) {
     graphql`
       query CurrencyRatesQuery(
         $first: Int
-        $after: ID
+        $after: String
         $base: Currency!
         $target: Currency!
         $currency: Currency!

@@ -14,7 +14,7 @@ FROM
   (
     SELECT
       strftime (
-        "%Y-%m",
+        '%Y-%m',
         datetime (t.date / 1000, 'unixepoch', 'localtime')
       ) AS monthId,
       SUM(t2c.amount_converted) AS sum,
@@ -31,7 +31,7 @@ FROM
   FULL OUTER JOIN (
     SELECT
       strftime (
-        "%Y-%m",
+        '%Y-%m',
         datetime (t.date / 1000, 'unixepoch', 'localtime')
       ) AS monthId,
       SUM(t2c.amount_converted) AS sum,

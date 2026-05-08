@@ -1,8 +1,7 @@
 {
   "compilerOptions": {
-    "baseUrl": "./",
     "paths": {
-      "@/*": ["app/*"]
+      "@/*": ["./app/*"]
     },
     "strict": true,
     "jsx": "preserve",

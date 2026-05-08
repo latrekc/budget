@@ -11,15 +11,15 @@ FROM
   (
     SELECT
       strftime (
-        "%Y",
+        '%Y',
         datetime (t.date / 1000, 'unixepoch', 'localtime')
       ) AS year,
       strftime (
-        "%m",
+        '%m',
         datetime (t.date / 1000, 'unixepoch', 'localtime')
       ) AS month,
       strftime (
-        "%Y-%m",
+        '%Y-%m',
         datetime (t.date / 1000, 'unixepoch', 'localtime')
       ) AS monthId,
       SUM(amount_converted) AS sum
@@ -35,15 +35,15 @@ FROM
   FULL OUTER JOIN (
     SELECT
       strftime (
-        "%Y",
+        '%Y',
         datetime (t.date / 1000, 'unixepoch', 'localtime')
       ) AS year,
       strftime (
-        "%m",
+        '%m',
         datetime (t.date / 1000, 'unixepoch', 'localtime')
       ) AS month,
       strftime (
-        "%Y-%m",
+        '%Y-%m',
         datetime (t.date / 1000, 'unixepoch', 'localtime')
       ) AS monthId,
       SUM(amount_converted) AS sum

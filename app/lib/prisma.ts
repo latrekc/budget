@@ -1,5 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { Prisma, PrismaClient } from "@prisma/client";
+import { Prisma } from "@prisma/client";
+
+import { PrismaClient } from ".prisma/client";
+
+import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
 
 const prismaClientPropertyName = `__prevent-name-collision__prisma`;
 type GlobalThisWithPrismaClient = {
@@ -9,7 +12,11 @@ type GlobalThisWithPrismaClient = {
 const getPrismaClient = () => {
   const newGlobalThis = globalThis as GlobalThisWithPrismaClient;
   if (!newGlobalThis[prismaClientPropertyName]) {
-    newGlobalThis[prismaClientPropertyName] = new PrismaClient();
+    newGlobalThis[prismaClientPropertyName] = new PrismaClient({
+      adapter: new PrismaBetterSqlite3({
+          url: "file:./database.sqlite",
+      }),
+    });
   }
   return newGlobalThis[prismaClientPropertyName];
 };

@@ -10,7 +10,7 @@ import TransactionsTable, { TransactionsSelection } from "./TransactionsTable";
 export const TransactionsQuery = graphql`
   query TransactionsQuery(
     $first: Int
-    $after: ID
+    $after: String
     $filters: FilterTransactionsInput
     $categoryFilters: FilterCategoryInput
   ) {

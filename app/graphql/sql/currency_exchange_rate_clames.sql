@@ -4,7 +4,7 @@ CREATE VIEW currency_exchange_rate_clames AS
 SELECT
   (
     currency || '-' || strftime (
-      "%Y-%m-%d",
+      '%Y-%m-%d',
       datetime (t.date / 1000, 'unixepoch', 'localtime')
     )
   ) AS id,
@@ -21,11 +21,11 @@ FROM
   transactions t
   LEFT OUTER JOIN currency_exchange_rates c ON t.currency = c.target
   AND strftime (
-      "%Y-%m-%d",
+      '%Y-%m-%d',
       datetime (t.date / 1000, 'unixepoch', 'localtime')
     
   ) = strftime (
-      "%Y-%m-%d",
+      '%Y-%m-%d',
       datetime (c.date / 1000, 'unixepoch', 'localtime')
     )
   
@@ -34,7 +34,7 @@ WHERE
 GROUP BY
   (
     currency || '-' || strftime (
-      "%Y-%m-%d",
+      '%Y-%m-%d',
       datetime (t.date / 1000, 'unixepoch', 'localtime')
     )
   )

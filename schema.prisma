@@ -1,17 +1,18 @@
 generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["views"]
+  output          = "node_modules/.prisma/client"
 }
 
 generator pothos {
-  provider        = "prisma-pothos-types"
+  provider = "pothos-prisma-generator"
   previewFeatures = ["views"]
   prismaUtils     = "true"
+  output   = "app/graphql/pothos-prisma.generated.ts"
 }
 
 datasource db {
   provider = "sqlite"
-  url      = "file:./database.sqlite"
 }
 
 model Transaction {
@@ -53,7 +54,7 @@ model CurrencyExchangeRate {
 }
 
 view CurrencyExchangeRateClaim {
-  id       String   @id @unique
+  id       String   @unique
   date     DateTime
   currency String
 
@@ -75,7 +76,7 @@ model TransactionsOnCategories {
 }
 
 view StatisticPerMonths {
-  id      String @id @unique
+  id      String @unique
   year    Int
   month   Int
   income  Int
@@ -85,7 +86,7 @@ view StatisticPerMonths {
 }
 
 view StatisticPerSource {
-  id      String @id @unique
+  id      String @unique
   income  Int
   outcome Int
   source  String
@@ -94,7 +95,7 @@ view StatisticPerSource {
 }
 
 view Statistic {
-  id      String @id @unique
+  id      String @unique
   monthId String
   income  Int
   outcome Int

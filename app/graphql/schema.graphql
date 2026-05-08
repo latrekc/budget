@@ -175,23 +175,23 @@ type Query {
   currencies(base: Currency!): [CurrenciesStatistic!]
   ok: Boolean
   rate_claims(
-    after: ID
-    before: ID
+    after: String
+    before: String
     currency: Currency!
     first: Int
     last: Int
   ): QueryRate_claimsConnection
   rates(
-    after: ID
+    after: String
     base: Currency!
-    before: ID
+    before: String
     first: Int
     last: Int
     target: Currency!
   ): QueryRatesConnection
   transactions(
-    after: ID
-    before: ID
+    after: String
+    before: String
     filters: FilterTransactionsInput
     first: Int
     last: Int
@@ -203,33 +203,33 @@ type Query {
 }
 
 type QueryRate_claimsConnection {
-  edges: [QueryRate_claimsConnectionEdge]!
+  edges: [QueryRate_claimsConnectionEdge]
   pageInfo: PageInfo!
 }
 
 type QueryRate_claimsConnectionEdge {
   cursor: String!
-  node: CurrencyExchangeRateClaim!
+  node: CurrencyExchangeRateClaim
 }
 
 type QueryRatesConnection {
-  edges: [QueryRatesConnectionEdge]!
+  edges: [QueryRatesConnectionEdge]
   pageInfo: PageInfo!
 }
 
 type QueryRatesConnectionEdge {
   cursor: String!
-  node: CurrencyExchangeRate!
+  node: CurrencyExchangeRate
 }
 
 type QueryTransactionsConnection {
-  edges: [QueryTransactionsConnectionEdge]!
+  edges: [QueryTransactionsConnectionEdge]
   pageInfo: PageInfo!
 }
 
 type QueryTransactionsConnectionEdge {
   cursor: String!
-  node: Transaction!
+  node: Transaction
 }
 
 enum SortBy {

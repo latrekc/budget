@@ -1,6 +1,6 @@
 import { Input } from "@nextui-org/react";
 import { Dispatch, useCallback, useEffect, useState } from "react";
-import { useDebounce } from "usehooks-ts";
+import { useDebounceValue } from "usehooks-ts";
 
 import {
   FiltersReducerAction,
@@ -16,7 +16,7 @@ export default function DescriptionFilter({
   filters: FiltersState;
 }) {
   const [searchValue, setSearchValue] = useState<string>(filters.search ?? "");
-  const debouncedSearch = useDebounce<string>(searchValue, 500);
+  const [debouncedSearch] = useDebounceValue<string>(searchValue, 500);
 
   const onSearch = useCallback((search: string) => setSearchValue(search), []);
 

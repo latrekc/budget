@@ -8,7 +8,7 @@ import {
   Selection,
 } from "@nextui-org/react";
 import { Dispatch, useCallback, useEffect, useMemo, useState } from "react";
-import { useDebounce } from "usehooks-ts";
+import { useDebounceValue } from "usehooks-ts";
 
 import { FaEquals, FaGreaterThan, FaLessThan } from "react-icons/fa";
 
@@ -27,7 +27,7 @@ export default function AmountFilter({
   filters: FiltersState;
 }) {
   const [amountValue, setAmountValue] = useState<string>(filters.amount ?? "");
-  const debouncedAmount = useDebounce<string>(amountValue, 500);
+  const [debouncedAmount] = useDebounceValue<string>(amountValue, 500);
 
   const onSearch = useCallback((amount: string) => setAmountValue(amount), []);
 

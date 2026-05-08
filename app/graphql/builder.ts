@@ -8,7 +8,7 @@ import PrismaUtils from "@pothos/plugin-prisma-utils";
 import RelayPlugin from "@pothos/plugin-relay";
 import SimpleObjectsPlugin from "@pothos/plugin-simple-objects";
 import { DateTimeResolver } from "graphql-scalars";
-
+import { prismaDmmf } from "./pothos-prisma.generated";
 import prisma from "../lib/prisma";
 
 export const builder = new SchemaBuilder<{
@@ -21,10 +21,6 @@ export const builder = new SchemaBuilder<{
     };
   };
 }>({
-  defaultFieldNullability: true,
-  errorOptions: {
-    defaultTypes: [],
-  },
   plugins: [
     PrismaPlugin,
     PrismaUtils,
@@ -34,8 +30,9 @@ export const builder = new SchemaBuilder<{
   ],
   prisma: {
     client: prisma,
+    dmmf: prismaDmmf,
+    exposeDescriptions: true,
   },
-  relayOptions: {},
 });
 
 builder.objectType(Error, {
