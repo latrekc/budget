@@ -1,4 +1,5 @@
 export enum Source {
+  Barclays = "Barclays",
   HSBC = "HSBC",
   Monzo = "Monzo",
   Raiffeisen = "Raiffeisen",
@@ -11,20 +12,30 @@ export enum Source {
 export enum Currency {
   EUR = "EUR",
   GBP = "GBP",
+  HUF = "HUF",
+  JPY = "JPY",
   RUB = "RUB",
+  TRY = "TRY",
   USD = "USD",
 }
 
 export const DEFAULT_CURRENCY = Currency.GBP;
 
+export type NonDefaultCurrency = Exclude<Currency, Currency.GBP>;
+
 export type Transaction = {
   amount: number;
+  amountConverted: number;
   currency: Currency;
   date: Date;
   description: string;
   id: string;
   source: Source;
 };
+export type TransactionWithoutAmountConverted = Omit<
+  Transaction,
+  "amountConverted"
+>;
 
 export enum AmountRelation {
   EQUAL = "EQUAL",
@@ -45,23 +56,9 @@ export function enumFromStringValue<T>(
 
 export enum PubSubChannels {
   Categories = "Categories",
+  CurrencyExchangeRates = "CurrencyExchangeRates",
   Transactions = "Transactions",
 }
-
-export const monthNames = new Map([
-  [1, "January"],
-  [2, "February"],
-  [3, "March"],
-  [4, "April"],
-  [5, "May"],
-  [6, "June"],
-  [7, "July"],
-  [8, "August"],
-  [9, "September"],
-  [10, "October"],
-  [11, "November"],
-  [12, "December"],
-]);
 
 export enum SortBy {
   Amount = "Amount",

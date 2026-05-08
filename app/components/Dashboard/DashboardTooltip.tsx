@@ -1,4 +1,5 @@
-import { DEFAULT_CURRENCY, monthNames } from "@/lib/types";
+import { monthNames } from "@/lib/dates";
+import { DEFAULT_CURRENCY } from "@/lib/types";
 import {
   ScrollShadow,
   Table,

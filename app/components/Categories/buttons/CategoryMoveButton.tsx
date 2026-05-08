@@ -13,7 +13,7 @@ import { graphql, useFragment, useMutation } from "react-relay";
 
 import { PubSubChannels } from "@/lib/types";
 import CategoryAutocomplete from "../CategoryAutocomplete";
-import { CategoryAutocompleteQuery$data } from "../__generated__/CategoryAutocompleteQuery.graphql";
+import { CategoryAutocomplete$data } from "../__generated__/CategoryAutocomplete.graphql";
 import { CategoryMoveButton$key } from "./__generated__/CategoryMoveButton.graphql";
 import { CategoryMoveButtonMutation } from "./__generated__/CategoryMoveButtonMutation.graphql";
 import { CategoryMoveButton_Categories$key } from "./__generated__/CategoryMoveButton_Categories.graphql";
@@ -81,7 +81,7 @@ export default function CategoryMoveButton({
   }, [id, parentCategory, subCategories]);
 
   const filterCallback = useCallback(
-    (categories: CategoryAutocompleteQuery$data["categories"]) =>
+    (categories: CategoryAutocomplete$data["categories_for_autocomplete"]) =>
       categories?.filter(
         (category) =>
           !ignoreIds.includes(category.id) &&

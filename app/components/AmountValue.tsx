@@ -40,7 +40,7 @@ export function AmountValueFormat({
     displayAmount = Math.abs(displayAmount);
   }
 
-  return new Intl.NumberFormat("en-GB", {
+  return new Intl.NumberFormat("en-US", {
     currency: currency,
     maximumFractionDigits: round ? 0 : 2,
     style: "currency",
@@ -52,18 +52,24 @@ export default function AmountValue({
   amount,
   currency,
   round,
+  secondary = false,
   size = Size.Normal,
 }: {
   abs?: boolean;
   amount: number;
   currency: Currency;
   round?: boolean;
+  secondary?: boolean;
   size?: Size;
 }) {
   return (
     <span
       className={`${
-        amount > 0 ? "text-green-900" : "text-red-900"
+        secondary || amount === 0
+          ? "text-default-500"
+          : amount > 0
+            ? "text-green-900"
+            : "text-red-900"
       } text-mono whitespace-nowrap ${getTextSize(size)}`}
     >
       {AmountValueFormat({ abs, amount, currency, round })}

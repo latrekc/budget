@@ -1,5 +1,6 @@
 import { builder } from "./builder";
 import "./types/category";
+import "./types/currency";
 import "./types/statistic";
 import "./types/transaction";
 

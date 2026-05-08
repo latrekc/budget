@@ -99,8 +99,9 @@ export default function useTransactionSetCategory({
           },
           variables: {
             transactions: transactions.map((transaction) => ({
-              ...transaction,
+              amount: transaction.amount,
               category: transaction.category ?? key.toString(),
+              transaction: transaction.transaction,
             })),
           },
         });

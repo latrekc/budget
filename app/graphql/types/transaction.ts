@@ -1,6 +1,10 @@
 import { Prisma } from "@prisma/client";
 import { parse as parseDate } from "date-format-parse";
 
+import {
+  getTransactionCurrencyRate,
+  getTransactionsCurrencyRates,
+} from "../../lib/currency_rates";
 import prisma, { parseId, parseIdString } from "../../lib/prisma";
 import {
   AmountRelation,
@@ -26,6 +30,7 @@ builder.enumType(SortBy, {
 builder.prismaObject("Transaction", {
   fields: (t) => ({
     amount: t.exposeInt("amount"),
+    amount_converted: t.exposeInt("amount_converted"),
     categories: t.relation("categories"),
     completed: t.exposeBoolean("completed"),
     currency: t.field({
@@ -49,6 +54,7 @@ builder.prismaObject("Transaction", {
 builder.prismaObject("TransactionsOnCategories", {
   fields: (t) => ({
     amount: t.exposeInt("amount"),
+    amount_converted: t.exposeInt("amount_converted"),
     category: t.relation("category"),
     transaction: t.relation("transaction"),
   }),
@@ -337,10 +343,10 @@ const transactionTotal = builder.simpleObject("TransactionTotal", {
       nullable: false,
     }),
     income: t.int({
-      nullable: true,
+      nullable: false,
     }),
     outcome: t.int({
-      nullable: true,
+      nullable: false,
     }),
   }),
 });
@@ -359,44 +365,41 @@ builder.queryField("transactionsTotal", (t) =>
         where: filters,
       });
 
-      const gt = {
+      const gt: Prisma.TransactionWhereInput = {
         amount: {
           gt: 0,
         },
       };
-      const lt = {
+      const lt: Prisma.TransactionWhereInput = {
         amount: {
           lt: 0,
         },
       };
+      const andFilters = (where: Prisma.TransactionWhereInput) =>
+        filters != undefined
+          ? {
+              AND: [filters, where],
+            }
+          : where;
 
       const income = await prisma.transaction.aggregate({
         _sum: {
-          amount: true,
+          amount_converted: true,
         },
-        where:
-          filters != undefined
-            ? {
-                AND: [filters, gt],
-              }
-            : gt,
+        where: andFilters(gt),
       });
+
       const outcome = await prisma.transaction.aggregate({
         _sum: {
-          amount: true,
+          amount_converted: true,
         },
-        where:
-          filters != undefined
-            ? {
-                AND: [filters, lt],
-              }
-            : lt,
+        where: andFilters(lt),
       });
 
       return {
         count,
-        income: income._sum.amount,
-        outcome: outcome._sum.amount,
+        income: income._sum.amount_converted ?? 0,
+        outcome: outcome._sum.amount_converted ?? 0,
       };
     },
     type: transactionTotal,
@@ -490,6 +493,7 @@ builder.mutationFields((t) => ({
         orderBy: [{ date: "desc" }],
         where: await filtersToWhere(args.filters),
       });
+      const currencyRates = await getTransactionsCurrencyRates(transactions);
 
       const transactionIds = transactions.map(({ id }) => id);
 
@@ -516,6 +520,9 @@ builder.mutationFields((t) => ({
         prisma.transactionsOnCategories.create({
           data: {
             amount,
+            amount_converted: Math.round(
+              amount * getTransactionCurrencyRate(currencyRates, transactionId),
+            ),
             categoryId,
             transactionId,
           },
@@ -559,6 +566,8 @@ builder.mutationFields((t) => ({
         },
       });
 
+      const currencyRates = await getTransactionsCurrencyRates(transactions);
+
       const transactionAmounts = args.transactions.reduce(
         (amounts, { amount, transaction }) => {
           amounts.set(
@@ -584,12 +593,16 @@ builder.mutationFields((t) => ({
       );
 
       const inserts = args.transactions.map(
-        ({ amount, category, transaction }) =>
+        ({ amount, category, transaction: transactionId }) =>
           prisma.transactionsOnCategories.create({
             data: {
               amount,
+              amount_converted: Math.round(
+                amount *
+                  getTransactionCurrencyRate(currencyRates, transactionId),
+              ),
               categoryId: parseId(category)!,
-              transactionId: parseIdString(transaction)!,
+              transactionId: parseIdString(transactionId)!,
             },
           }),
       );

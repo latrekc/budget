@@ -25,3 +25,15 @@ SET
 
 ALTER TABLE transactions2categories
 DROP COLUMN old_amount;
+
+ALTER TABLE transactions
+ADD COLUMN amount_converted INT;
+
+UPDATE TABLE transactions
+SET
+  amount_converted = amount
+WHERE
+  currency = "GBP";
+
+ALTER TABLE transactions2categories
+ADD COLUMN amount_converted INT;

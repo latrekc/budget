@@ -31,6 +31,7 @@ module.exports = {
       parser: "@typescript-eslint/parser",
       parserOptions: {
         project: "tsconfig.json",
+        warnOnUnsupportedTypeScriptVersion: false,
       },
       plugins: ["relay", "perfectionist"],
       rules: {

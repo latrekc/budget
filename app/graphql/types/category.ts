@@ -17,7 +17,7 @@ async function resolveAmount(
     (info.variableValues.filters as TransactionFilter) ??
     (info.variableValues.statisticFilters as TransactionFilter);
 
-  if (relation === "income" && filters?.onlyIncome === true) {
+  if (relation === "outcome" && filters?.onlyIncome === true) {
     return 0;
   }
 
@@ -46,11 +46,11 @@ async function resolveAmount(
   }
 
   const result = await prisma.transactionsOnCategories.aggregate({
-    _sum: { amount: true },
+    _sum: { amount_converted: true },
     where,
   });
 
-  return result._sum.amount ?? 0;
+  return result._sum.amount_converted ?? 0;
 }
 
 builder.prismaObject("Category", {

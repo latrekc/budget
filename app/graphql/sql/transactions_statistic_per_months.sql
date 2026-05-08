@@ -22,11 +22,11 @@ FROM
         "%Y-%m",
         datetime (t.date / 1000, 'unixepoch', 'localtime')
       ) AS monthId,
-      SUM(amount) AS sum
+      SUM(amount_converted) AS sum
     FROM
       transactions t
     WHERE
-      amount > 0
+      amount_converted > 0
     GROUP BY
       monthId,
       year,
@@ -46,11 +46,11 @@ FROM
         "%Y-%m",
         datetime (t.date / 1000, 'unixepoch', 'localtime')
       ) AS monthId,
-      SUM(amount) AS sum
+      SUM(amount_converted) AS sum
     FROM
       transactions t
     WHERE
-      amount < 0
+      amount_converted < 0
     GROUP BY
       monthId,
       year,
