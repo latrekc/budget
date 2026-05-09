@@ -80,7 +80,7 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-relay": "^2.0.0",
     "graphql": "^16.14.0",
-    "postcss": "^8.5.14",
+    "postcss": "^8.5.10",
     "pothos-prisma-generator": "^1.3.11",
     "prettier": "^3.8.3",
     "prettier-plugin-organize-imports": "^4.3.0",
