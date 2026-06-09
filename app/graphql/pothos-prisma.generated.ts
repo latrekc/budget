@@ -1,5 +1,5 @@
 /* eslint-disable */
-import type { Prisma, Transaction, Category, CurrencyExchangeRate, TransactionsOnCategories, CurrencyExchangeRateClaim, StatisticPerMonths, StatisticPerSource, Statistic } from "./prisma/index.js";
+import type { Prisma, Transaction, Category, CurrencyExchangeRate, TransactionsOnCategories, CurrencyExchangeRateClaim, StatisticPerMonths, StatisticPerSource, Statistic } from "@prisma/client";
 import type { PothosPrismaDatamodel } from "@pothos/plugin-prisma";
 export default interface PrismaTypes {
     Transaction: {

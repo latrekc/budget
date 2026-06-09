@@ -8,7 +8,7 @@ generator pothos {
   provider        = "prisma-pothos-types"
   previewFeatures = ["views"]
   prismaUtils     = "true"
-  clientOutput    = "./prisma" // relative path from pothos output to prisma client
+  clientOutput    = "@prisma/client" // relative path from pothos output to prisma client
   output          = "app/graphql/pothos-prisma.generated.ts"
 }
 
