@@ -7,7 +7,7 @@ import { graphql, useFragment } from "react-relay";
 import { createRoot, Root } from "react-dom/client";
 
 import { DEFAULT_CURRENCY } from "@/lib/types";
-import { BarSeriesOption, graphic, SunburstSeriesOption } from "echarts";
+import type { BarSeriesOption, SunburstSeriesOption } from "echarts/types/dist/shared" with { "resolution-mode": "import" };
 import { AmountValueFormat } from "../AmountValue";
 import { CategoryChip$key } from "../Categories/__generated__/CategoryChip.graphql";
 import { useFilters } from "../Filters/FiltersProvider";
@@ -276,51 +276,65 @@ export default function DashboardByTimePeriods({
       return {
         color:
           grandParentCategory != undefined
-            ? new graphic.LinearGradient(0, 0, 1, 0, [
-                {
-                  color: grandParentCategory.color,
-                  offset: 0,
-                },
-                {
-                  color: grandParentCategory.color,
-                  offset: 0.5,
-                },
-                {
-                  color: parentCategory!.color,
-                  offset: 0.5,
-                },
-                {
-                  color: parentCategory!.color,
-                  offset: 0.75,
-                },
-                {
-                  color: category.color,
-                  offset: 0.75,
-                },
-                {
-                  color: category.color,
-                  offset: 1,
-                },
-              ])
-            : parentCategory != undefined
-              ? new graphic.LinearGradient(0, 0, 1, 0, [
+            ? {
+                type: "linear",
+                x: 0,
+                y: 0,
+                x2: 1,
+                y2: 0,
+                colorStops: [
                   {
-                    color: parentCategory.color,
+                    color: grandParentCategory.color,
                     offset: 0,
                   },
                   {
-                    color: parentCategory.color,
+                    color: grandParentCategory.color,
                     offset: 0.5,
                   },
                   {
-                    color: category.color,
+                    color: parentCategory!.color,
                     offset: 0.5,
+                  },
+                  {
+                    color: parentCategory!.color,
+                    offset: 0.75,
+                  },
+                  {
+                    color: category.color,
+                    offset: 0.75,
                   },
                   {
                     color: category.color,
                     offset: 1,
                   },
-                ])
+                ],
+              }
+            : parentCategory != undefined
+              ? {
+                  type: "linear",
+                  x: 0,
+                  y: 0,
+                  x2: 1,
+                  y2: 0,
+                  colorStops: [
+                    {
+                      color: parentCategory.color,
+                      offset: 0,
+                    },
+                    {
+                      color: parentCategory.color,
+                      offset: 0.5,
+                    },
+                    {
+                      color: category.color,
+                      offset: 0.5,
+                    },
+                    {
+                      color: category.color,
+                      offset: 1,
+                    },
+                  ],
+                }
               : category.color,
         data: monthsStatistic.map(({ month }) => {
           const value = categoryA.data.find((i) => i[0] === month);
