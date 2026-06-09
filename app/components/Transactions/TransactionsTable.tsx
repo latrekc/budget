@@ -128,9 +128,9 @@ export default function TransactionsTable({
   const transactionAmounts: Map<string, [number, number]> = useMemo(
     () =>
       (transactions?.edges || []).reduce((amounts, edge) => {
-        amounts.set(edge?.node.id, [
-          edge?.node.amount,
-          edge?.node.amount_converted,
+        amounts.set(edge?.node?.id, [
+          edge?.node?.amount,
+          edge?.node?.amount_converted,
         ]);
 
         return amounts;
@@ -244,11 +244,11 @@ export default function TransactionsTable({
         {(item) => (
           <TableRow
             className={`${
-              item?.node.completed
+              item?.node?.completed
                 ? "bg-white hover:bg-stone-100"
                 : "bg-lime-50 hover:bg-lime-100"
             } `}
-            key={item?.node.id}
+            key={item?.node?.id}
           >
             {(columnKey) => (
               <TableCell className={cellAlign(columnKey as Colunms)}>

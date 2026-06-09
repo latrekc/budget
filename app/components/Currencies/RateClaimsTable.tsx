@@ -142,7 +142,7 @@ export default function RateClaimsTable({
         {(item) => (
           <TableRow
             className={"bg-white hover:bg-stone-100"}
-            key={item?.node.id}
+            key={item?.node?.id}
           >
             {(columnKey) => (
               <TableCell className={cellAlign(columnKey as Colunms)}>
