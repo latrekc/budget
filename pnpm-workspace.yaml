@@ -5,3 +5,10 @@ allowBuilds:
   prisma: true
   sharp: false
   unrs-resolver: true
+
+ignoredBuiltDependencies:
+  - '@prisma/engines'
+  - better-sqlite3
+  - prisma
+  - sharp
+  - unrs-resolver
