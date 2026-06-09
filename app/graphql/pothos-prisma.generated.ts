@@ -1,939 +1,162 @@
-export const prismaDmmf = {
-  "datamodel": {
-    "enums": [],
-    "models": [
-      {
-        "name": "Transaction",
-        "dbName": "transactions",
-        "schema": null,
-        "fields": [
-          {
-            "name": "id",
-            "kind": "scalar",
-            "isList": false,
-            "isRequired": true,
-            "isUnique": false,
-            "isId": true,
-            "isReadOnly": false,
-            "hasDefaultValue": false,
-            "type": "String",
-            "nativeType": null,
-            "isGenerated": false,
-            "isUpdatedAt": false
-          },
-          {
-            "name": "source",
-            "kind": "scalar",
-            "isList": false,
-            "isRequired": true,
-            "isUnique": false,
-            "isId": false,
-            "isReadOnly": false,
-            "hasDefaultValue": false,
-            "type": "String",
-            "nativeType": null,
-            "isGenerated": false,
-            "isUpdatedAt": false
-          },
-          {
-            "name": "date",
-            "kind": "scalar",
-            "isList": false,
-            "isRequired": true,
-            "isUnique": false,
-            "isId": false,
-            "isReadOnly": false,
-            "hasDefaultValue": false,
-            "type": "DateTime",
-            "nativeType": null,
-            "isGenerated": false,
-            "isUpdatedAt": false
-          },
-          {
-            "name": "description",
-            "kind": "scalar",
-            "isList": false,
-            "isRequired": true,
-            "isUnique": false,
-            "isId": false,
-            "isReadOnly": false,
-            "hasDefaultValue": false,
-            "type": "String",
-            "nativeType": null,
-            "isGenerated": false,
-            "isUpdatedAt": false
-          },
-          {
-            "name": "amount",
-            "kind": "scalar",
-            "isList": false,
-            "isRequired": true,
-            "isUnique": false,
-            "isId": false,
-            "isReadOnly": false,
-            "hasDefaultValue": false,
-            "type": "Int",
-            "nativeType": null,
-            "isGenerated": false,
-            "isUpdatedAt": false
-          },
-          {
-            "name": "amount_converted",
-            "kind": "scalar",
-            "isList": false,
-            "isRequired": false,
-            "isUnique": false,
-            "isId": false,
-            "isReadOnly": false,
-            "hasDefaultValue": false,
-            "type": "Int",
-            "nativeType": null,
-            "isGenerated": false,
-            "isUpdatedAt": false
-          },
-          {
-            "name": "currency",
-            "kind": "scalar",
-            "isList": false,
-            "isRequired": true,
-            "isUnique": false,
-            "isId": false,
-            "isReadOnly": false,
-            "hasDefaultValue": false,
-            "type": "String",
-            "nativeType": null,
-            "isGenerated": false,
-            "isUpdatedAt": false
-          },
-          {
-            "name": "categories",
-            "kind": "object",
-            "isList": true,
-            "isRequired": true,
-            "isUnique": false,
-            "isId": false,
-            "isReadOnly": false,
-            "hasDefaultValue": false,
-            "type": "TransactionsOnCategories",
-            "nativeType": null,
-            "relationName": "TransactionToTransactionsOnCategories",
-            "relationFromFields": [],
-            "relationToFields": [],
-            "isGenerated": false,
-            "isUpdatedAt": false
-          },
-          {
-            "name": "completed",
-            "kind": "scalar",
-            "isList": false,
-            "isRequired": true,
-            "isUnique": false,
-            "isId": false,
-            "isReadOnly": false,
-            "hasDefaultValue": true,
-            "type": "Boolean",
-            "nativeType": null,
-            "default": false,
-            "isGenerated": false,
-            "isUpdatedAt": false
-          }
-        ],
-        "primaryKey": null,
-        "uniqueFields": [],
-        "uniqueIndexes": [],
-        "isGenerated": false
-      },
-      {
-        "name": "Category",
-        "dbName": "categories",
-        "schema": null,
-        "fields": [
-          {
-            "name": "id",
-            "kind": "scalar",
-            "isList": false,
-            "isRequired": true,
-            "isUnique": false,
-            "isId": true,
-            "isReadOnly": false,
-            "hasDefaultValue": true,
-            "type": "Int",
-            "nativeType": null,
-            "default": {
-              "name": "autoincrement",
-              "args": []
-            },
-            "isGenerated": false,
-            "isUpdatedAt": false
-          },
-          {
-            "name": "name",
-            "kind": "scalar",
-            "isList": false,
-            "isRequired": true,
-            "isUnique": false,
-            "isId": false,
-            "isReadOnly": false,
-            "hasDefaultValue": false,
-            "type": "String",
-            "nativeType": null,
-            "isGenerated": false,
-            "isUpdatedAt": false
-          },
-          {
-            "name": "parentCategory",
-            "kind": "object",
-            "isList": false,
-            "isRequired": false,
-            "isUnique": false,
-            "isId": false,
-            "isReadOnly": false,
-            "hasDefaultValue": false,
-            "type": "Category",
-            "nativeType": null,
-            "relationName": "ParentCategory",
-            "relationFromFields": [
-              "parentCategoryId"
-            ],
-            "relationToFields": [
-              "id"
-            ],
-            "isGenerated": false,
-            "isUpdatedAt": false
-          },
-          {
-            "name": "parentCategoryId",
-            "kind": "scalar",
-            "isList": false,
-            "isRequired": false,
-            "isUnique": false,
-            "isId": false,
-            "isReadOnly": true,
-            "hasDefaultValue": false,
-            "type": "Int",
-            "nativeType": null,
-            "isGenerated": false,
-            "isUpdatedAt": false
-          },
-          {
-            "name": "subCategories",
-            "kind": "object",
-            "isList": true,
-            "isRequired": true,
-            "isUnique": false,
-            "isId": false,
-            "isReadOnly": false,
-            "hasDefaultValue": false,
-            "type": "Category",
-            "nativeType": null,
-            "relationName": "ParentCategory",
-            "relationFromFields": [],
-            "relationToFields": [],
-            "isGenerated": false,
-            "isUpdatedAt": false
-          },
-          {
-            "name": "transactions",
-            "kind": "object",
-            "isList": true,
-            "isRequired": true,
-            "isUnique": false,
-            "isId": false,
-            "isReadOnly": false,
-            "hasDefaultValue": false,
-            "type": "TransactionsOnCategories",
-            "nativeType": null,
-            "relationName": "CategoryToTransactionsOnCategories",
-            "relationFromFields": [],
-            "relationToFields": [],
-            "isGenerated": false,
-            "isUpdatedAt": false
-          },
-          {
-            "name": "statistic",
-            "kind": "object",
-            "isList": true,
-            "isRequired": true,
-            "isUnique": false,
-            "isId": false,
-            "isReadOnly": false,
-            "hasDefaultValue": false,
-            "type": "Statistic",
-            "nativeType": null,
-            "relationName": "CategoryToStatistic",
-            "relationFromFields": [],
-            "relationToFields": [],
-            "isGenerated": false,
-            "isUpdatedAt": false
-          }
-        ],
-        "primaryKey": null,
-        "uniqueFields": [
-          [
-            "name",
-            "parentCategoryId"
-          ]
-        ],
-        "uniqueIndexes": [
-          {
-            "name": null,
-            "fields": [
-              "name",
-              "parentCategoryId"
-            ]
-          }
-        ],
-        "isGenerated": false
-      },
-      {
-        "name": "CurrencyExchangeRate",
-        "dbName": "currency_exchange_rates",
-        "schema": null,
-        "fields": [
-          {
-            "name": "id",
-            "kind": "scalar",
-            "isList": false,
-            "isRequired": true,
-            "isUnique": false,
-            "isId": true,
-            "isReadOnly": false,
-            "hasDefaultValue": false,
-            "type": "String",
-            "nativeType": null,
-            "isGenerated": false,
-            "isUpdatedAt": false
-          },
-          {
-            "name": "date",
-            "kind": "scalar",
-            "isList": false,
-            "isRequired": true,
-            "isUnique": false,
-            "isId": false,
-            "isReadOnly": false,
-            "hasDefaultValue": false,
-            "type": "DateTime",
-            "nativeType": null,
-            "isGenerated": false,
-            "isUpdatedAt": false
-          },
-          {
-            "name": "base",
-            "kind": "scalar",
-            "isList": false,
-            "isRequired": true,
-            "isUnique": false,
-            "isId": false,
-            "isReadOnly": false,
-            "hasDefaultValue": false,
-            "type": "String",
-            "nativeType": null,
-            "isGenerated": false,
-            "isUpdatedAt": false
-          },
-          {
-            "name": "target",
-            "kind": "scalar",
-            "isList": false,
-            "isRequired": true,
-            "isUnique": false,
-            "isId": false,
-            "isReadOnly": false,
-            "hasDefaultValue": false,
-            "type": "String",
-            "nativeType": null,
-            "isGenerated": false,
-            "isUpdatedAt": false
-          },
-          {
-            "name": "rate",
-            "kind": "scalar",
-            "isList": false,
-            "isRequired": true,
-            "isUnique": false,
-            "isId": false,
-            "isReadOnly": false,
-            "hasDefaultValue": false,
-            "type": "Float",
-            "nativeType": null,
-            "isGenerated": false,
-            "isUpdatedAt": false
-          }
-        ],
-        "primaryKey": null,
-        "uniqueFields": [
-          [
-            "date",
-            "base",
-            "target"
-          ]
-        ],
-        "uniqueIndexes": [
-          {
-            "name": null,
-            "fields": [
-              "date",
-              "base",
-              "target"
-            ]
-          }
-        ],
-        "isGenerated": false
-      },
-      {
-        "name": "TransactionsOnCategories",
-        "dbName": "transactions2categories",
-        "schema": null,
-        "fields": [
-          {
-            "name": "transaction",
-            "kind": "object",
-            "isList": false,
-            "isRequired": true,
-            "isUnique": false,
-            "isId": false,
-            "isReadOnly": false,
-            "hasDefaultValue": false,
-            "type": "Transaction",
-            "nativeType": null,
-            "relationName": "TransactionToTransactionsOnCategories",
-            "relationFromFields": [
-              "transactionId"
-            ],
-            "relationToFields": [
-              "id"
-            ],
-            "isGenerated": false,
-            "isUpdatedAt": false
-          },
-          {
-            "name": "transactionId",
-            "kind": "scalar",
-            "isList": false,
-            "isRequired": true,
-            "isUnique": false,
-            "isId": false,
-            "isReadOnly": true,
-            "hasDefaultValue": false,
-            "type": "String",
-            "nativeType": null,
-            "isGenerated": false,
-            "isUpdatedAt": false
-          },
-          {
-            "name": "category",
-            "kind": "object",
-            "isList": false,
-            "isRequired": true,
-            "isUnique": false,
-            "isId": false,
-            "isReadOnly": false,
-            "hasDefaultValue": false,
-            "type": "Category",
-            "nativeType": null,
-            "relationName": "CategoryToTransactionsOnCategories",
-            "relationFromFields": [
-              "categoryId"
-            ],
-            "relationToFields": [
-              "id"
-            ],
-            "isGenerated": false,
-            "isUpdatedAt": false
-          },
-          {
-            "name": "categoryId",
-            "kind": "scalar",
-            "isList": false,
-            "isRequired": true,
-            "isUnique": false,
-            "isId": false,
-            "isReadOnly": true,
-            "hasDefaultValue": false,
-            "type": "Int",
-            "nativeType": null,
-            "isGenerated": false,
-            "isUpdatedAt": false
-          },
-          {
-            "name": "amount",
-            "kind": "scalar",
-            "isList": false,
-            "isRequired": true,
-            "isUnique": false,
-            "isId": false,
-            "isReadOnly": false,
-            "hasDefaultValue": false,
-            "type": "Int",
-            "nativeType": null,
-            "isGenerated": false,
-            "isUpdatedAt": false
-          },
-          {
-            "name": "amount_converted",
-            "kind": "scalar",
-            "isList": false,
-            "isRequired": true,
-            "isUnique": false,
-            "isId": false,
-            "isReadOnly": false,
-            "hasDefaultValue": false,
-            "type": "Int",
-            "nativeType": null,
-            "isGenerated": false,
-            "isUpdatedAt": false
-          }
-        ],
-        "primaryKey": {
-          "name": null,
-          "fields": [
-            "transactionId",
-            "categoryId"
-          ]
-        },
-        "uniqueFields": [],
-        "uniqueIndexes": [],
-        "isGenerated": false
-      },
-      {
-        "name": "CurrencyExchangeRateClaim",
-        "dbName": "currency_exchange_rate_clames",
-        "schema": null,
-        "fields": [
-          {
-            "name": "id",
-            "kind": "scalar",
-            "isList": false,
-            "isRequired": true,
-            "isUnique": true,
-            "isId": false,
-            "isReadOnly": false,
-            "hasDefaultValue": false,
-            "type": "String",
-            "nativeType": null,
-            "isGenerated": false,
-            "isUpdatedAt": false
-          },
-          {
-            "name": "date",
-            "kind": "scalar",
-            "isList": false,
-            "isRequired": true,
-            "isUnique": false,
-            "isId": false,
-            "isReadOnly": false,
-            "hasDefaultValue": false,
-            "type": "DateTime",
-            "nativeType": null,
-            "isGenerated": false,
-            "isUpdatedAt": false
-          },
-          {
-            "name": "currency",
-            "kind": "scalar",
-            "isList": false,
-            "isRequired": true,
-            "isUnique": false,
-            "isId": false,
-            "isReadOnly": false,
-            "hasDefaultValue": false,
-            "type": "String",
-            "nativeType": null,
-            "isGenerated": false,
-            "isUpdatedAt": false
-          }
-        ],
-        "primaryKey": null,
-        "uniqueFields": [],
-        "uniqueIndexes": [],
-        "isGenerated": false
-      },
-      {
-        "name": "StatisticPerMonths",
-        "dbName": "transactions_statistic_per_months",
-        "schema": null,
-        "fields": [
-          {
-            "name": "id",
-            "kind": "scalar",
-            "isList": false,
-            "isRequired": true,
-            "isUnique": true,
-            "isId": false,
-            "isReadOnly": false,
-            "hasDefaultValue": false,
-            "type": "String",
-            "nativeType": null,
-            "isGenerated": false,
-            "isUpdatedAt": false
-          },
-          {
-            "name": "year",
-            "kind": "scalar",
-            "isList": false,
-            "isRequired": true,
-            "isUnique": false,
-            "isId": false,
-            "isReadOnly": false,
-            "hasDefaultValue": false,
-            "type": "Int",
-            "nativeType": null,
-            "isGenerated": false,
-            "isUpdatedAt": false
-          },
-          {
-            "name": "month",
-            "kind": "scalar",
-            "isList": false,
-            "isRequired": true,
-            "isUnique": false,
-            "isId": false,
-            "isReadOnly": false,
-            "hasDefaultValue": false,
-            "type": "Int",
-            "nativeType": null,
-            "isGenerated": false,
-            "isUpdatedAt": false
-          },
-          {
-            "name": "income",
-            "kind": "scalar",
-            "isList": false,
-            "isRequired": true,
-            "isUnique": false,
-            "isId": false,
-            "isReadOnly": false,
-            "hasDefaultValue": false,
-            "type": "Int",
-            "nativeType": null,
-            "isGenerated": false,
-            "isUpdatedAt": false
-          },
-          {
-            "name": "outcome",
-            "kind": "scalar",
-            "isList": false,
-            "isRequired": true,
-            "isUnique": false,
-            "isId": false,
-            "isReadOnly": false,
-            "hasDefaultValue": false,
-            "type": "Int",
-            "nativeType": null,
-            "isGenerated": false,
-            "isUpdatedAt": false
-          }
-        ],
-        "primaryKey": null,
-        "uniqueFields": [],
-        "uniqueIndexes": [],
-        "isGenerated": false
-      },
-      {
-        "name": "StatisticPerSource",
-        "dbName": "transactions_statistic_per_source",
-        "schema": null,
-        "fields": [
-          {
-            "name": "id",
-            "kind": "scalar",
-            "isList": false,
-            "isRequired": true,
-            "isUnique": true,
-            "isId": false,
-            "isReadOnly": false,
-            "hasDefaultValue": false,
-            "type": "String",
-            "nativeType": null,
-            "isGenerated": false,
-            "isUpdatedAt": false
-          },
-          {
-            "name": "income",
-            "kind": "scalar",
-            "isList": false,
-            "isRequired": true,
-            "isUnique": false,
-            "isId": false,
-            "isReadOnly": false,
-            "hasDefaultValue": false,
-            "type": "Int",
-            "nativeType": null,
-            "isGenerated": false,
-            "isUpdatedAt": false
-          },
-          {
-            "name": "outcome",
-            "kind": "scalar",
-            "isList": false,
-            "isRequired": true,
-            "isUnique": false,
-            "isId": false,
-            "isReadOnly": false,
-            "hasDefaultValue": false,
-            "type": "Int",
-            "nativeType": null,
-            "isGenerated": false,
-            "isUpdatedAt": false
-          },
-          {
-            "name": "source",
-            "kind": "scalar",
-            "isList": false,
-            "isRequired": true,
-            "isUnique": false,
-            "isId": false,
-            "isReadOnly": false,
-            "hasDefaultValue": false,
-            "type": "String",
-            "nativeType": null,
-            "isGenerated": false,
-            "isUpdatedAt": false
-          }
-        ],
-        "primaryKey": null,
-        "uniqueFields": [],
-        "uniqueIndexes": [],
-        "isGenerated": false
-      },
-      {
-        "name": "Statistic",
-        "dbName": "transactions_statistic",
-        "schema": null,
-        "fields": [
-          {
-            "name": "id",
-            "kind": "scalar",
-            "isList": false,
-            "isRequired": true,
-            "isUnique": true,
-            "isId": false,
-            "isReadOnly": false,
-            "hasDefaultValue": false,
-            "type": "String",
-            "nativeType": null,
-            "isGenerated": false,
-            "isUpdatedAt": false
-          },
-          {
-            "name": "monthId",
-            "kind": "scalar",
-            "isList": false,
-            "isRequired": true,
-            "isUnique": false,
-            "isId": false,
-            "isReadOnly": false,
-            "hasDefaultValue": false,
-            "type": "String",
-            "nativeType": null,
-            "isGenerated": false,
-            "isUpdatedAt": false
-          },
-          {
-            "name": "income",
-            "kind": "scalar",
-            "isList": false,
-            "isRequired": true,
-            "isUnique": false,
-            "isId": false,
-            "isReadOnly": false,
-            "hasDefaultValue": false,
-            "type": "Int",
-            "nativeType": null,
-            "isGenerated": false,
-            "isUpdatedAt": false
-          },
-          {
-            "name": "outcome",
-            "kind": "scalar",
-            "isList": false,
-            "isRequired": true,
-            "isUnique": false,
-            "isId": false,
-            "isReadOnly": false,
-            "hasDefaultValue": false,
-            "type": "Int",
-            "nativeType": null,
-            "isGenerated": false,
-            "isUpdatedAt": false
-          },
-          {
-            "name": "category",
-            "kind": "object",
-            "isList": false,
-            "isRequired": true,
-            "isUnique": false,
-            "isId": false,
-            "isReadOnly": false,
-            "hasDefaultValue": false,
-            "type": "Category",
-            "nativeType": null,
-            "relationName": "CategoryToStatistic",
-            "relationFromFields": [
-              "categoryId"
-            ],
-            "relationToFields": [
-              "id"
-            ],
-            "isGenerated": false,
-            "isUpdatedAt": false
-          },
-          {
-            "name": "categoryId",
-            "kind": "scalar",
-            "isList": false,
-            "isRequired": true,
-            "isUnique": false,
-            "isId": false,
-            "isReadOnly": true,
-            "hasDefaultValue": false,
-            "type": "Int",
-            "nativeType": null,
-            "isGenerated": false,
-            "isUpdatedAt": false
-          }
-        ],
-        "primaryKey": null,
-        "uniqueFields": [],
-        "uniqueIndexes": [],
-        "isGenerated": false
-      }
-    ],
-    "types": [],
-    "indexes": [
-      {
-        "model": "Transaction",
-        "type": "id",
-        "isDefinedOnField": true,
-        "fields": [
-          {
-            "name": "id"
-          }
-        ]
-      },
-      {
-        "model": "Transaction",
-        "type": "unique",
-        "isDefinedOnField": true,
-        "fields": [
-          {
-            "name": "id"
-          }
-        ]
-      },
-      {
-        "model": "Category",
-        "type": "id",
-        "isDefinedOnField": true,
-        "fields": [
-          {
-            "name": "id"
-          }
-        ]
-      },
-      {
-        "model": "Category",
-        "type": "unique",
-        "isDefinedOnField": false,
-        "fields": [
-          {
-            "name": "name"
-          },
-          {
-            "name": "parentCategoryId"
-          }
-        ]
-      },
-      {
-        "model": "CurrencyExchangeRate",
-        "type": "id",
-        "isDefinedOnField": true,
-        "fields": [
-          {
-            "name": "id"
-          }
-        ]
-      },
-      {
-        "model": "CurrencyExchangeRate",
-        "type": "unique",
-        "isDefinedOnField": true,
-        "fields": [
-          {
-            "name": "id"
-          }
-        ]
-      },
-      {
-        "model": "CurrencyExchangeRate",
-        "type": "unique",
-        "isDefinedOnField": false,
-        "fields": [
-          {
-            "name": "date"
-          },
-          {
-            "name": "base"
-          },
-          {
-            "name": "target"
-          }
-        ]
-      },
-      {
-        "model": "TransactionsOnCategories",
-        "type": "id",
-        "isDefinedOnField": false,
-        "fields": [
-          {
-            "name": "transactionId"
-          },
-          {
-            "name": "categoryId"
-          }
-        ]
-      },
-      {
-        "model": "CurrencyExchangeRateClaim",
-        "type": "unique",
-        "isDefinedOnField": true,
-        "fields": [
-          {
-            "name": "id"
-          }
-        ]
-      },
-      {
-        "model": "StatisticPerMonths",
-        "type": "unique",
-        "isDefinedOnField": true,
-        "fields": [
-          {
-            "name": "id"
-          }
-        ]
-      },
-      {
-        "model": "StatisticPerSource",
-        "type": "unique",
-        "isDefinedOnField": true,
-        "fields": [
-          {
-            "name": "id"
-          }
-        ]
-      },
-      {
-        "model": "Statistic",
-        "type": "unique",
-        "isDefinedOnField": true,
-        "fields": [
-          {
-            "name": "id"
-          }
-        ]
-      }
-    ]
-  }
-};
+/* eslint-disable */
+import type { Prisma, Transaction, Category, CurrencyExchangeRate, TransactionsOnCategories, CurrencyExchangeRateClaim, StatisticPerMonths, StatisticPerSource, Statistic } from "./prisma/index.js";
+import type { PothosPrismaDatamodel } from "@pothos/plugin-prisma";
+export default interface PrismaTypes {
+    Transaction: {
+        Name: "Transaction";
+        Shape: Transaction;
+        Include: Prisma.TransactionInclude;
+        Select: Prisma.TransactionSelect;
+        OrderBy: Prisma.TransactionOrderByWithRelationInput;
+        WhereUnique: Prisma.TransactionWhereUniqueInput;
+        Where: Prisma.TransactionWhereInput;
+        Create: Prisma.TransactionCreateInput;
+        Update: Prisma.TransactionUpdateInput;
+        RelationName: "categories";
+        ListRelations: "categories";
+        Relations: {
+            categories: {
+                Shape: TransactionsOnCategories[];
+                Name: "TransactionsOnCategories";
+                Nullable: false;
+            };
+        };
+    };
+    Category: {
+        Name: "Category";
+        Shape: Category;
+        Include: Prisma.CategoryInclude;
+        Select: Prisma.CategorySelect;
+        OrderBy: Prisma.CategoryOrderByWithRelationInput;
+        WhereUnique: Prisma.CategoryWhereUniqueInput;
+        Where: Prisma.CategoryWhereInput;
+        Create: Prisma.CategoryCreateInput;
+        Update: Prisma.CategoryUpdateInput;
+        RelationName: "parentCategory" | "subCategories" | "transactions" | "statistic";
+        ListRelations: "subCategories" | "transactions" | "statistic";
+        Relations: {
+            parentCategory: {
+                Shape: Category | null;
+                Name: "Category";
+                Nullable: true;
+            };
+            subCategories: {
+                Shape: Category[];
+                Name: "Category";
+                Nullable: false;
+            };
+            transactions: {
+                Shape: TransactionsOnCategories[];
+                Name: "TransactionsOnCategories";
+                Nullable: false;
+            };
+            statistic: {
+                Shape: Statistic[];
+                Name: "Statistic";
+                Nullable: false;
+            };
+        };
+    };
+    CurrencyExchangeRate: {
+        Name: "CurrencyExchangeRate";
+        Shape: CurrencyExchangeRate;
+        Include: never;
+        Select: Prisma.CurrencyExchangeRateSelect;
+        OrderBy: Prisma.CurrencyExchangeRateOrderByWithRelationInput;
+        WhereUnique: Prisma.CurrencyExchangeRateWhereUniqueInput;
+        Where: Prisma.CurrencyExchangeRateWhereInput;
+        Create: Prisma.CurrencyExchangeRateCreateInput;
+        Update: Prisma.CurrencyExchangeRateUpdateInput;
+        RelationName: never;
+        ListRelations: never;
+        Relations: {};
+    };
+    TransactionsOnCategories: {
+        Name: "TransactionsOnCategories";
+        Shape: TransactionsOnCategories;
+        Include: Prisma.TransactionsOnCategoriesInclude;
+        Select: Prisma.TransactionsOnCategoriesSelect;
+        OrderBy: Prisma.TransactionsOnCategoriesOrderByWithRelationInput;
+        WhereUnique: Prisma.TransactionsOnCategoriesWhereUniqueInput;
+        Where: Prisma.TransactionsOnCategoriesWhereInput;
+        Create: Prisma.TransactionsOnCategoriesCreateInput;
+        Update: Prisma.TransactionsOnCategoriesUpdateInput;
+        RelationName: "transaction" | "category";
+        ListRelations: never;
+        Relations: {
+            transaction: {
+                Shape: Transaction;
+                Name: "Transaction";
+                Nullable: false;
+            };
+            category: {
+                Shape: Category;
+                Name: "Category";
+                Nullable: false;
+            };
+        };
+    };
+    CurrencyExchangeRateClaim: {
+        Name: "CurrencyExchangeRateClaim";
+        Shape: CurrencyExchangeRateClaim;
+        Include: never;
+        Select: Prisma.CurrencyExchangeRateClaimSelect;
+        OrderBy: Prisma.CurrencyExchangeRateClaimOrderByWithRelationInput;
+        WhereUnique: Prisma.CurrencyExchangeRateClaimWhereUniqueInput;
+        Where: Prisma.CurrencyExchangeRateClaimWhereInput;
+        Create: {};
+        Update: {};
+        RelationName: never;
+        ListRelations: never;
+        Relations: {};
+    };
+    StatisticPerMonths: {
+        Name: "StatisticPerMonths";
+        Shape: StatisticPerMonths;
+        Include: never;
+        Select: Prisma.StatisticPerMonthsSelect;
+        OrderBy: Prisma.StatisticPerMonthsOrderByWithRelationInput;
+        WhereUnique: Prisma.StatisticPerMonthsWhereUniqueInput;
+        Where: Prisma.StatisticPerMonthsWhereInput;
+        Create: {};
+        Update: {};
+        RelationName: never;
+        ListRelations: never;
+        Relations: {};
+    };
+    StatisticPerSource: {
+        Name: "StatisticPerSource";
+        Shape: StatisticPerSource;
+        Include: never;
+        Select: Prisma.StatisticPerSourceSelect;
+        OrderBy: Prisma.StatisticPerSourceOrderByWithRelationInput;
+        WhereUnique: Prisma.StatisticPerSourceWhereUniqueInput;
+        Where: Prisma.StatisticPerSourceWhereInput;
+        Create: {};
+        Update: {};
+        RelationName: never;
+        ListRelations: never;
+        Relations: {};
+    };
+    Statistic: {
+        Name: "Statistic";
+        Shape: Statistic;
+        Include: Prisma.StatisticInclude;
+        Select: Prisma.StatisticSelect;
+        OrderBy: Prisma.StatisticOrderByWithRelationInput;
+        WhereUnique: Prisma.StatisticWhereUniqueInput;
+        Where: Prisma.StatisticWhereInput;
+        Create: {};
+        Update: {};
+        RelationName: "category";
+        ListRelations: never;
+        Relations: {
+            category: {
+                Shape: Category;
+                Name: "Category";
+                Nullable: false;
+            };
+        };
+    };
+}
+export function getDatamodel(): PothosPrismaDatamodel { return JSON.parse("{\"datamodel\":{\"models\":{\"Transaction\":{\"fields\":[{\"type\":\"String\",\"kind\":\"scalar\",\"name\":\"id\",\"isRequired\":true,\"isList\":false,\"hasDefaultValue\":false,\"isUnique\":false,\"isId\":true,\"isUpdatedAt\":false},{\"type\":\"String\",\"kind\":\"scalar\",\"name\":\"source\",\"isRequired\":true,\"isList\":false,\"hasDefaultValue\":false,\"isUnique\":false,\"isId\":false,\"isUpdatedAt\":false},{\"type\":\"DateTime\",\"kind\":\"scalar\",\"name\":\"date\",\"isRequired\":true,\"isList\":false,\"hasDefaultValue\":false,\"isUnique\":false,\"isId\":false,\"isUpdatedAt\":false},{\"type\":\"String\",\"kind\":\"scalar\",\"name\":\"description\",\"isRequired\":true,\"isList\":false,\"hasDefaultValue\":false,\"isUnique\":false,\"isId\":false,\"isUpdatedAt\":false},{\"type\":\"Int\",\"kind\":\"scalar\",\"name\":\"amount\",\"isRequired\":true,\"isList\":false,\"hasDefaultValue\":false,\"isUnique\":false,\"isId\":false,\"isUpdatedAt\":false},{\"type\":\"Int\",\"kind\":\"scalar\",\"name\":\"amount_converted\",\"isRequired\":false,\"isList\":false,\"hasDefaultValue\":false,\"isUnique\":false,\"isId\":false,\"isUpdatedAt\":false},{\"type\":\"String\",\"kind\":\"scalar\",\"name\":\"currency\",\"isRequired\":true,\"isList\":false,\"hasDefaultValue\":false,\"isUnique\":false,\"isId\":false,\"isUpdatedAt\":false},{\"type\":\"TransactionsOnCategories\",\"kind\":\"object\",\"name\":\"categories\",\"isRequired\":true,\"isList\":true,\"hasDefaultValue\":false,\"isUnique\":false,\"isId\":false,\"relationName\":\"TransactionToTransactionsOnCategories\",\"relationFromFields\":[],\"isUpdatedAt\":false},{\"type\":\"Boolean\",\"kind\":\"scalar\",\"name\":\"completed\",\"isRequired\":true,\"isList\":false,\"hasDefaultValue\":true,\"isUnique\":false,\"isId\":false,\"isUpdatedAt\":false}],\"primaryKey\":null,\"uniqueIndexes\":[]},\"Category\":{\"fields\":[{\"type\":\"Int\",\"kind\":\"scalar\",\"name\":\"id\",\"isRequired\":true,\"isList\":false,\"hasDefaultValue\":true,\"isUnique\":false,\"isId\":true,\"isUpdatedAt\":false},{\"type\":\"String\",\"kind\":\"scalar\",\"name\":\"name\",\"isRequired\":true,\"isList\":false,\"hasDefaultValue\":false,\"isUnique\":false,\"isId\":false,\"isUpdatedAt\":false},{\"type\":\"Category\",\"kind\":\"object\",\"name\":\"parentCategory\",\"isRequired\":false,\"isList\":false,\"hasDefaultValue\":false,\"isUnique\":false,\"isId\":false,\"relationName\":\"ParentCategory\",\"relationFromFields\":[\"parentCategoryId\"],\"isUpdatedAt\":false},{\"type\":\"Int\",\"kind\":\"scalar\",\"name\":\"parentCategoryId\",\"isRequired\":false,\"isList\":false,\"hasDefaultValue\":false,\"isUnique\":false,\"isId\":false,\"isUpdatedAt\":false},{\"type\":\"Category\",\"kind\":\"object\",\"name\":\"subCategories\",\"isRequired\":true,\"isList\":true,\"hasDefaultValue\":false,\"isUnique\":false,\"isId\":false,\"relationName\":\"ParentCategory\",\"relationFromFields\":[],\"isUpdatedAt\":false},{\"type\":\"TransactionsOnCategories\",\"kind\":\"object\",\"name\":\"transactions\",\"isRequired\":true,\"isList\":true,\"hasDefaultValue\":false,\"isUnique\":false,\"isId\":false,\"relationName\":\"CategoryToTransactionsOnCategories\",\"relationFromFields\":[],\"isUpdatedAt\":false},{\"type\":\"Statistic\",\"kind\":\"object\",\"name\":\"statistic\",\"isRequired\":true,\"isList\":true,\"hasDefaultValue\":false,\"isUnique\":false,\"isId\":false,\"relationName\":\"CategoryToStatistic\",\"relationFromFields\":[],\"isUpdatedAt\":false}],\"primaryKey\":null,\"uniqueIndexes\":[{\"name\":null,\"fields\":[\"name\",\"parentCategoryId\"]}]},\"CurrencyExchangeRate\":{\"fields\":[{\"type\":\"String\",\"kind\":\"scalar\",\"name\":\"id\",\"isRequired\":true,\"isList\":false,\"hasDefaultValue\":false,\"isUnique\":false,\"isId\":true,\"isUpdatedAt\":false},{\"type\":\"DateTime\",\"kind\":\"scalar\",\"name\":\"date\",\"isRequired\":true,\"isList\":false,\"hasDefaultValue\":false,\"isUnique\":false,\"isId\":false,\"isUpdatedAt\":false},{\"type\":\"String\",\"kind\":\"scalar\",\"name\":\"base\",\"isRequired\":true,\"isList\":false,\"hasDefaultValue\":false,\"isUnique\":false,\"isId\":false,\"isUpdatedAt\":false},{\"type\":\"String\",\"kind\":\"scalar\",\"name\":\"target\",\"isRequired\":true,\"isList\":false,\"hasDefaultValue\":false,\"isUnique\":false,\"isId\":false,\"isUpdatedAt\":false},{\"type\":\"Float\",\"kind\":\"scalar\",\"name\":\"rate\",\"isRequired\":true,\"isList\":false,\"hasDefaultValue\":false,\"isUnique\":false,\"isId\":false,\"isUpdatedAt\":false}],\"primaryKey\":null,\"uniqueIndexes\":[{\"name\":null,\"fields\":[\"date\",\"base\",\"target\"]}]},\"TransactionsOnCategories\":{\"fields\":[{\"type\":\"Transaction\",\"kind\":\"object\",\"name\":\"transaction\",\"isRequired\":true,\"isList\":false,\"hasDefaultValue\":false,\"isUnique\":false,\"isId\":false,\"relationName\":\"TransactionToTransactionsOnCategories\",\"relationFromFields\":[\"transactionId\"],\"isUpdatedAt\":false},{\"type\":\"String\",\"kind\":\"scalar\",\"name\":\"transactionId\",\"isRequired\":true,\"isList\":false,\"hasDefaultValue\":false,\"isUnique\":false,\"isId\":false,\"isUpdatedAt\":false},{\"type\":\"Category\",\"kind\":\"object\",\"name\":\"category\",\"isRequired\":true,\"isList\":false,\"hasDefaultValue\":false,\"isUnique\":false,\"isId\":false,\"relationName\":\"CategoryToTransactionsOnCategories\",\"relationFromFields\":[\"categoryId\"],\"isUpdatedAt\":false},{\"type\":\"Int\",\"kind\":\"scalar\",\"name\":\"categoryId\",\"isRequired\":true,\"isList\":false,\"hasDefaultValue\":false,\"isUnique\":false,\"isId\":false,\"isUpdatedAt\":false},{\"type\":\"Int\",\"kind\":\"scalar\",\"name\":\"amount\",\"isRequired\":true,\"isList\":false,\"hasDefaultValue\":false,\"isUnique\":false,\"isId\":false,\"isUpdatedAt\":false},{\"type\":\"Int\",\"kind\":\"scalar\",\"name\":\"amount_converted\",\"isRequired\":true,\"isList\":false,\"hasDefaultValue\":false,\"isUnique\":false,\"isId\":false,\"isUpdatedAt\":false}],\"primaryKey\":{\"name\":null,\"fields\":[\"transactionId\",\"categoryId\"]},\"uniqueIndexes\":[]},\"CurrencyExchangeRateClaim\":{\"fields\":[{\"type\":\"String\",\"kind\":\"scalar\",\"name\":\"id\",\"isRequired\":true,\"isList\":false,\"hasDefaultValue\":false,\"isUnique\":true,\"isId\":false,\"isUpdatedAt\":false},{\"type\":\"DateTime\",\"kind\":\"scalar\",\"name\":\"date\",\"isRequired\":true,\"isList\":false,\"hasDefaultValue\":false,\"isUnique\":false,\"isId\":false,\"isUpdatedAt\":false},{\"type\":\"String\",\"kind\":\"scalar\",\"name\":\"currency\",\"isRequired\":true,\"isList\":false,\"hasDefaultValue\":false,\"isUnique\":false,\"isId\":false,\"isUpdatedAt\":false}],\"primaryKey\":null,\"uniqueIndexes\":[]},\"StatisticPerMonths\":{\"fields\":[{\"type\":\"String\",\"kind\":\"scalar\",\"name\":\"id\",\"isRequired\":true,\"isList\":false,\"hasDefaultValue\":false,\"isUnique\":true,\"isId\":false,\"isUpdatedAt\":false},{\"type\":\"Int\",\"kind\":\"scalar\",\"name\":\"year\",\"isRequired\":true,\"isList\":false,\"hasDefaultValue\":false,\"isUnique\":false,\"isId\":false,\"isUpdatedAt\":false},{\"type\":\"Int\",\"kind\":\"scalar\",\"name\":\"month\",\"isRequired\":true,\"isList\":false,\"hasDefaultValue\":false,\"isUnique\":false,\"isId\":false,\"isUpdatedAt\":false},{\"type\":\"Int\",\"kind\":\"scalar\",\"name\":\"income\",\"isRequired\":true,\"isList\":false,\"hasDefaultValue\":false,\"isUnique\":false,\"isId\":false,\"isUpdatedAt\":false},{\"type\":\"Int\",\"kind\":\"scalar\",\"name\":\"outcome\",\"isRequired\":true,\"isList\":false,\"hasDefaultValue\":false,\"isUnique\":false,\"isId\":false,\"isUpdatedAt\":false}],\"primaryKey\":null,\"uniqueIndexes\":[]},\"StatisticPerSource\":{\"fields\":[{\"type\":\"String\",\"kind\":\"scalar\",\"name\":\"id\",\"isRequired\":true,\"isList\":false,\"hasDefaultValue\":false,\"isUnique\":true,\"isId\":false,\"isUpdatedAt\":false},{\"type\":\"Int\",\"kind\":\"scalar\",\"name\":\"income\",\"isRequired\":true,\"isList\":false,\"hasDefaultValue\":false,\"isUnique\":false,\"isId\":false,\"isUpdatedAt\":false},{\"type\":\"Int\",\"kind\":\"scalar\",\"name\":\"outcome\",\"isRequired\":true,\"isList\":false,\"hasDefaultValue\":false,\"isUnique\":false,\"isId\":false,\"isUpdatedAt\":false},{\"type\":\"String\",\"kind\":\"scalar\",\"name\":\"source\",\"isRequired\":true,\"isList\":false,\"hasDefaultValue\":false,\"isUnique\":false,\"isId\":false,\"isUpdatedAt\":false}],\"primaryKey\":null,\"uniqueIndexes\":[]},\"Statistic\":{\"fields\":[{\"type\":\"String\",\"kind\":\"scalar\",\"name\":\"id\",\"isRequired\":true,\"isList\":false,\"hasDefaultValue\":false,\"isUnique\":true,\"isId\":false,\"isUpdatedAt\":false},{\"type\":\"String\",\"kind\":\"scalar\",\"name\":\"monthId\",\"isRequired\":true,\"isList\":false,\"hasDefaultValue\":false,\"isUnique\":false,\"isId\":false,\"isUpdatedAt\":false},{\"type\":\"Int\",\"kind\":\"scalar\",\"name\":\"income\",\"isRequired\":true,\"isList\":false,\"hasDefaultValue\":false,\"isUnique\":false,\"isId\":false,\"isUpdatedAt\":false},{\"type\":\"Int\",\"kind\":\"scalar\",\"name\":\"outcome\",\"isRequired\":true,\"isList\":false,\"hasDefaultValue\":false,\"isUnique\":false,\"isId\":false,\"isUpdatedAt\":false},{\"type\":\"Category\",\"kind\":\"object\",\"name\":\"category\",\"isRequired\":true,\"isList\":false,\"hasDefaultValue\":false,\"isUnique\":false,\"isId\":false,\"relationName\":\"CategoryToStatistic\",\"relationFromFields\":[\"categoryId\"],\"isUpdatedAt\":false},{\"type\":\"Int\",\"kind\":\"scalar\",\"name\":\"categoryId\",\"isRequired\":true,\"isList\":false,\"hasDefaultValue\":false,\"isUnique\":false,\"isId\":false,\"isUpdatedAt\":false}],\"primaryKey\":null,\"uniqueIndexes\":[]}}}}"); }

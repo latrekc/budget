@@ -5,10 +5,11 @@ generator client {
 }
 
 generator pothos {
-  provider = "pothos-prisma-generator"
+  provider        = "prisma-pothos-types"
   previewFeatures = ["views"]
   prismaUtils     = "true"
-  output   = "app/graphql/pothos-prisma.generated.ts"
+  clientOutput    = "./prisma" // relative path from pothos output to prisma client
+  output          = "app/graphql/pothos-prisma.generated.ts"
 }
 
 datasource db {

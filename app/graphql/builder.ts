@@ -1,4 +1,4 @@
-import type PrismaTypes from "@pothos/plugin-prisma/generated";
+import type PrismaTypes from "./pothos-prisma.generated";
 
 import SchemaBuilder from "@pothos/core";
 import ErrorsPlugin from "@pothos/plugin-errors";
@@ -8,8 +8,8 @@ import PrismaUtils from "@pothos/plugin-prisma-utils";
 import RelayPlugin from "@pothos/plugin-relay";
 import SimpleObjectsPlugin from "@pothos/plugin-simple-objects";
 import { DateTimeResolver } from "graphql-scalars";
-import { prismaDmmf } from "./pothos-prisma.generated";
 import prisma from "../lib/prisma";
+import { getDatamodel } from "./pothos-prisma.generated";
 
 export const builder = new SchemaBuilder<{
   DefaultFieldNullability: true;
@@ -30,7 +30,7 @@ export const builder = new SchemaBuilder<{
   ],
   prisma: {
     client: prisma,
-    dmmf: prismaDmmf,
+    dmmf: getDatamodel(),
     exposeDescriptions: true,
   },
 });
