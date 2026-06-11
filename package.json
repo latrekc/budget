@@ -13,7 +13,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "tsc --noemit && eslint .",
-    "prisma-build": "pnpm dlx prisma generate"
+    "prisma-build": "pnpm dlx prisma generate",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
   },
   "dependencies": {
     "@hublaw/ofx-parser": "^1.1.0",
@@ -55,9 +58,12 @@
   "devDependencies": {
     "@next/eslint-plugin-next": "^16.2.6",
     "@tailwindcss/postcss": "^4.2.4",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
     "@tsconfig/node18": "^18.2.6",
     "@types/better-sqlite3": "^7.6.13",
     "@types/chroma-js": "^3.1.2",
+    "@types/jest": "^30.0.0",
     "@types/node": "^25.6.2",
     "@types/object-hash": "^3.0.6",
     "@types/react": "^19.2.14",
@@ -81,6 +87,8 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-relay": "^2.0.0",
     "graphql": "^16.14.0",
+    "jest": "^30.4.2",
+    "jest-environment-jsdom": "^30.4.1",
     "postcss": "^8.5.14",
     "pothos-prisma-generator": "^1.3.11",
     "prettier": "^3.8.3",
