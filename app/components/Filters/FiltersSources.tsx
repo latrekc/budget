@@ -89,6 +89,7 @@ export default function FiltersSources({
         {sources.map(({ income, outcome, source }) => (
           <Checkbox
             className="m-0 min-w-[100%] flex-none cursor-pointer gap-2 rounded-lg border-2 border-white p-4 hover:bg-content2 data-[selected=true]:border-primary"
+            data-testid="source-item"
             key={source}
             value={source}
           >

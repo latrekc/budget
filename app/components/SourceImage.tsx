@@ -3,5 +3,9 @@ import { Source } from "./Transactions/cell/__generated__/TransactionSourceCell.
 
 export default function SourceImage({ source }: { source: Source }) {
   const path = `/assets/sources/${source}.svg`;
-  return <Image alt={source} height={24} priority src={path} width={24} />;
+  return (
+    <span className="relative inline-block size-6 flex-none">
+      <Image alt={source} className="object-contain" fill priority src={path} />
+    </span>
+  );
 }

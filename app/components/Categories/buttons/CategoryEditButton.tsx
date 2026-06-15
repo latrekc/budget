@@ -107,7 +107,13 @@ export default function CategoryEditButton({
       showArrow
     >
       <PopoverTrigger>
-        <Button isIconOnly size="sm" title="Edit category" variant="flat">
+        <Button
+          aria-label="Edit category"
+          isIconOnly
+          size="sm"
+          title="Edit category"
+          variant="flat"
+        >
           <LuTextCursorInput size="2em" />
         </Button>
       </PopoverTrigger>
@@ -118,6 +124,7 @@ export default function CategoryEditButton({
               <Input
                 autoFocus
                 className="p-4"
+                data-testid="input"
                 errorMessage={error?.message}
                 isDisabled={isEditMutationInFlight}
                 isInvalid={error != null}

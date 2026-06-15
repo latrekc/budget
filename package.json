@@ -12,7 +12,7 @@
     "dev": "pnpm ts-node -O '{\"module\":\"commonjs\"}' ./app/scripts/serve.ts dev",
     "build": "next build",
     "start": "pnpm ts-node -O '{\"module\":\"commonjs\"}' ./app/scripts/serve.ts start",
-    "lint": "tsc --noemit; eslint .",
+    "lint": "next typegen && tsc --noemit; eslint .",
     "prisma-build": "pnpm prisma generate",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -107,6 +107,7 @@
     "relay-test-utils": "^21.0.1",
     "tailwindcss": "^4.3.0",
     "ts-node": "^10.9.2",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "undici": "^8.5.0"
   }
 }

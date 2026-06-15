@@ -161,7 +161,13 @@ export default function CategoryMoveButton({
       showArrow
     >
       <PopoverTrigger>
-        <Button isIconOnly size="sm" title="Move category" variant="flat">
+        <Button
+          aria-label="Move category"
+          isIconOnly
+          size="sm"
+          title="Move category"
+          variant="flat"
+        >
           <MdMoveDown size="2em" />
         </Button>
       </PopoverTrigger>

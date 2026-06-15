@@ -93,7 +93,7 @@ export default function CategoryContent({
     <Checkbox
       className={`m-0 mt-1 min-w-[100%] flex-none cursor-pointer gap-4 rounded-lg border-2 border-white p-4 hover:bg-content2 ${
         categoryMode === CategoryMode.SELECT
-          ? "data-[selected=true]:border-primary"
+          ? "data-[selected=true]:border-accent"
           : "data-[selected=true]:border-danger"
       }`}
       isDisabled={!isMatchFilter || isWrongMode}

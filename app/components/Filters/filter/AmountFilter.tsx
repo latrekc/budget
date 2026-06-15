@@ -78,6 +78,7 @@ export default function AmountFilter({
   return (
     <Input
       className="w-auto"
+      data-testid="amount-input"
       isClearable
       label="Search by amount"
       labelPlacement="outside"

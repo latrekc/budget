@@ -100,6 +100,7 @@ export default function CategoryAddButton({
     >
       <PopoverTrigger>
         <Button
+          aria-label={label}
           isIconOnly={!withLabel}
           size="sm"
           startContent={withLabel ? <TiPlus size="2em" /> : null}
@@ -116,6 +117,7 @@ export default function CategoryAddButton({
               <Input
                 autoFocus
                 className="p-4"
+                data-testid="input"
                 errorMessage={error?.message}
                 isClearable
                 isDisabled={isMutationInFlight}
