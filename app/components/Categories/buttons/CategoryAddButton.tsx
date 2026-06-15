@@ -80,7 +80,8 @@ export default function CategoryAddButton({
 
   const [isOpen, setIsOpen] = useState(false);
 
-  const onOpenChange = useCallback((open: boolean) => {
+  const onOpenChange = useCallback(
+    (open: boolean) => {
       setIsOpen(open);
       setValue("");
       setError(null);
