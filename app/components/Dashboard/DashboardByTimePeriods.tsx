@@ -7,15 +7,13 @@ import { graphql, useFragment } from "react-relay";
 import { createRoot, Root } from "react-dom/client";
 
 import { DEFAULT_CURRENCY } from "@/lib/types";
-import type { BarSeriesOption, SunburstSeriesOption } from "echarts/types/dist/shared" with { "resolution-mode": "import" };
+import type { BarSeriesOption, SunburstSeriesOption, EChartsOption } from "echarts/types/dist/shared" with { "resolution-mode": "import" };
 import { AmountValueFormat } from "../AmountValue";
 import { CategoryChip$key } from "../Categories/__generated__/CategoryChip.graphql";
 import { useFilters } from "../Filters/FiltersProvider";
 import { FiltersReducerActionType } from "../Filters/FiltersReducer";
 import { DashboardTooltip } from "./DashboardTooltip";
 import { DashboardByTimePeriods$key } from "./__generated__/DashboardByTimePeriods.graphql";
-
-type EChartsOption = echarts.EChartsOption;
 
 type CategoryAggregation = {
   color: string;
@@ -518,11 +516,11 @@ export default function DashboardByTimePeriods({
       ],
       width: "100%",
       xAxis: {
-        boundaryGap: false,
+        boundaryGap: [0,0],
         type: "time",
       },
       yAxis: {
-        boundaryGap: false,
+        boundaryGap: [0,0],
         interval: 1000,
         type: "value",
       },
