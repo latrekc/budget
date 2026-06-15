@@ -73,6 +73,7 @@ export function color(categoryKey: CategoryColorResolver$key): string {
   };
 
   const rootCategories = filterByParent(null);
+  // eslint-disable-next-line import-x/no-named-as-default-member
   const rootColors = chroma.scale(ROOT_SCALE).colors(rootCategories.length);
 
   if (category.parentCategory == null) {
@@ -93,6 +94,7 @@ export function color(categoryKey: CategoryColorResolver$key): string {
       const darkenColor = chroma(parentColor).desaturate(3).darken(3);
 
       const parentCategories = filterByParent(parentCategory?.id);
+      // eslint-disable-next-line import-x/no-named-as-default-member
       const parentScaleColors = chroma
         .scale([parentColor, darkenColor])
         .colors(parentCategories.length + 1)
@@ -115,6 +117,7 @@ export function color(categoryKey: CategoryColorResolver$key): string {
       const grandParentCategories = filterByParent(
         parentCategory.parentCategory.__ref,
       );
+      // eslint-disable-next-line import-x/no-named-as-default-member
       const grandParentScaleColors = chroma
         .scale([grandParentColor, darkenGrandColor])
         .colors(grandParentCategories.length + 1)
@@ -128,6 +131,7 @@ export function color(categoryKey: CategoryColorResolver$key): string {
 
       const darkenColor = chroma(parentColor).saturate(3).brighten(3);
       const parentCategories = filterByParent(parentCategory?.id);
+      // eslint-disable-next-line import-x/no-named-as-default-member
       const parentScaleColors = chroma
         .scale([parentColor, darkenColor])
         .colors(parentCategories.length + 1)

@@ -149,10 +149,10 @@ export default function DashboardByTimePeriods({
   );
 
   const categoryToSunburstData = useCallback(
-    (
+    function categoryToSunburstData(
       categoryId: string,
       relation: "income" | "outcome",
-    ): NonNullable<SunburstSeriesOption["data"]>[0] => {
+    ): NonNullable<SunburstSeriesOption["data"]>[0] {
       const categoryA = categoriesStatistic.get(categoryId);
       const category = allCategories.get(categoryId)!;
       const parentCategory = allCategories.get(category.parentCategory);

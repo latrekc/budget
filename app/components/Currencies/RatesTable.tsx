@@ -24,9 +24,7 @@ export const PER_PAGE = 20;
 
 enum Colunms {
   "Date" = "Date",
-  // eslint-disable-next-line perfectionist/sort-enums
   "Value" = "Value",
-  // eslint-disable-next-line perfectionist/sort-enums
   "Delete" = "",
 }
 

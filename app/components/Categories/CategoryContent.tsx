@@ -61,13 +61,7 @@ export default function CategoryContent({
       test(category?.name) ||
       test(category.parentCategory?.name) ||
       test(category.parentCategory?.parentCategory?.name),
-    [
-      category?.name,
-      category.parentCategory?.name,
-      category.parentCategory?.parentCategory?.name,
-      filterName.length,
-      test,
-    ],
+    [category, filterName.length, test],
   );
 
   const isWrongMode = useMemo(
