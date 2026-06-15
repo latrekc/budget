@@ -87,7 +87,7 @@ export default function RateClaimValueCell({
     <form onSubmit={onSubmit}>
       <input
         autoFocus
-        className="w-20 rounded border-0 bg-gray-200 text-right text-base "
+        className="w-20 rounded border-0 bg-gray-200 text-right text-base"
         disabled={isMutationInFlight}
         inputMode="numeric"
         onChange={(e) => setValue(e.currentTarget.value)}

@@ -29,11 +29,8 @@ import TransactionSourceCell from "./cell/TransactionSourceCell";
 
 enum Colunms {
   "Source" = "Source",
-  // eslint-disable-next-line perfectionist/sort-enums
   "Description" = "Description",
-  // eslint-disable-next-line perfectionist/sort-enums
   "Amount" = "Amount",
-  // eslint-disable-next-line perfectionist/sort-enums
   "Categories" = "Categories",
   "CategoriesButton" = "",
 }

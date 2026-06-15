@@ -81,10 +81,12 @@ export default function CategoryAddButton({
   const [isOpen, setIsOpen] = useState(false);
 
   const onOpenChange = useCallback((open: boolean) => {
-    setIsOpen(open);
-    setValue("");
-    setError(null);
-  }, []);
+      setIsOpen(open);
+      setValue("");
+      setError(null);
+    },
+    [setIsOpen, setValue, setError],
+  );
 
   const label = parent != null ? "Add subcategory" : "Add category";
 

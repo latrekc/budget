@@ -188,7 +188,7 @@ export default function TransactionCellSplitCategoryButton({
                       ) : null}
                       <input
                         autoFocus
-                        className="w-20 rounded border-0 bg-gray-200 text-right text-base "
+                        className="w-20 rounded border-0 bg-gray-200 text-right text-base"
                         inputMode="decimal"
                         key={index}
                         onChange={(e) =>

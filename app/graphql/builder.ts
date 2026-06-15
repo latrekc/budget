@@ -2,7 +2,6 @@ import type PrismaTypes from "./pothos-prisma.generated";
 
 import SchemaBuilder from "@pothos/core";
 import ErrorsPlugin from "@pothos/plugin-errors";
-// eslint-disable-next-line import/no-named-as-default
 import PrismaPlugin from "@pothos/plugin-prisma";
 import PrismaUtils from "@pothos/plugin-prisma-utils";
 import RelayPlugin from "@pothos/plugin-relay";

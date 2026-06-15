@@ -14,7 +14,7 @@ const getPrismaClient = () => {
   if (!newGlobalThis[prismaClientPropertyName]) {
     newGlobalThis[prismaClientPropertyName] = new PrismaClient({
       adapter: new PrismaBetterSqlite3({
-          url: "file:./database.sqlite",
+        url: "file:./database.sqlite",
       }),
     });
   }
@@ -31,6 +31,7 @@ const prisma = getPrismaClient().$extends({
         // Get the current model at runtime
         const context = Prisma.getExtensionContext(this);
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const result = await (context as any).findFirst({ where });
         return result !== null;
       },

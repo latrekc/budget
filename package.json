@@ -56,6 +56,7 @@
     "usehooks-ts": "^3.1.1"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@next/eslint-plugin-next": "^16.2.6",
     "@tailwindcss/postcss": "^4.2.4",
     "@testing-library/jest-dom": "^6.9.1",
@@ -70,7 +71,6 @@
     "@types/react-relay": "^18.2.1",
     "@types/relay-runtime": "^20.1.1",
     "@typescript-eslint/eslint-plugin": "^8.59.2",
-    "@typescript-eslint/eslint-plugin-tslint": "^7.0.2",
     "@typescript-eslint/parser": "^8.59.2",
     "autoprefixer": "^10.5.0",
     "babel": "^6.23.0",
@@ -79,11 +79,9 @@
     "eslint-config-next": "^16.2.6",
     "eslint-config-prettier": "^10.1.8",
     "eslint-import-resolver-typescript": "^4.4.4",
-    "eslint-plugin-import": "^2.32.0",
-    "eslint-plugin-json": "^4.0.1",
+    "eslint-plugin-import-x": "^4.16.2",
     "eslint-plugin-perfectionist": "^5.9.0",
     "eslint-plugin-prettier": "^5.5.5",
-    "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-relay": "^2.0.0",
     "graphql": "^16.14.0",

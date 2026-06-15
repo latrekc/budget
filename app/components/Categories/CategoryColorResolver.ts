@@ -24,7 +24,6 @@ const COLORS_CACHE = new Map<string, string>();
  * A color for the category
  */
 export function color(categoryKey: CategoryColorResolver$key): string {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const category = readFragment(
     graphql`
       fragment CategoryColorResolver on Category {
