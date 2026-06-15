@@ -50,6 +50,8 @@ export default function CategoryAddButton({
       }
     `);
 
+  const [isOpen, setIsOpen] = useState(false);
+
   const onSubmit = useCallback(
     (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault();
@@ -78,13 +80,14 @@ export default function CategoryAddButton({
     [commitMutation, parent, publish, value],
   );
 
-  const [isOpen, setIsOpen] = useState(false);
-
-  const onOpenChange = useCallback((open: boolean) => {
-    setIsOpen(open);
-    setValue("");
-    setError(null);
-  }, []);
+  const onOpenChange = useCallback(
+    (open: boolean) => {
+      setIsOpen(open);
+      setValue("");
+      setError(null);
+    },
+    [setIsOpen, setValue, setError],
+  );
 
   const label = parent != null ? "Add subcategory" : "Add category";
 

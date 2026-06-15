@@ -96,14 +96,7 @@ export default function CategoryEditButton({
         });
       }
     },
-    [
-      category.id,
-      category.name,
-      category?.parentCategory?.id,
-      commitEditMutation,
-      publish,
-      value,
-    ],
+    [category, commitEditMutation, publish, value],
   );
 
   return (
