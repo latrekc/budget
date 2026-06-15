@@ -40,6 +40,7 @@
     "date-format-parse": "^0.2.7",
     "echarts": "^6.0.0",
     "echarts-for-react": "^3.0.6",
+    "eslint-plugin-jest": "^29.15.2",
     "format-number-with-string": "^0.0.2",
     "framer-motion": "^12.38.0",
     "graphql-scalars": "^1.25.0",

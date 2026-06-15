@@ -7,6 +7,7 @@ const typescriptEslint = require("@typescript-eslint/eslint-plugin");
 const typescriptParser = require("@typescript-eslint/parser");
 const reactHooksPlugin = require("eslint-plugin-react-hooks");
 const relayPlugin = require("eslint-plugin-relay");
+const pluginJest = require("eslint-plugin-jest");
 
 module.exports = [
   // Base configuration for all files
@@ -125,6 +126,21 @@ module.exports = [
   {
     rules: {
       ...prettier.configs.recommended.rules,
+    },
+  },
+  // jest
+  {
+    files: ["**/*.spec.js", "**/*.test.js", "**/*.test.ts", "**/*.test.tsx"],
+    plugins: { jest: pluginJest },
+    languageOptions: {
+      globals: pluginJest.environments.globals.globals,
+    },
+    rules: {
+      "jest/no-disabled-tests": "warn",
+      "jest/no-focused-tests": "error",
+      "jest/no-identical-title": "error",
+      "jest/prefer-to-have-length": "warn",
+      "jest/valid-expect": "error",
     },
   },
   // Ignore patterns
