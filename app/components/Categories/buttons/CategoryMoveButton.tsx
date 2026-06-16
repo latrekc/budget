@@ -173,7 +173,7 @@ export default function CategoryMoveButton({
                 <Button
                   color="danger"
                   isDisabled={isMoveMutationInFlight}
-                  onClick={onMoveToRoot}
+                  onPress={onMoveToRoot}
                 >
                   Move to the root
                 </Button>

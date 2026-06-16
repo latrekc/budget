@@ -223,7 +223,7 @@ export default function TransactionCellSplitCategoryButton({
                     <Button
                       className="p-0"
                       isIconOnly
-                      onClick={() => {
+                      onPress={() => {
                         dispatch({
                           payload: {
                             amounts: amounts.concat(NaN),
@@ -259,7 +259,7 @@ export default function TransactionCellSplitCategoryButton({
               <Button
                 color="primary"
                 isDisabled={isNaN(split.rest) || isMutationInFlight}
-                onClick={() => onSave("null")}
+                onPress={() => onSave("null")}
               >
                 Save
               </Button>

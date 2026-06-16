@@ -87,7 +87,7 @@ export default function RateDeleteCell({
               <Button
                 color="danger"
                 isDisabled={isDeleteMutationInFlight}
-                onClick={onDelete}
+                onPress={onDelete}
               >
                 Yes, remove
               </Button>

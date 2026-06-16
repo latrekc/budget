@@ -48,7 +48,7 @@ export default function TransactionCellAddCategoryButton({
       onClose={() => setIsOpen(false)}
       showArrow
     >
-      <PopoverTrigger onClick={() => setIsOpen(true)}>
+      <PopoverTrigger onPress={() => setIsOpen(true)}>
         <Button
           className="p-0"
           isIconOnly
