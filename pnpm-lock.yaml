@@ -237,6 +237,9 @@ importers:
       relay-compiler:
         specifier: ^20.1.1
         version: 20.1.1
+      relay-test-utils:
+        specifier: ^21.0.1
+        version: 21.0.1
       tailwindcss:
         specifier: ^4.3.0
         version: 4.3.0
@@ -5102,6 +5105,12 @@ packages:
 
   relay-runtime@20.1.1:
     resolution: {integrity: sha512-N98ZkkyuIHdXmHaPuljihM1QbFYXATF0gxA0CESFphszsQzXs9A/zZloVfzdOI/xg3B3CfM/5nozvIoeTDIcfw==}
+
+  relay-runtime@21.0.1:
+    resolution: {integrity: sha512-OS+We56sp6gkGVEcce9VCNOeg/sMbxT9unEoerQPgNAICHowSWrXNc6LJxF2OqjypxYF7kaLDSPPiaPii2Pw1g==}
+
+  relay-test-utils@21.0.1:
+    resolution: {integrity: sha512-Or9qrzdGpiNMMXCZ/eKbVeMiBNijILdyFIuf2/FYnV+7YvDkxFq+oE/g4/gZhYqd1G5/Cejjjavv/xqs86MrzA==}
 
   remeda@2.33.4:
     resolution: {integrity: sha512-ygHswjlc/opg2VrtiYvUOPLjxjtdKvjGz1/plDhkG66hjNjFr1xmfrs2ClNFo/E6TyUFiwYNh53bKV26oBoMGQ==}
@@ -11954,6 +11963,23 @@ snapshots:
       '@babel/runtime': 7.26.0
       fbjs: 3.0.5
       invariant: 2.2.4
+    transitivePeerDependencies:
+      - encoding
+
+  relay-runtime@21.0.1:
+    dependencies:
+      '@babel/runtime': 7.29.2
+      fbjs: 3.0.5
+      invariant: 2.2.4
+    transitivePeerDependencies:
+      - encoding
+
+  relay-test-utils@21.0.1:
+    dependencies:
+      '@babel/runtime': 7.29.2
+      fbjs: 3.0.5
+      invariant: 2.2.4
+      relay-runtime: 21.0.1
     transitivePeerDependencies:
       - encoding
 

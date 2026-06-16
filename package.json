@@ -97,6 +97,7 @@
     "prettier-plugin-tailwindcss": "^0.8.0",
     "prisma": "^7.8.0",
     "relay-compiler": "^20.1.1",
+    "relay-test-utils": "^21.0.1",
     "tailwindcss": "^4.3.0",
     "ts-node": "^10.9.2",
     "typescript": "^6.0.3"
