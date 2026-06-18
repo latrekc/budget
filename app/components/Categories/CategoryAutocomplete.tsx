@@ -57,7 +57,6 @@ export default function CategoryAutocomplete({
 
   useEffect(() => {
     return subscribe(PubSubChannels.Categories, () => {
-      console.log("Refetch categories for CategoryAutocomplete");
       refetch({}, { fetchPolicy: "network-only" });
     });
   }, [refetch, subscribe]);
