@@ -5,3 +5,4 @@ node_modules
 __generated__
 tsconfig.tsbuildinfo
 database.sqlite
+coverage
