@@ -71,6 +71,9 @@ importers:
       echarts-for-react:
         specifier: ^3.0.6
         version: 3.0.6(echarts@6.0.0)(react@19.2.6)
+      eslint-plugin-jest:
+        specifier: ^29.15.2
+        version: 29.15.2(@typescript-eslint/eslint-plugin@8.59.2(@typescript-eslint/parser@8.59.2(eslint@10.3.0(jiti@2.7.0))(typescript@6.0.3))(eslint@10.3.0(jiti@2.7.0))(typescript@6.0.3))(eslint@10.3.0(jiti@2.7.0))(jest@30.4.2(@types/node@25.6.2)(ts-node@10.9.2(@types/node@25.6.2)(typescript@6.0.3)))(typescript@6.0.3)
       format-number-with-string:
         specifier: ^0.0.2
         version: 0.0.2
@@ -234,6 +237,9 @@ importers:
       relay-compiler:
         specifier: ^20.1.1
         version: 20.1.1
+      relay-test-utils:
+        specifier: ^21.0.1
+        version: 21.0.1
       tailwindcss:
         specifier: ^4.3.0
         version: 4.3.0
@@ -3462,6 +3468,22 @@ packages:
       '@typescript-eslint/parser':
         optional: true
 
+  eslint-plugin-jest@29.15.2:
+    resolution: {integrity: sha512-kEN4r9RZl1xcsb4arGq89LrcVdOUFII/JSCwtTPJyv16mDwmPrcuEQwpxqZHeINvcsd7oK5O/rhdGlxFRaZwvQ==}
+    engines: {node: ^20.12.0 || ^22.0.0 || >=24.0.0}
+    peerDependencies:
+      '@typescript-eslint/eslint-plugin': ^8.0.0
+      eslint: ^8.57.0 || ^9.0.0 || ^10.0.0
+      jest: '*'
+      typescript: '>=4.8.4 <7.0.0'
+    peerDependenciesMeta:
+      '@typescript-eslint/eslint-plugin':
+        optional: true
+      jest:
+        optional: true
+      typescript:
+        optional: true
+
   eslint-plugin-jsx-a11y@6.10.2:
     resolution: {integrity: sha512-scB3nz4WmG75pV8+3eRUQOHZlNSUhFNq37xnpgRkCCELU3XMvXAxLk1eqWWyE22Ki4Q01Fnsw9BA3cJHDPgn2Q==}
     engines: {node: '>=4.0'}
@@ -5083,6 +5105,12 @@ packages:
 
   relay-runtime@20.1.1:
     resolution: {integrity: sha512-N98ZkkyuIHdXmHaPuljihM1QbFYXATF0gxA0CESFphszsQzXs9A/zZloVfzdOI/xg3B3CfM/5nozvIoeTDIcfw==}
+
+  relay-runtime@21.0.1:
+    resolution: {integrity: sha512-OS+We56sp6gkGVEcce9VCNOeg/sMbxT9unEoerQPgNAICHowSWrXNc6LJxF2OqjypxYF7kaLDSPPiaPii2Pw1g==}
+
+  relay-test-utils@21.0.1:
+    resolution: {integrity: sha512-Or9qrzdGpiNMMXCZ/eKbVeMiBNijILdyFIuf2/FYnV+7YvDkxFq+oE/g4/gZhYqd1G5/Cejjjavv/xqs86MrzA==}
 
   remeda@2.33.4:
     resolution: {integrity: sha512-ygHswjlc/opg2VrtiYvUOPLjxjtdKvjGz1/plDhkG66hjNjFr1xmfrs2ClNFo/E6TyUFiwYNh53bKV26oBoMGQ==}
@@ -10059,6 +10087,17 @@ snapshots:
       - eslint-import-resolver-webpack
       - supports-color
 
+  eslint-plugin-jest@29.15.2(@typescript-eslint/eslint-plugin@8.59.2(@typescript-eslint/parser@8.59.2(eslint@10.3.0(jiti@2.7.0))(typescript@6.0.3))(eslint@10.3.0(jiti@2.7.0))(typescript@6.0.3))(eslint@10.3.0(jiti@2.7.0))(jest@30.4.2(@types/node@25.6.2)(ts-node@10.9.2(@types/node@25.6.2)(typescript@6.0.3)))(typescript@6.0.3):
+    dependencies:
+      '@typescript-eslint/utils': 8.59.2(eslint@10.3.0(jiti@2.7.0))(typescript@6.0.3)
+      eslint: 10.3.0(jiti@2.7.0)
+    optionalDependencies:
+      '@typescript-eslint/eslint-plugin': 8.59.2(@typescript-eslint/parser@8.59.2(eslint@10.3.0(jiti@2.7.0))(typescript@6.0.3))(eslint@10.3.0(jiti@2.7.0))(typescript@6.0.3)
+      jest: 30.4.2(@types/node@25.6.2)(ts-node@10.9.2(@types/node@25.6.2)(typescript@6.0.3))
+      typescript: 6.0.3
+    transitivePeerDependencies:
+      - supports-color
+
   eslint-plugin-jsx-a11y@6.10.2(eslint@10.3.0(jiti@2.7.0)):
     dependencies:
       aria-query: 5.3.2
@@ -11924,6 +11963,23 @@ snapshots:
       '@babel/runtime': 7.26.0
       fbjs: 3.0.5
       invariant: 2.2.4
+    transitivePeerDependencies:
+      - encoding
+
+  relay-runtime@21.0.1:
+    dependencies:
+      '@babel/runtime': 7.29.2
+      fbjs: 3.0.5
+      invariant: 2.2.4
+    transitivePeerDependencies:
+      - encoding
+
+  relay-test-utils@21.0.1:
+    dependencies:
+      '@babel/runtime': 7.29.2
+      fbjs: 3.0.5
+      invariant: 2.2.4
+      relay-runtime: 21.0.1
     transitivePeerDependencies:
       - encoding
 

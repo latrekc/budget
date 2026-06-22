@@ -139,7 +139,7 @@ function DeleteButton({
   const ref = useRef(null);
 
   const { getButtonProps } = useButton({
-    onClick: onDelete,
+    onPress: onDelete,
     ref,
   });
 

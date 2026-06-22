@@ -4,7 +4,13 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@nextui-org/react";
-import { useCallback, useEffect, useMemo, useReducer, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useReducer,
+  useState,
+} from "react";
 import { LuSplit } from "react-icons/lu";
 import { graphql, useFragment, useRefetchableFragment } from "react-relay";
 
@@ -50,7 +56,6 @@ export default function TransactionCellSplitCategoryButton({
 
   useEffect(() => {
     return subscribe(PubSubChannels.Categories, () => {
-      console.log("Refetch categories for TransactionCellSplitCategoryButton");
       refetch({}, { fetchPolicy: "network-only" });
     });
   }, [refetch, subscribe]);
@@ -180,7 +185,7 @@ export default function TransactionCellSplitCategoryButton({
                     </div>
                   </div>
                   {amounts.map((amount, index) => (
-                    <>
+                    <React.Fragment key={`${id}-${index}`}>
                       {index > 0 ? (
                         <div className="self-center">
                           <TiPlus size="1em" />
@@ -190,7 +195,6 @@ export default function TransactionCellSplitCategoryButton({
                         autoFocus
                         className="w-20 rounded border-0 bg-gray-200 text-right text-base"
                         inputMode="decimal"
-                        key={index}
                         onChange={(e) =>
                           dispatch({
                             payload: {
@@ -216,14 +220,14 @@ export default function TransactionCellSplitCategoryButton({
                         type="number"
                         value={Math.abs(amount / 100)}
                       />
-                    </>
+                    </React.Fragment>
                   ))}
                   {split.rest !== 0 &&
                   amounts.filter((amount) => isNaN(amount)).length < 1 ? (
                     <Button
                       className="p-0"
                       isIconOnly
-                      onClick={() => {
+                      onPress={() => {
                         dispatch({
                           payload: {
                             amounts: amounts.concat(NaN),
@@ -259,7 +263,7 @@ export default function TransactionCellSplitCategoryButton({
               <Button
                 color="primary"
                 isDisabled={isNaN(split.rest) || isMutationInFlight}
-                onClick={() => onSave("null")}
+                onPress={() => onSave("null")}
               >
                 Save
               </Button>

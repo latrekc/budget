@@ -11,7 +11,7 @@ import type {
   BarSeriesOption,
   EChartsOption,
   SunburstSeriesOption,
-} from "echarts/types/dist/shared" with { "resolution-mode": "import" };
+} from "echarts/types/dist/shared";
 import { AmountValueFormat } from "../AmountValue";
 import { CategoryChip$key } from "../Categories/__generated__/CategoryChip.graphql";
 import { useFilters } from "../Filters/FiltersProvider";

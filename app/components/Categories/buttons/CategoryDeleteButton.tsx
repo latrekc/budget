@@ -96,7 +96,7 @@ export default function CategoryDeleteButton({
               <Button
                 color="danger"
                 isDisabled={isDeleteMutationInFlight}
-                onClick={onDelete}
+                onPress={onDelete}
               >
                 Yes, remove
               </Button>

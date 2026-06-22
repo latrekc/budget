@@ -60,7 +60,7 @@ export default function CategoriesFilter({
         onClose={() => setIsOpen(false)}
         showArrow
       >
-        <PopoverTrigger onClick={() => setIsOpen(true)}>
+        <PopoverTrigger onPress={() => setIsOpen(true)}>
           <Button
             color="primary"
             isDisabled={transactions.length == 0}

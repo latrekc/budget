@@ -31,7 +31,7 @@ export default function CurrencyFilter({
         <Button
           isIconOnly
           key={id}
-          onClick={() => onToggleCurrency(label)}
+          onPress={() => onToggleCurrency(label)}
           title={label}
           variant={
             filters.currencies === null || filters.currencies.includes(label)

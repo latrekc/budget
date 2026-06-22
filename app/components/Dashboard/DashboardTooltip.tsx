@@ -23,8 +23,8 @@ export function DashboardTooltip({
   category: { color: string; name: string };
   current?: string;
   data: [string, null | number][];
-  grandParentCategory: { color: string; name: string } | undefined;
-  parentCategory: { color: string; name: string } | undefined;
+  grandParentCategory?: { color: string; name: string } | undefined;
+  parentCategory?: { color: string; name: string } | undefined;
 }) {
   const rows = useMemo(
     () => [
