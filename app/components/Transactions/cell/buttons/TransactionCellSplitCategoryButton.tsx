@@ -50,7 +50,6 @@ export default function TransactionCellSplitCategoryButton({
 
   useEffect(() => {
     return subscribe(PubSubChannels.Categories, () => {
-      console.log("Refetch categories for TransactionCellSplitCategoryButton");
       refetch({}, { fetchPolicy: "network-only" });
     });
   }, [refetch, subscribe]);
