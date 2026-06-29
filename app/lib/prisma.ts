@@ -13,9 +13,16 @@ const getPrismaClient = () => {
   const newGlobalThis = globalThis as GlobalThisWithPrismaClient;
   if (!newGlobalThis[prismaClientPropertyName]) {
     newGlobalThis[prismaClientPropertyName] = new PrismaClient({
-      adapter: new PrismaBetterSqlite3({
-        url: "file:./database.sqlite",
-      }),
+      adapter: new PrismaBetterSqlite3(
+        {
+          url: "file:./database.sqlite",
+        },
+        // The database stores DateTime columns as integer epoch-ms (the
+        // legacy Prisma SQLite format). The v7 adapter defaults to binding
+        // date filters as ISO-8601 text, which never matches an integer
+        // column, so range filters (e.g. month) silently return nothing.
+        { timestampFormat: "unixepoch-ms" },
+      ),
     });
   }
   return newGlobalThis[prismaClientPropertyName];
