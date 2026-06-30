@@ -7,3 +7,5 @@ tsconfig.tsbuildinfo
 database.sqlite
 coverage
 .llms
+.env
+.env*.local

@@ -2,6 +2,7 @@ import { Prisma } from "@prisma/client";
 
 import { PrismaClient } from ".prisma/client";
 
+import { loadEnvConfig } from "@next/env";
 import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
 
 const prismaClientPropertyName = `__prevent-name-collision__prisma`;
@@ -12,10 +13,25 @@ type GlobalThisWithPrismaClient = {
 const getPrismaClient = () => {
   const newGlobalThis = globalThis as GlobalThisWithPrismaClient;
   if (!newGlobalThis[prismaClientPropertyName]) {
+    // Load .env so any entry point (Next.js, ts-node scripts) can read
+    // DATABASE_FILE. loadEnvConfig never overrides values already present in
+    // process.env, so inline/shell variables and Next's own loading still win.
+    // Skip it entirely when DATABASE_FILE is already set (Next.js runtime and
+    // the Jest/next-jest test env both pre-load it) to avoid redundant env-file
+    // scanning and the console noise @next/env emits under jsdom.
+    if (!process.env.DATABASE_FILE) {
+      loadEnvConfig(process.cwd());
+    }
+    const databaseFile = process.env.DATABASE_FILE;
+    if (!databaseFile) {
+      throw new Error(
+        "DATABASE_FILE environment variable is not set. It must point to the SQLite database (e.g. file:./database.sqlite).",
+      );
+    }
     newGlobalThis[prismaClientPropertyName] = new PrismaClient({
       adapter: new PrismaBetterSqlite3(
         {
-          url: "file:./database.sqlite",
+          url: databaseFile,
         },
         // The database stores DateTime columns as integer epoch-ms (the
         // legacy Prisma SQLite format). The v7 adapter defaults to binding
