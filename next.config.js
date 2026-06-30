@@ -1,4 +1,13 @@
 module.exports = {
+  async redirects() {
+    return [
+      {
+        source: "/",
+        destination: "/transactions",
+        permanent: false,
+      },
+    ];
+  },
   compiler: {
     relay: {
       excludes: [

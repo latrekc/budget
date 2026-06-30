@@ -2,6 +2,7 @@
 
 import { NextUIProvider } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
+import { Suspense } from "react";
 import { RelayEnvironmentProvider } from "react-relay";
 
 import { FiltersProvider } from "./components/Filters/FiltersProvider";
@@ -15,7 +16,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <RelayEnvironmentProvider environment={environment}>
       <NextUIProvider navigate={router.push}>
         <PubSubProvider>
-          <FiltersProvider>{children}</FiltersProvider>
+          <Suspense>
+            <FiltersProvider>{children}</FiltersProvider>
+          </Suspense>
         </PubSubProvider>
       </NextUIProvider>
     </RelayEnvironmentProvider>
