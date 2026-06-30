@@ -142,6 +142,7 @@ export default function FiltersMonths({
         years={years}
       />
       <RadioGroup
+        aria-label="Year mode"
         className="py-6"
         onValueChange={onSetYearMode}
         orientation="horizontal"
@@ -381,7 +382,11 @@ function YearComponent({
         </>
       ) : null}
 
-      <CheckboxGroup onValueChange={setSelected} value={filterMonthsState}>
+      <CheckboxGroup
+        aria-label="Filter by month"
+        onValueChange={setSelected}
+        value={filterMonthsState}
+      >
         {year.months.map(({ id, income, month, outcome, year: monthYear }) => (
           <Checkbox
             classNames={{

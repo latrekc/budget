@@ -29,7 +29,7 @@ describe("AmountFilter", () => {
   it("renders input number clearable with label and asserts 1 input", () => {
     const dispatch = jest.fn();
     render(<AmountFilter dispatch={dispatch} filters={initialState} />);
-    const inputs = screen.getAllByTestId("amount-input");
+    const inputs = screen.getAllByTestId("amount-input-field");
     expect(inputs.length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText("Search by amount")).toBeInTheDocument();
   });
@@ -37,9 +37,7 @@ describe("AmountFilter", () => {
   it("debounced dispatch SetAmount on value change", () => {
     const dispatch = jest.fn();
     render(<AmountFilter dispatch={dispatch} filters={initialState} />);
-    const input =
-      screen.getAllByTestId("amount-input")[1] ||
-      screen.getAllByTestId("amount-input")[0];
+    const input = screen.getByTestId("amount-input-field");
     fireEvent.change(input, { target: { value: "123" } });
     expect(dispatch).toHaveBeenCalledWith(
       expect.objectContaining({ type: expect.any(Number), payload: "123" }),
@@ -54,9 +52,7 @@ describe("AmountFilter", () => {
         filters={{ ...initialState, amount: "10" }}
       />,
     );
-    const input =
-      screen.getAllByTestId("amount-input")[1] ||
-      screen.getAllByTestId("amount-input")[0];
+    const input = screen.getByTestId("amount-input-field");
     fireEvent.change(input, { target: { value: "" } });
     expect(dispatch).toHaveBeenCalledWith(
       expect.objectContaining({ payload: null }),

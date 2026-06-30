@@ -13,7 +13,9 @@ function readSql(): string {
 describe("transactions_statistic_per_source.sql view", () => {
   it("drops and creates view transactions_statistic_per_source", () => {
     const content = readSql();
-    expect(content).toMatch(/DROP VIEW transactions_statistic_per_source/i);
+    expect(content).toMatch(
+      /DROP VIEW IF EXISTS transactions_statistic_per_source/i,
+    );
     expect(content).toMatch(
       /CREATE VIEW transactions_statistic_per_source AS/i,
     );

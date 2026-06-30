@@ -63,7 +63,7 @@ export default function Currencies({
 
   return (
     <div className="p-3">
-      <Tabs items={items}>
+      <Tabs aria-label="Currencies" items={items}>
         {({ currency, rateClaims }) => (
           <Tab
             key={currency}

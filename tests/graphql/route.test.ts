@@ -33,11 +33,11 @@ function readRoute(): string {
 }
 
 describe("route GraphQL type", () => {
-  it("GET POST OPTIONS are defined as handleRequest exports in file", () => {
+  it("GET POST OPTIONS are defined as handler exports in file", () => {
     const content = readRoute();
-    expect(content).toMatch(/export\s*\{\s*handleRequest\s+as\s+GET/);
-    expect(content).toMatch(/handleRequest\s+as\s+POST/);
-    expect(content).toMatch(/handleRequest\s+as\s+OPTIONS/);
+    expect(content).toMatch(/export\s*\{\s*handler\s+as\s+GET/);
+    expect(content).toMatch(/handler\s+as\s+POST/);
+    expect(content).toMatch(/handler\s+as\s+OPTIONS/);
   });
 
   it("GET returns Yoga landing HTML or GraphQL response characterizing export structure", () => {

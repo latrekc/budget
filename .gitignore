@@ -9,3 +9,6 @@ coverage
 .llms
 .env
 .env*.local
+e2e/*.sqlite
+playwright-report/
+test-results/

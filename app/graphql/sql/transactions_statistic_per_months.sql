@@ -1,4 +1,4 @@
-DROP VIEW transactions_statistic_per_months;
+DROP VIEW IF EXISTS transactions_statistic_per_months;
 
 CREATE VIEW transactions_statistic_per_months AS
 SELECT

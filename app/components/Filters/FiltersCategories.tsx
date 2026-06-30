@@ -237,6 +237,7 @@ export default function FiltersCategories({
         />
 
         <RadioGroup
+          aria-label="Category mode"
           className="py-6"
           onValueChange={onSetCategoryMode}
           orientation="horizontal"
@@ -247,7 +248,11 @@ export default function FiltersCategories({
           <Radio value={CategoryMode.IGNORE}>Ignore</Radio>
         </RadioGroup>
 
-        <CheckboxGroup onValueChange={setSelected} value={value}>
+        <CheckboxGroup
+          aria-label="Filter by category"
+          onValueChange={setSelected}
+          value={value}
+        >
           {filteredCategories
             ?.filter((category) => category.parentCategory == null)
             .map((category) => (

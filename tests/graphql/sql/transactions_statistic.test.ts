@@ -13,7 +13,7 @@ function readSql(): string {
 describe("transactions_statistic.sql view", () => {
   it("drops view then creates view transactions_statistic", () => {
     const content = readSql();
-    expect(content).toMatch(/DROP VIEW transactions_statistic/i);
+    expect(content).toMatch(/DROP VIEW IF EXISTS transactions_statistic/i);
     expect(content).toMatch(/CREATE VIEW transactions_statistic AS/i);
   });
 

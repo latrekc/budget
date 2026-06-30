@@ -13,7 +13,9 @@ function readSql(): string {
 describe("currency_exchange_rate_clames.sql view", () => {
   it("file exists and drops view then creates view", () => {
     const content = readSql();
-    expect(content).toMatch(/DROP VIEW currency_exchange_rate_clames/i);
+    expect(content).toMatch(
+      /DROP VIEW IF EXISTS currency_exchange_rate_clames/i,
+    );
     expect(content).toMatch(/CREATE VIEW currency_exchange_rate_clames AS/i);
   });
 

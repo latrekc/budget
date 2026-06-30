@@ -78,7 +78,7 @@ export default function AmountFilter({
   return (
     <Input
       className="w-auto"
-      data-testid="amount-input"
+      data-testid="amount-input-field"
       isClearable
       label="Search by amount"
       labelPlacement="outside"
@@ -86,7 +86,7 @@ export default function AmountFilter({
       startContent={
         <Dropdown>
           <DropdownTrigger>
-            <Button isIconOnly variant="light">
+            <Button aria-label="Amount relation" isIconOnly variant="light">
               {icons[filters.amountRelation ?? AmountRelation.EQUAL]}
             </Button>
           </DropdownTrigger>

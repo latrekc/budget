@@ -17,6 +17,10 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
+    "e2e": "playwright test",
+    "e2e:ui": "playwright test --ui",
+    "e2e:seed": "DATABASE_FILE=file:./e2e/golden.sqlite pnpm ts-node -O '{\"module\":\"commonjs\"}' ./tests/e2e/helpers/seed.ts",
+    "e2e:setup": "mkdir -p e2e && pnpm exec prisma db push --url file:./e2e/golden.sqlite && pnpm e2e:seed",
     "prepare": "husky"
   },
   "dependencies": {
@@ -63,7 +67,7 @@
     "@eslint/js": "^10.0.1",
     "@next/env": "^16.2.6",
     "@next/eslint-plugin-next": "^16.2.6",
-    "@playwright/test": "^1.61.1",
+    "@playwright/test": "1.61.1",
     "@tailwindcss/postcss": "^4.2.4",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",

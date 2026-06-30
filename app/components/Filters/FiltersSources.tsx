@@ -80,9 +80,11 @@ export default function FiltersSources({
       )}
 
       <CheckboxGroup
+        aria-label="Filter by source"
         classNames={{
           wrapper: "gap-1",
         }}
+        data-testid="checkbox-group"
         onValueChange={setSelected}
         value={value}
       >

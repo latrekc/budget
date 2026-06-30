@@ -1,4 +1,4 @@
-DROP VIEW currency_exchange_rate_clames;
+DROP VIEW IF EXISTS currency_exchange_rate_clames;
 
 CREATE VIEW currency_exchange_rate_clames AS
 SELECT
