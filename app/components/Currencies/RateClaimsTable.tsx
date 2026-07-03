@@ -12,7 +12,7 @@ import {
   TableRow,
 } from "@nextui-org/react";
 import { useInfiniteScroll } from "@nextui-org/use-infinite-scroll";
-import { useCallback, useEffect, useMemo } from "react";
+import { RefObject, useCallback, useEffect, useMemo } from "react";
 import { graphql, useFragment, usePaginationFragment } from "react-relay";
 import { RateClaimsTable$key } from "./__generated__/RateClaimsTable.graphql";
 import { RateClaimsTable_RenderCell$key } from "./__generated__/RateClaimsTable_RenderCell.graphql";
@@ -62,8 +62,10 @@ export default function RateClaimsTable({
   );
 
   const loadMore = useCallback(() => {
-    loadNext(PER_PAGE);
-  }, [loadNext]);
+    if (hasNext && !isLoadingNext) {
+      loadNext(PER_PAGE);
+    }
+  }, [hasNext, isLoadingNext, loadNext]);
 
   const [loaderRef, scrollerRef] = useInfiniteScroll({
     hasMore: hasNext,
@@ -104,14 +106,18 @@ export default function RateClaimsTable({
       aria-label="Rates"
       baseRef={scrollerRef}
       bottomContent={
-        hasNext ? (
-          <div className="flex w-full justify-center">
-            <Spinner color="default" ref={loaderRef} />
-          </div>
-        ) : null
+        <div
+          className="flex w-full justify-center"
+          data-is-loading={isLoadingNext ? "true" : "false"}
+          data-testid="table-load-more"
+          onClick={loadMore}
+          ref={loaderRef as RefObject<HTMLDivElement>}
+        >
+          {isLoadingNext ? <Spinner color="default" /> : null}
+        </div>
       }
       classNames={{
-        base: "max-h-[720px] overflow-scroll",
+        wrapper: "max-h-[720px] overflow-y-auto",
       }}
       isHeaderSticky
       radius="none"
@@ -133,12 +139,7 @@ export default function RateClaimsTable({
         )}
       </TableHeader>
 
-      <TableBody
-        emptyContent="No records"
-        isLoading={isLoadingNext}
-        items={items}
-        loadingContent={<Spinner color="default" />}
-      >
+      <TableBody emptyContent="No records" items={items}>
         {(item) => (
           <TableRow
             className={"bg-white hover:bg-stone-100"}

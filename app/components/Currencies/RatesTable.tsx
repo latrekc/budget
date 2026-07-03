@@ -12,7 +12,7 @@ import {
   TableRow,
 } from "@nextui-org/react";
 import { useInfiniteScroll } from "@nextui-org/use-infinite-scroll";
-import { useCallback, useEffect, useMemo } from "react";
+import { RefObject, useCallback, useEffect, useMemo } from "react";
 import { graphql, useFragment, usePaginationFragment } from "react-relay";
 import { RatesTable$key } from "./__generated__/RatesTable.graphql";
 import { RatesTable_RenderCell$key } from "./__generated__/RatesTable_RenderCell.graphql";
@@ -64,8 +64,10 @@ export default function RatesTable({
   );
 
   const loadMore = useCallback(() => {
-    loadNext(PER_PAGE);
-  }, [loadNext]);
+    if (hasNext && !isLoadingNext) {
+      loadNext(PER_PAGE);
+    }
+  }, [hasNext, isLoadingNext, loadNext]);
 
   const [loaderRef, scrollerRef] = useInfiniteScroll({
     hasMore: hasNext,
@@ -109,14 +111,18 @@ export default function RatesTable({
       aria-label="Rates"
       baseRef={scrollerRef}
       bottomContent={
-        hasNext ? (
-          <div className="flex w-full justify-center">
-            <Spinner color="default" ref={loaderRef} />
-          </div>
-        ) : null
+        <div
+          className="flex w-full justify-center"
+          data-is-loading={isLoadingNext ? "true" : "false"}
+          data-testid="table-load-more"
+          onClick={loadMore}
+          ref={loaderRef as RefObject<HTMLDivElement>}
+        >
+          {isLoadingNext ? <Spinner color="default" /> : null}
+        </div>
       }
       classNames={{
-        base: "max-h-[720px] overflow-scroll",
+        wrapper: "max-h-[720px] overflow-y-auto",
       }}
       isHeaderSticky
       radius="none"
@@ -138,12 +144,7 @@ export default function RatesTable({
         )}
       </TableHeader>
 
-      <TableBody
-        emptyContent="No records"
-        isLoading={isLoadingNext}
-        items={items}
-        loadingContent={<Spinner color="default" />}
-      >
+      <TableBody emptyContent="No records" items={items}>
         {(item) => (
           <TableRow
             className={"bg-white hover:bg-stone-100"}

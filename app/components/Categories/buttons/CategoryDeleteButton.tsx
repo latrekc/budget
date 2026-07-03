@@ -68,6 +68,7 @@ export default function CategoryDeleteButton({
     <Popover backdrop="opaque" showArrow>
       <PopoverTrigger>
         <Button
+          aria-label="Remove category"
           color="danger"
           isIconOnly
           size="sm"

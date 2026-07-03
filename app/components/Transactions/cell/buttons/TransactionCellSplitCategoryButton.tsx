@@ -146,6 +146,7 @@ export default function TransactionCellSplitCategoryButton({
       <PopoverTrigger>
         <Button
           className="p-0"
+          data-testid="btn-Split-category"
           isIconOnly
           size="sm"
           title="Split category"

@@ -64,10 +64,10 @@ export default function RateDeleteCell({
     <Popover backdrop="opaque" showArrow>
       <PopoverTrigger>
         <Button
+          aria-label="Remove rate"
           color="danger"
           isIconOnly
           size="sm"
-          title="Remove category"
           variant="solid"
         >
           <TiDelete color="white" size="2em" />

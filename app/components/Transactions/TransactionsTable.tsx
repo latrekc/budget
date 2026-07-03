@@ -13,7 +13,7 @@ import {
   TableRow,
 } from "@nextui-org/react";
 import { useInfiniteScroll } from "@nextui-org/use-infinite-scroll";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, type RefObject } from "react";
 import { graphql, useFragment, usePaginationFragment } from "react-relay";
 
 import { FiltersState } from "../Filters/FiltersReducer";
@@ -162,8 +162,10 @@ export default function TransactionsTable({
   );
 
   const loadMore = useCallback(() => {
-    loadNext(PER_PAGE);
-  }, [loadNext]);
+    if (hasNext && !isLoadingNext) {
+      loadNext(PER_PAGE);
+    }
+  }, [hasNext, isLoadingNext, loadNext]);
 
   const [loaderRef, scrollerRef] = useInfiniteScroll({
     hasMore: hasNext,
@@ -205,14 +207,18 @@ export default function TransactionsTable({
       aria-label="Transaction"
       baseRef={scrollerRef}
       bottomContent={
-        hasNext ? (
-          <div className="flex w-full justify-center">
-            <Spinner color="default" ref={loaderRef} />
-          </div>
-        ) : null
+        <div
+          className="flex w-full justify-center"
+          data-is-loading={isLoadingNext ? "true" : "false"}
+          data-testid="table-load-more"
+          onClick={loadMore}
+          ref={loaderRef as RefObject<HTMLDivElement>}
+        >
+          {isLoadingNext ? <Spinner color="default" /> : null}
+        </div>
       }
       classNames={{
-        base: "max-h-[720px] overflow-scroll",
+        wrapper: "max-h-[720px] overflow-y-auto",
       }}
       isHeaderSticky
       onSelectionChange={onSelectionChange}
@@ -232,12 +238,7 @@ export default function TransactionsTable({
         )}
       </TableHeader>
 
-      <TableBody
-        emptyContent="No records"
-        isLoading={isLoadingNext}
-        items={items}
-        loadingContent={<Spinner color="default" />}
-      >
+      <TableBody emptyContent="No records" items={items}>
         {(item) => (
           <TableRow
             className={`${
@@ -245,6 +246,7 @@ export default function TransactionsTable({
                 ? "bg-white hover:bg-stone-100"
                 : "bg-lime-50 hover:bg-lime-100"
             } `}
+            id={item?.node?.id ?? ""}
             key={item?.node?.id}
           >
             {(columnKey) => (

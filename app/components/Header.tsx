@@ -1,4 +1,4 @@
-import { Link, Navbar, NavbarContent, NavbarItem } from "@nextui-org/react";
+import { Link } from "@nextui-org/react";
 
 export enum PageType {
   Balances = "Balances",
@@ -18,24 +18,23 @@ export default function Header({ active }: { active: PageType }) {
   ];
 
   return (
-    <Navbar isBordered maxWidth="full">
-      <NavbarContent className="flex gap-4" justify="start">
+    <header className="border-b border-divider">
+      <nav className="mx-auto flex max-w-full gap-4 px-4 py-3">
         {pages.map((page) => (
-          <NavbarItem isActive={page.id === active} key={page.id}>
+          <div key={page.id} data-active={page.id === active}>
             {page.disabled ? (
-              <Link isDisabled>{page.id}</Link>
+              <span className="text-muted cursor-not-allowed">{page.id}</span>
             ) : (
               <Link
-                aria-current="page"
-                color={page.id === active ? "foreground" : "primary"}
+                aria-current={page.id === active ? "page" : undefined}
                 href={`/${page.id.toLowerCase()}`}
               >
                 {page.id}
               </Link>
             )}
-          </NavbarItem>
+          </div>
         ))}
-      </NavbarContent>
-    </Navbar>
+      </nav>
+    </header>
   );
 }

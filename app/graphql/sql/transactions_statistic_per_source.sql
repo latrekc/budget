@@ -1,4 +1,4 @@
-DROP VIEW transactions_statistic_per_source;
+DROP VIEW IF EXISTS transactions_statistic_per_source;
 
 CREATE VIEW transactions_statistic_per_source AS
 SELECT

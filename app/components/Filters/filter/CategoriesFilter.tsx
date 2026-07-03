@@ -52,18 +52,21 @@ export default function CategoriesFilter({
     setIsOpen(false);
   }, [setSelectedTransactions]);
 
+  const isDisabled = transactions.length == 0;
+
   return (
     <div className="inline-flex items-center justify-start gap-x-3">
       <Popover
         backdrop="opaque"
         isOpen={isOpen}
-        onClose={() => setIsOpen(false)}
+        onOpenChange={(open) => setIsOpen(open && !isDisabled)}
         showArrow
       >
-        <PopoverTrigger onPress={() => setIsOpen(true)}>
+        <PopoverTrigger>
           <Button
             color="primary"
-            isDisabled={transactions.length == 0}
+            data-testid="categories-button"
+            isDisabled={isDisabled}
             size="sm"
             title="Set category"
             variant="flat"

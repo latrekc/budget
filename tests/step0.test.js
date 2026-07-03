@@ -1,8 +1,12 @@
+const fs = require("fs");
+const path = require("path");
+
+const ROOT = path.resolve(__dirname, "..");
+
 describe("Step 0: Jest Installation", () => {
   test("jest is installed and configured", () => {
-    const fs = require("fs");
     const packageJson = JSON.parse(
-      fs.readFileSync("/Users/latrekc/Code/budget/package.json", "utf-8"),
+      fs.readFileSync(path.join(ROOT, "package.json"), "utf-8"),
     );
 
     // Check jest is in devDependencies
@@ -19,23 +23,16 @@ describe("Step 0: Jest Installation", () => {
   });
 
   test("jest config file exists", () => {
-    const fs = require("fs");
-    expect(fs.existsSync("/Users/latrekc/Code/budget/jest.config.js")).toBe(
-      true,
-    );
+    expect(fs.existsSync(path.join(ROOT, "jest.config.js"))).toBe(true);
   });
 
   test("jest setup file exists", () => {
-    const fs = require("fs");
-    expect(fs.existsSync("/Users/latrekc/Code/budget/jest.setup.js")).toBe(
-      true,
-    );
+    expect(fs.existsSync(path.join(ROOT, "jest.setup.js"))).toBe(true);
   });
 
   test("test script is configured in package.json", () => {
-    const fs = require("fs");
     const packageJson = JSON.parse(
-      fs.readFileSync("/Users/latrekc/Code/budget/package.json", "utf-8"),
+      fs.readFileSync(path.join(ROOT, "package.json"), "utf-8"),
     );
     expect(packageJson.scripts).toHaveProperty("test");
     expect(packageJson.scripts.test).toContain("jest");

@@ -51,6 +51,7 @@ export default function TransactionCellAddCategoryButton({
       <PopoverTrigger onPress={() => setIsOpen(true)}>
         <Button
           className="p-0"
+          data-testid="add-button-trigger"
           isIconOnly
           size="sm"
           title="Set category"

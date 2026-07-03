@@ -29,6 +29,7 @@ export default function CurrencyFilter({
     <ButtonGroup color="primary" size="sm" variant="solid">
       {Object.entries(Currency).map(([id, label]) => (
         <Button
+          data-testid="currency-button"
           isIconOnly
           key={id}
           onPress={() => onToggleCurrency(label)}
