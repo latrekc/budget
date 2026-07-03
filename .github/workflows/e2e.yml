@@ -1,4 +1,4 @@
-name: E2E
+name: CI
 
 on:
   push:
@@ -7,10 +7,64 @@ on:
 
 # Cancel superseded runs on the same ref to save CI minutes.
 concurrency:
-  group: e2e-${{ github.ref }}
+  group: ci-${{ github.ref }}
   cancel-in-progress: true
 
+# CI has no .env, so anything that lazily touches Prisma (postinstall's schema
+# generation, `next build`, jest) needs DATABASE_FILE pointed at the checked-in
+# golden DB. Scoped to CI only — dev/production still rely on .env.
+env:
+  DATABASE_FILE: file:./e2e/golden.sqlite
+
 jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Install Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+  test:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Install Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Test
+        run: pnpm test
+
   playwright:
     name: Playwright (chromium)
     runs-on: ubuntu-latest
@@ -32,10 +86,6 @@ jobs:
       # Install deps. `postinstall` builds better-sqlite3, generates the Prisma
       # client, the GraphQL schema, and the Relay artifacts.
       - name: Install dependencies
-        # postinstall runs `pnpm schema`, which imports prisma.ts and needs a
-        # DATABASE_FILE. CI has no .env, so point it at the checked-in golden DB.
-        env:
-          DATABASE_FILE: file:./e2e/golden.sqlite
         run: pnpm install --frozen-lockfile
 
       # Cache the Playwright browser binaries, keyed on the resolved version so a
