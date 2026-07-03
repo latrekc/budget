@@ -151,10 +151,9 @@ async function filtersToWhere(filters: TransactionFilter | null | undefined) {
       };
     }
 
-    if ((filters.amount ?? "").trim().length > 0) {
-      const amount = Math.round(
-        Math.abs(parseFloat((filters.amount ?? "").trim()) * 100),
-      );
+    const parsedAmount = parseFloat((filters.amount ?? "").trim());
+    if (!Number.isNaN(parsedAmount)) {
+      const amount = Math.round(Math.abs(parsedAmount * 100));
 
       switch (filters.amountRelation) {
         case AmountRelation.GREATER:
@@ -328,7 +327,7 @@ builder.queryField("transactions", (t) =>
         ...query,
         orderBy:
           args.filters?.sortBy === SortBy.Amount
-            ? [{ amount: "asc" }, { date: "desc" }]
+            ? [{ amount_converted: "asc" }, { date: "desc" }]
             : [{ date: "desc" }, { amount: "asc" }],
         where: await filtersToWhere(args.filters),
       });

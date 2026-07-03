@@ -4,8 +4,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Commands
 
+Both `DATABASE_FILE` (a `file:` URL to the SQLite DB) and `PORT` are required env vars with
+no default — set them via `.env` (see `.env.example`) or inline/shell (inline wins). The
+`dev`/`start` scripts run through `app/scripts/serve.ts`, which loads `.env` before starting
+Next so a `PORT` from `.env` is honored; commands fail fast if either var is unset.
+
 ```bash
-pnpm run dev          # Start Next.js dev server (localhost:3000)
+pnpm run dev          # Start Next.js dev server on PORT
 pnpm run build        # Production build
 pnpm run lint         # TypeScript check (tsc --noemit) + ESLint
 
