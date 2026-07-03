@@ -32,6 +32,10 @@ jobs:
       # Install deps. `postinstall` builds better-sqlite3, generates the Prisma
       # client, the GraphQL schema, and the Relay artifacts.
       - name: Install dependencies
+        # postinstall runs `pnpm schema`, which imports prisma.ts and needs a
+        # DATABASE_FILE. CI has no .env, so point it at the checked-in golden DB.
+        env:
+          DATABASE_FILE: file:./e2e/golden.sqlite
         run: pnpm install --frozen-lockfile
 
       # Cache the Playwright browser binaries, keyed on the resolved version so a
