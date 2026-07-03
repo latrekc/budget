@@ -6,6 +6,11 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
+  // The per-worker fixture (helpers/server.ts) spawns a full `next start` server
+  // per worker. On the 2-core CI runner, multiple heavy servers starve the CPU
+  // and cause client-side RSC navigation/mutations to stall, so pin CI to a
+  // single worker. Locally (undefined) Playwright still uses all cores.
+  workers: process.env.CI ? 1 : undefined,
   // In CI emit GitHub annotations AND an HTML report (uploaded as an artifact).
   reporter: process.env.CI ? [["github"], ["html", { open: "never" }]] : "html",
   timeout: 60_000,
