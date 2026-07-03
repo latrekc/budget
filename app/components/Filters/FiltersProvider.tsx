@@ -210,8 +210,16 @@ export const FiltersProvider: FC<FiltersProviderProps> = function (props) {
       params.delete("sortBy");
     }
 
-    router.replace(`${pathname}?${params}`);
-  }, [filtersState, pathname, router]);
+    // Only rewrite the URL when the computed query differs from the current
+    // one. Without this guard the effect fires a redundant router.replace on
+    // mount (e.g. "/transactions?" with empty params); that late replace can
+    // land after an in-flight route change and bounce the user back to the
+    // previous page — a race that showed up as flaky navigation in CI.
+    const nextParams = params.toString();
+    if (nextParams !== searchParams.toString()) {
+      router.replace(nextParams ? `${pathname}?${nextParams}` : pathname);
+    }
+  }, [filtersState, pathname, router, searchParams]);
 
   const context = {
     categoryFiltersState,
