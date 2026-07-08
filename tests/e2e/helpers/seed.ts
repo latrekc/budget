@@ -149,6 +149,23 @@ export const SEED = {
     JPY: 96,
     TRY: 96,
   },
+  // Distinct golden exchange-rate rows per currency: one per (year-month) — each
+  // non-GBP currency recurs once a month on a fixed day — minus the 2019 Q1 gap
+  // (3 months). 8 years * 12 - 3 = 93. Used by the infinite-scroll spec.
+  rates: {
+    USD: 93,
+  },
+  // Non-GBP transactions with no matching rate (the deliberate 2019 Q1 gap):
+  // one per month for Jan/Feb/Mar 2019 = 3 per currency. Surfaced as "claims".
+  claims: {
+    USD: 3,
+  },
+  // Low-cardinality dataset written by seedSmall() for the mutation specs.
+  small: {
+    transactions: 8,
+    usdRates: 1, // one USD rate (2024-01-15)
+    usdClaims: 1, // one USD claim (2024-02-20, no matching rate)
+  },
 } as const;
 
 type TransactionRow = {

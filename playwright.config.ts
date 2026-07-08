@@ -19,7 +19,20 @@ export default defineConfig({
     trace: "on-first-retry",
     screenshot: "only-on-failure",
   },
-  projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
+  projects: [
+    {
+      name: "chromium",
+      use: {
+        ...devices["Desktop Chrome"],
+        launchOptions: {
+          // Enable the Chromium sandbox locally, but disable it in CI: GitHub's
+          // Linux runners don't provide the kernel privileges Chromium needs to
+          // sandbox, so forcing it there fails with "Chromium sandboxing failed!".
+          chromiumSandbox: !process.env.CI,
+        },
+      },
+    },
+  ],
   // No top-level `webServer`: servers are launched per-worker by the fixture in
   // tests/e2e/helpers/server.ts so each worker has an isolated DB + port.
 });

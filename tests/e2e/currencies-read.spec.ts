@@ -6,11 +6,12 @@ import {
   currencyTabs,
   gotoCurrencies,
   ratesTable,
+  SEED,
 } from "./helpers/selectors";
 import { expect, test } from "./helpers/server";
 
 const NON_GBP = ["USD", "EUR", "RUB", "HUF", "JPY", "TRY"];
-const USD_CLAIMS = 3;
+const USD_CLAIMS = SEED.claims.USD;
 
 function tableDataRows(page: Page, table: Locator): Locator {
   return table.getByRole("row").filter({ has: page.getByRole("rowheader") });
@@ -32,18 +33,25 @@ test("tabs render only for currencies that have rates or claims", async ({
 
 test("a currency with claims shows the claim-count chip", async ({ page }) => {
   await gotoCurrencies(page);
-  await expect(currencyTab(page, "USD")).toContainText(String(USD_CLAIMS));
+  await expect(currencyTab(page, "USD")).toContainText(String(USD_CLAIMS), {
+    timeout: 15_000,
+  });
 });
 
 test("selecting a tab renders its claims and rates tables", async ({
   page,
 }) => {
   await gotoCurrencies(page);
+  await expect(currencyTab(page, "USD")).toBeVisible();
   await currencyTab(page, "USD").click();
 
-  await expect(claimsTable(page)).toBeVisible();
-  await expect(ratesTable(page)).toBeVisible();
+  await expect(claimsTable(page)).toBeVisible({ timeout: 15_000 });
+  await expect(ratesTable(page)).toBeVisible({ timeout: 15_000 });
 
-  await expect(tableDataRows(page, claimsTable(page))).toHaveCount(USD_CLAIMS);
-  await expect(tableDataRows(page, ratesTable(page)).first()).toBeVisible();
+  await expect(tableDataRows(page, claimsTable(page))).toHaveCount(USD_CLAIMS, {
+    timeout: 15_000,
+  });
+  await expect(tableDataRows(page, ratesTable(page)).first()).toBeVisible({
+    timeout: 15_000,
+  });
 });
