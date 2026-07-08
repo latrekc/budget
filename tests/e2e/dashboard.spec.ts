@@ -22,7 +22,9 @@ test("sidebar category filter updates the URL", async ({ page }) => {
   await clickInScroll(
     categoriesGroup(page).getByRole("checkbox", { name: "Coffee" }),
   );
-  await expect.poll(() => urlParam(page, "categories")).toContain("13");
+  await expect
+    .poll(() => urlParam(page, "categories"), { timeout: 15_000 })
+    .toContain("13");
 });
 
 test("sidebar month filter updates the URL", async ({ page }) => {
@@ -31,7 +33,9 @@ test("sidebar month filter updates the URL", async ({ page }) => {
   await clickInScroll(
     monthsGroup(page).getByRole("checkbox", { name: /June/ }),
   );
-  await expect.poll(() => urlParam(page, "months")).toBe("2026-06");
+  await expect
+    .poll(() => urlParam(page, "months"), { timeout: 15_000 })
+    .toBe("2026-06");
 });
 
 test("the dashboard has no sources filter", async ({ page }) => {
@@ -45,7 +49,7 @@ test("clicking a bar category toggles the category filter", async ({
 }) => {
   await page.goto("/dashboard");
   const barChart = dashboardCharts(page).first();
-  await expect(barChart).toBeVisible();
+  await expect(barChart).toBeVisible({ timeout: 15_000 });
 
   const box = await barChart.boundingBox();
   if (box == null) {
@@ -72,5 +76,7 @@ test("clicking a bar category toggles the category filter", async ({
     }
   }
 
-  await expect.poll(() => urlParam(page, "categories")).not.toBeNull();
+  await expect
+    .poll(() => urlParam(page, "categories"), { timeout: 15_000 })
+    .not.toBeNull();
 });

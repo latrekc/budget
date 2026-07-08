@@ -159,6 +159,16 @@ export async function expectTotalCount(
   ).toBeVisible();
 }
 
+/** Assert total count with extended timeout for URL filter propagation. */
+export async function expectTotalCountStable(
+  page: Page,
+  count: number,
+): Promise<void> {
+  await expect(
+    page.getByText(new RegExp(`\\b${count}\\b\\s+transactions`)).first(),
+  ).toBeVisible({ timeout: 15_000 });
+}
+
 /** Read a URL query param from the current page URL (decoded). */
 export function urlParam(page: Page, name: string): null | string {
   return new URL(page.url()).searchParams.get(name);

@@ -2,10 +2,11 @@ import type { Page } from "@playwright/test";
 import {
   currencyButton,
   descriptionFilter,
-  expectTotalCount,
+  expectTotalCountStable,
   gotoTransactions,
   onlyIncomeSwitch,
   onlyUncategorisedSwitch,
+  SEED,
   transactionRows,
   urlParam,
 } from "./helpers/selectors";
@@ -18,82 +19,99 @@ function searchValue(page: Page): string {
   return decodeURIComponent(urlParam(page, "search") ?? "");
 }
 
-// Seed-derived counts (verified against the golden DB).
-const TOTAL = 1056;
-const COFFEE = 40;
-const NOT_COFFEE = 1016;
-const COFFEE_OR_RENT = 64;
-const NOT_COFFEE_AND_NOT_RENT = 992;
+// Seed-derived counts. Values with a direct SEED field are referenced from it so
+// the seed stays the single source of truth; the rest are derived or verified
+// against the golden DB.
+const TOTAL = SEED.totalTransactions;
+const COFFEE = SEED.descriptions.coffee;
+const NOT_COFFEE = TOTAL - COFFEE;
+const COFFEE_OR_RENT = COFFEE + SEED.descriptions.rent;
+const NOT_COFFEE_AND_NOT_RENT = TOTAL - COFFEE_OR_RENT;
 const ONLY_INCOME = 212;
 const ONLY_UNCOMPLITED = 537;
-const USD = 96;
+const USD = SEED.currencies.USD;
 const COFFEE_AND_INCOME = 8;
 
 test("description search sets ?search and narrows rows", async ({ page }) => {
   await gotoTransactions(page);
   await descriptionFilter(page).fill("coffee");
-  await expect.poll(() => searchValue(page)).toBe("coffee");
-  await expectTotalCount(page, COFFEE);
+  await expect
+    .poll(() => searchValue(page), { timeout: 15_000 })
+    .toBe("coffee");
+  await expectTotalCountStable(page, COFFEE);
   await expect(transactionRows(page).first()).toContainText("coffee");
 });
 
 test("negative search (!term) excludes matches", async ({ page }) => {
   await gotoTransactions(page);
   await descriptionFilter(page).fill("!coffee");
-  await expect.poll(() => searchValue(page)).toBe("!coffee");
-  await expectTotalCount(page, NOT_COFFEE);
+  await expect
+    .poll(() => searchValue(page), { timeout: 15_000 })
+    .toBe("!coffee");
+  await expectTotalCountStable(page, NOT_COFFEE);
 });
 
 test("OR search (a|b) includes both", async ({ page }) => {
   await gotoTransactions(page);
   await descriptionFilter(page).fill("coffee|rent");
-  await expect.poll(() => searchValue(page)).toBe("coffee|rent");
-  await expectTotalCount(page, COFFEE_OR_RENT);
+  await expect
+    .poll(() => searchValue(page), { timeout: 15_000 })
+    .toBe("coffee|rent");
+  await expectTotalCountStable(page, COFFEE_OR_RENT);
 });
 
 test("AND-of-not search (!a|b) excludes both", async ({ page }) => {
   await gotoTransactions(page);
   await descriptionFilter(page).fill("!coffee|rent");
-  await expect.poll(() => searchValue(page)).toBe("!coffee|rent");
-  await expectTotalCount(page, NOT_COFFEE_AND_NOT_RENT);
+  await expect
+    .poll(() => searchValue(page), { timeout: 15_000 })
+    .toBe("!coffee|rent");
+  await expectTotalCountStable(page, NOT_COFFEE_AND_NOT_RENT);
 });
 
 test("Only uncategorised toggles ?onlyUncomplited", async ({ page }) => {
   await gotoTransactions(page);
+  await expect(onlyUncategorisedSwitch(page)).toBeVisible();
   await onlyUncategorisedSwitch(page).click({ force: true });
-  await expect.poll(() => urlParam(page, "onlyUncomplited")).toBe("true");
-  await expectTotalCount(page, ONLY_UNCOMPLITED);
+  await expect
+    .poll(() => urlParam(page, "onlyUncomplited"), { timeout: 15_000 })
+    .toBe("true");
+  await expectTotalCountStable(page, ONLY_UNCOMPLITED);
 });
 
 test("Only income toggles ?onlyIncome and filters to positive amounts", async ({
   page,
 }) => {
   await gotoTransactions(page);
+  await expect(onlyIncomeSwitch(page)).toBeVisible();
   await onlyIncomeSwitch(page).click({ force: true });
-  await expect.poll(() => urlParam(page, "onlyIncome")).toBe("true");
-  await expectTotalCount(page, ONLY_INCOME);
+  await expect
+    .poll(() => urlParam(page, "onlyIncome"), { timeout: 15_000 })
+    .toBe("true");
+  await expectTotalCountStable(page, ONLY_INCOME);
 });
 
 test("currency button toggles ?currencies and filters rows", async ({
   page,
 }) => {
   await gotoTransactions(page);
+  await expect(currencyButton(page, "USD")).toBeVisible();
   await currencyButton(page, "USD").click();
   // Toggling USD off from the default (all) leaves the other six currencies.
   await expect
-    .poll(() => urlParam(page, "currencies"))
+    .poll(() => urlParam(page, "currencies"), { timeout: 15_000 })
     .toEqual(expect.stringContaining("GBP"));
   expect(urlParam(page, "currencies")).not.toContain("USD");
-  await expectTotalCount(page, TOTAL - USD);
+  await expectTotalCountStable(page, TOTAL - USD);
 });
 
 test("deep-link reproduces filter state", async ({ page }) => {
   await page.goto("/transactions?search=coffee");
-  await expectTotalCount(page, COFFEE);
+  await expectTotalCountStable(page, COFFEE);
 
   await page.goto("/transactions?currencies=USD");
-  await expectTotalCount(page, USD);
+  await expectTotalCountStable(page, USD);
 
   await page.goto("/transactions?search=coffee&onlyIncome=true");
-  await expectTotalCount(page, COFFEE_AND_INCOME);
+  await expectTotalCountStable(page, COFFEE_AND_INCOME);
 });

@@ -132,10 +132,28 @@ export const test = base.extend<
       await waitForHttp(`${baseUrl}/transactions`);
 
       const resetDb = async (variant: "large" | "small" = "large") => {
-        await stopServer(proc);
+        // Stop previous server best-effort; ignore errors to let beforeEach stay authoritative.
+        try {
+          await stopServer(proc);
+        } catch {
+          // ignore - will be force killed
+        }
         if (variant === "small") {
+          // Small seed rewrites table rows in the existing worker DB file.
+          // Ensure the file exists: if previous reset failed it might be missing,
+          // so fall back to copying golden first.
+          if (!fs.existsSync(dbFile)) {
+            fs.copyFileSync(GOLDEN, dbFile);
+          }
           seedSmallInto(databaseUrl);
         } else {
+          // Large: fast file copy of golden snapshot. Remove first to avoid
+          // copy-on-write lock issues on some platforms.
+          try {
+            fs.rmSync(dbFile, { force: true });
+          } catch {
+            // ignore
+          }
           fs.copyFileSync(GOLDEN, dbFile);
         }
         proc = startServer(port, databaseUrl);

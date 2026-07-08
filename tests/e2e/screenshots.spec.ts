@@ -28,11 +28,13 @@ test.beforeAll(() => {
 });
 
 test.beforeEach(() => {
-  // This suite only regenerates the README documentation screenshots against the
-  // local golden build; skip it in CI so it never gates the docs PR.
+  // Documentation screenshot generation is OFF by default (it isn't an assertion
+  // suite and would otherwise run on every local `playwright test`). Opt in with
+  // GENERATE_SCREENSHOTS=1 to regenerate the README images against the local
+  // golden build. The suite is intentionally kept, just not run automatically.
   test.skip(
-    !!process.env.CI,
-    "documentation screenshot capture runs locally only",
+    !process.env.GENERATE_SCREENSHOTS,
+    "screenshot capture disabled; set GENERATE_SCREENSHOTS=1 to regenerate",
   );
 });
 
