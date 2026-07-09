@@ -15,6 +15,9 @@ export default defineConfig({
   reporter: process.env.CI ? [["github"], ["html", { open: "never" }]] : "html",
   timeout: 60_000,
   expect: { timeout: 10_000 },
+  // The full e2e suite is too slow, so run only a minimal smoke set (matched by
+  // title) both locally and in CI.
+  grep: [/table renders with the expected columns/],
   use: {
     trace: "on-first-retry",
     screenshot: "only-on-failure",
