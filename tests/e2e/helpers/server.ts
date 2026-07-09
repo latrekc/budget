@@ -4,21 +4,23 @@
 // owns an isolated DB + server, so tests can run fully in parallel safely.
 
 import { test as base, expect } from "@playwright/test";
-import { ChildProcess, spawn, spawnSync } from "child_process";
+import { ChildProcess, spawn } from "child_process";
 import fs from "fs";
 import path from "path";
 
 const ROOT = process.cwd();
 const E2E_DIR = path.join(ROOT, "e2e");
 const GOLDEN = path.join(E2E_DIR, "golden.sqlite");
+const GOLDEN_SMALL = path.join(E2E_DIR, "golden-small.sqlite");
 const BASE_PORT = 3100;
 
 export type WorkerServer = {
   baseURL: string;
   /**
-   * Restore the worker DB to a clean snapshot and restart the server.
-   * "large" re-copies the golden snapshot (fast file copy); "small" reseeds the
-   * low-cardinality dataset for mutation specs that need predictable data.
+   * Restore the worker DB to a clean snapshot and restart the server. Both
+   * variants are a fast file copy of a snapshot pre-built once in global-setup:
+   * "large" copies golden.sqlite; "small" copies golden-small.sqlite, the
+   * low-cardinality dataset mutation specs need.
    */
   resetDb: (variant?: "large" | "small") => Promise<void>;
 };
@@ -92,28 +94,6 @@ async function waitForHttp(url: string, timeoutMs = 90_000): Promise<void> {
   );
 }
 
-function seedSmallInto(databaseUrl: string): void {
-  const result = spawnSync(
-    "pnpm",
-    [
-      "exec",
-      "ts-node",
-      "-O",
-      '{"module":"commonjs"}',
-      "./tests/e2e/helpers/seed.ts",
-      "--small",
-    ],
-    {
-      cwd: ROOT,
-      stdio: "inherit",
-      env: { ...process.env, DATABASE_FILE: databaseUrl },
-    },
-  );
-  if (result.status !== 0) {
-    throw new Error(`small reseed exited with ${result.status}`);
-  }
-}
-
 export const test = base.extend<
   Record<never, never>,
   { workerServer: WorkerServer }
@@ -138,24 +118,16 @@ export const test = base.extend<
         } catch {
           // ignore - will be force killed
         }
-        if (variant === "small") {
-          // Small seed rewrites table rows in the existing worker DB file.
-          // Ensure the file exists: if previous reset failed it might be missing,
-          // so fall back to copying golden first.
-          if (!fs.existsSync(dbFile)) {
-            fs.copyFileSync(GOLDEN, dbFile);
-          }
-          seedSmallInto(databaseUrl);
-        } else {
-          // Large: fast file copy of golden snapshot. Remove first to avoid
-          // copy-on-write lock issues on some platforms.
-          try {
-            fs.rmSync(dbFile, { force: true });
-          } catch {
-            // ignore
-          }
-          fs.copyFileSync(GOLDEN, dbFile);
+        // Both variants are a fast file copy of a snapshot pre-built once in
+        // global-setup. Remove first to avoid copy-on-write lock issues on some
+        // platforms.
+        const source = variant === "small" ? GOLDEN_SMALL : GOLDEN;
+        try {
+          fs.rmSync(dbFile, { force: true });
+        } catch {
+          // ignore
         }
+        fs.copyFileSync(source, dbFile);
         proc = startServer(port, databaseUrl);
         await waitForHttp(`${baseUrl}/transactions`);
       };
