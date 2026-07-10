@@ -13,7 +13,7 @@
     "build": "next build",
     "build:e2e": "E2E_LEAN_BUILD=1 next build",
     "start": "pnpm ts-node -O '{\"module\":\"commonjs\"}' ./app/scripts/serve.ts start",
-    "lint": "next typegen && tsc --noemit; eslint .",
+    "lint": "next typegen && sh -c 'tsc --noemit; tsc=$?; eslint .; eslint=$?; exit $((tsc || eslint))'",
     "prisma-build": "pnpm prisma generate",
     "test": "jest",
     "test:watch": "jest --watch",
